@@ -1,15 +1,15 @@
 # Benchmarking Task List
 
 ## 1. Tooling & Build
-- [ ] **Build `ct_hammer`**
-    - [ ] Resolve dependencies for `certificate-transparency-go`.
-    - [ ] Verify `ct_hammer` binary functionality.
-- [ ] **Build `tesseract_hammer`**
-    - [ ] Resolve dependencies for `tesseract`.
-    - [ ] Verify `hammer` binary functionality.
-- [ ] **Containerize Tools** (Optional but recommended for GKE execution)
-    - [ ] Create Dockerfile for `ct_hammer`.
-    - [ ] Create Dockerfile for `tesseract_hammer`.
+- [x] **Build `ct_hammer`**
+    - [x] Resolve dependencies for `certificate-transparency-go`.
+    - [x] Verify `ct_hammer` binary functionality.
+- [x] **Build `tesseract_hammer`**
+    - [x] Resolve dependencies for `tesseract`.
+    - [x] Verify `hammer` binary functionality.
+- [ ] **Containerize Tools** (Using `ko` + distroless/static)
+    - [ ] Configure `ko` for `ct_hammer`.
+    - [ ] Configure `ko` for `tesseract_hammer`.
     - [ ] Push images to Artifact Registry.
 
 ## 2. Infrastructure (Terraform)

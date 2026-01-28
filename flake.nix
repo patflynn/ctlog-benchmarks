@@ -22,12 +22,14 @@
             git
             gh
             go
+            ko
           ];
 
           shellHook = ''
             echo "Welcome to the CT Log Benchmarks dev environment!"
             echo "Terraform version: $(terraform version | head -n1)"
             echo "GCloud version: $(gcloud --version | head -n1)"
+            echo "Ko version: $(ko version)"
           '';
         };
       }
