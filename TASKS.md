@@ -13,9 +13,9 @@
     - [ ] Push images to Artifact Registry.
 
 ## 2. Infrastructure (Terraform)
-- [ ] **Base Networking & Cluster**
-    - [ ] VPC, Subnets.
-    - [ ] GKE Standard Cluster (or use Autopilot if simpler for benchmark).
+- [x] **Base Networking & Cluster**
+    - [x] VPC, Subnets.
+    - [x] GKE Standard Cluster (or use Autopilot if simpler for benchmark).
 - [ ] **Trillian Stack**
     - [ ] Cloud SQL Instance (MySQL).
     - [ ] Kubernetes Manifests/Helm for Trillian Log Server.
