@@ -16,11 +16,11 @@
 - [x] **Base Networking & Cluster**
     - [x] VPC, Subnets.
     - [x] GKE Standard Cluster (or use Autopilot if simpler for benchmark).
-- [ ] **Trillian Stack**
-    - [ ] Cloud SQL Instance (MySQL).
-    - [ ] Kubernetes Manifests/Helm for Trillian Log Server.
-    - [ ] Kubernetes Manifests/Helm for Trillian Log Signer.
-    - [ ] Kubernetes Manifests/Helm for CTFE.
+- [x] **Trillian Stack**
+    - [x] Cloud SQL Instance (MySQL).
+    - [x] Kubernetes Manifests/Helm for Trillian Log Server.
+    - [x] Kubernetes Manifests/Helm for Trillian Log Signer.
+    - [x] Kubernetes Manifests/Helm for CTFE.
     - [ ] Terraform glue to deploy manifests.
 - [ ] **TesseraCT Stack**
     - [ ] Cloud Spanner Instance.

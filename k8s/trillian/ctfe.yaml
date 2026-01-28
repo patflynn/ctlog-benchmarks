@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ctfe
+  namespace: trillian
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ctfe
+  template:
+    metadata:
+      labels:
+        app: ctfe
+    spec:
+      containers:
+      - name: ctfe
+        image: gcr.io/trillian-opensource-ci/ct_server:v1.3.1
+        args:
+        - "--log_config=/config/ctfe.cfg"
+        - "--log_rpc_server=trillian-logserver:8090"
+        - "--http_endpoint=0.0.0.0:6962"
+        ports:
+        - containerPort: 6962
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: ctfe-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ctfe
+  namespace: trillian
+spec:
+  selector:
+    app: ctfe
+  ports:
+  - name: http
+    port: 80
+    targetPort: 6962
+  type: LoadBalancer

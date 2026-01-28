@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trillian-logsigner
+  namespace: trillian
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trillian-logsigner
+  template:
+    metadata:
+      labels:
+        app: trillian-logsigner
+    spec:
+      serviceAccountName: trillian-sa
+      containers:
+      - name: logsigner
+        image: gcr.io/trillian-opensource-ci/log_signer:v1.7.1
+        args:
+        - "--mysql_uri=$(MYSQL_URI)"
+        - "--rpc_endpoint=0.0.0.0:8090"
+        - "--http_endpoint=0.0.0.0:8091"
+        - "--force_master=true"
+        envFrom:
+        - configMapRef:
+            name: trillian-config
+        ports:
+        - containerPort: 8090
+        - containerPort: 8091
+      - name: cloud-sql-proxy
+        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.14.2
+        args:
+        - "--port=3306"
+        - "PROJECT_ID:REGION:trillian-mysql"

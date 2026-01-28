@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trillian-logserver
+  namespace: trillian
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trillian-logserver
+  template:
+    metadata:
+      labels:
+        app: trillian-logserver
+    spec:
+      serviceAccountName: trillian-sa
+      containers:
+      - name: logserver
+        image: gcr.io/trillian-opensource-ci/log_server:v1.7.1
+        args:
+        - "--mysql_uri=$(MYSQL_URI)"
+        - "--rpc_endpoint=0.0.0.0:8090"
+        - "--http_endpoint=0.0.0.0:8091"
+        envFrom:
+        - configMapRef:
+            name: trillian-config
+        ports:
+        - containerPort: 8090
+        - containerPort: 8091
+      - name: cloud-sql-proxy
+        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.14.2
+        args:
+        - "--port=3306"
+        - "PROJECT_ID:REGION:trillian-mysql"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trillian-logserver
+  namespace: trillian
+spec:
+  selector:
+    app: trillian-logserver
+  ports:
+  - name: rpc
+    port: 8090
+  - name: http
+    port: 8091
