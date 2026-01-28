@@ -1,0 +1,51 @@
+name: Infrastructure
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  # These secrets/vars must be set in the GitHub Repo
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+  WIF_SERVICE_ACCOUNT: ${{ vars.GCP_WIF_SA }}
+  TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ env.WIF_PROVIDER }}
+        service_account: ${{ env.WIF_SERVICE_ACCOUNT }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Terraform Init
+      run: |
+        terraform init 
+          -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" 
+          -backend-config="prefix=terraform/state"
+
+    - name: Terraform Plan
+      run: terraform plan -var="project_id=${{ env.PROJECT_ID }}" -input=false
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve -var="project_id=${{ env.PROJECT_ID }}" -input=false
