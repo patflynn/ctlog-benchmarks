@@ -20,6 +20,7 @@ jobs:
   terraform:
     name: Terraform
     runs-on: ubuntu-latest
+    environment: BENCHMARKING
     defaults:
       run:
         working-directory: ./terraform
