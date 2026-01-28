@@ -73,6 +73,31 @@ We will use **Terraform** to provision the environments.
     *   GCP Cloud Monitoring (CPU, Memory, DB Load).
     *   Client-side metrics from `hammer` tools (Latency histograms, Throughput).
 
+### Cost Estimation Methodology
+**Problem:** GCP Billing data has a 24-48 hour latency, making it unsuitable for iterative benchmarking.
+**Solution:** We will use **Derived Cost** based on real-time resource usage metrics multiplied by public list prices for `us-central1`.
+
+#### 1. Resource Metering (via Cloud Monitoring API)
+We will query the following metrics over the benchmark window:
+
+| Resource | Metric URL | Unit |
+| :--- | :--- | :--- |
+| **GKE Compute** | `kubernetes.io/node/cpu/allocatable_utilization` | vCPU-seconds |
+| **GKE Memory** | `kubernetes.io/node/memory/allocatable_utilization` | GB-seconds |
+| **Cloud SQL CPU** | `database/cpu/usage_time` | vCPU-seconds |
+| **Cloud SQL Storage** | `database/disk/bytes_used` | GB-months |
+| **Spanner Compute** | `spanner/instance/processing_units` | PU-seconds |
+| **Spanner Storage** | `spanner/instance/storage/used_bytes` | GB-months |
+| **GCS Storage** | `storage/total_bytes` | GB-months |
+| **GCS Ops** | `storage/api/request_count` | 10k Ops |
+
+#### 2. Pricing Constants (us-central1)
+*Pricing references to be hardcoded in the analysis script (approximate standard rates):*
+*   **e2-standard nodes:** ~$0.0335/vCPU/hour, ~$0.0045/GB/hour
+*   **Cloud SQL (Enterprise):** ~$0.0413/vCPU/hour, ~$0.0070/GB/hour
+*   **Spanner:** ~$0.09/100PU/hour
+*   **GCS:** $0.020/GB/month, $0.005/10k Class A Ops
+
 ## 6. Execution Steps
 1.  **Build Tools:** Compile `ct_hammer` and `tesseract/hammer`.
 2.  **Provision Infra:** Create Terraform for both stacks.
