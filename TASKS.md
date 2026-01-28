@@ -8,8 +8,8 @@
     - [x] Resolve dependencies for `tesseract`.
     - [x] Verify `hammer` binary functionality.
 - [ ] **Containerize Tools** (Using `ko` + distroless/static)
-    - [ ] Configure `ko` for `ct_hammer`.
-    - [ ] Configure `ko` for `tesseract_hammer`.
+    - [x] Configure `ko` for `ct_hammer`.
+    - [x] Configure `ko` for `tesseract_hammer`.
     - [ ] Push images to Artifact Registry.
 
 ## 2. Infrastructure (Terraform)
