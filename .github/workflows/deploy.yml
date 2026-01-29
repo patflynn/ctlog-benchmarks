@@ -1,0 +1,61 @@
+name: Deploy & Verify
+
+on:
+  workflow_dispatch: # Manual trigger for now
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'k8s/**'
+      - 'scripts/**'
+      - 'terraform/**' # Re-deploy if infra changes (simplification)
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+  WIF_SERVICE_ACCOUNT: ${{ vars.GCP_WIF_SA }}
+  # Hardcoded for now based on terraform defaults, could be vars
+  REGION: us-central1
+  ZONE: us-central1-a
+  CLUSTER_NAME: ctlog-cluster
+
+jobs:
+  deploy-and-verify:
+    name: Deploy to GKE
+    runs-on: ubuntu-latest
+    environment: BENCHMARKING
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ env.WIF_PROVIDER }}
+        service_account: ${{ env.WIF_SERVICE_ACCOUNT }}
+
+    - name: Setup GCloud & Kubectl
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ env.PROJECT_ID }}
+        install_components: 'gke-gcloud-auth-plugin'
+
+    - name: Get Cluster Credentials
+      run: |
+        gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} 
+          --zone ${{ env.ZONE }} 
+          --project ${{ env.PROJECT_ID }}
+
+    - name: Setup ko
+      uses: ko-build/setup-ko@v0.6
+
+    - name: Run Deployment Script
+      run: |
+        chmod +x scripts/deploy_k8s.sh
+        ./scripts/deploy_k8s.sh ${{ env.PROJECT_ID }} ${{ env.REGION }} ${{ env.ZONE }}
+
+    # Add a simple smoke test later if needed (curl endpoints)
