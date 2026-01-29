@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: ctfe
-        image: gcr.io/trillian-opensource-ci/ct_server:v1.3.1
+        image: ko://github.com/google/certificate-transparency-go/trillian/ctfe/ct_server
         args:
         - "--log_config=/config/ctfe.cfg"
         - "--log_rpc_server=trillian-logserver:8090"
