@@ -90,9 +90,10 @@ kill $PF_PID
 
 # Generate Keys & Config
 echo "   Generating Keys & Config..."
-openssl ecparam -name prime256v1 -genkey -noout -out privkey.pem
-openssl ec -in privkey.pem -pubout -out pubkey.pem
-openssl req -new -x509 -days 365 -nodes -out roots.pem -key privkey.pem -subj "/C=US/ST=Test/L=Test/O=Test/CN=RootCA"
+openssl ecparam -name prime256v1 -genkey -noout -out privkey-raw.pem
+openssl ec -in privkey-raw.pem -out privkey.pem -aes256 -passout pass:benchmark
+openssl ec -in privkey.pem -pubout -out pubkey.pem -passin pass:benchmark
+openssl req -new -x509 -days 365 -nodes -out roots.pem -key privkey.pem -passin pass:benchmark -subj "/C=US/ST=Test/L=Test/O=Test/CN=RootCA"
 
 cat <<EOF > ctfe.cfg
 config {
@@ -102,6 +103,7 @@ config {
   private_key: {
     [type.googleapis.com/keyspb.PEMKeyFile] {
       path: "/config/privkey.pem"
+      password: "benchmark"
     }
   }
 }
@@ -120,7 +122,7 @@ kubectl create configmap ctfe-config \
 kubectl rollout restart deployment/ctfe -n trillian
 
 # Cleanup local keys
-rm privkey.pem pubkey.pem roots.pem ctfe.cfg
+rm privkey-raw.pem privkey.pem pubkey.pem roots.pem ctfe.cfg
 
 # 4. Deploy TesseraCT
 echo "Deploying TesseraCT Stack..."
