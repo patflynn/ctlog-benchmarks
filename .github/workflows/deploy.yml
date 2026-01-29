@@ -32,6 +32,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Debug Environment
+      run: |
+        echo "WIF_PROVIDER: '${{ env.WIF_PROVIDER }}'"
+        printf "Length: %d\n" "${#WIF_PROVIDER}"
+
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v3
       with:
