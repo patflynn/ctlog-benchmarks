@@ -124,17 +124,6 @@ kubectl rollout restart deployment/ctfe -n trillian
 # Cleanup local keys
 rm privkey-raw.pem privkey.pem pubkey.pem roots.pem ctfe.cfg
 
-# 4. Deploy TesseraCT
-echo "Deploying TesseraCT Stack..."
-for f in k8s/tesseract/*.yaml; do
-    envsubst < $f > build/$f
-done
-
-echo "   Generating and Uploading Tesseract Signer Secrets..."
-# Generate fresh EC P256 keys locally
-openssl ecparam -name prime256v1 -genkey -noout -out tesseract-priv.pem
-openssl ec -in tesseract-priv.pem -pubout -out tesseract-pub.pem
-
 # Upload to Secret Manager (Create new versions)
 gcloud secrets versions add tesseract-signer-priv --data-file=tesseract-priv.pem --project="${PROJECT_ID}"
 gcloud secrets versions add tesseract-signer-pub --data-file=tesseract-pub.pem --project="${PROJECT_ID}"
@@ -147,6 +136,11 @@ export PRIV_KEY_SECRET_NAME=$(gcloud secrets versions describe latest --secret="
 echo "   Resolved Secret Versions:"
 echo "   Public:  ${PUB_KEY_SECRET_NAME}"
 echo "   Private: ${PRIV_KEY_SECRET_NAME}"
+
+# Process Tesseract Manifests (after exporting secret names)
+for f in k8s/tesseract/*.yaml; do
+    envsubst < $f > build/$f
+done
 
 rm tesseract-priv.pem tesseract-pub.pem
 
