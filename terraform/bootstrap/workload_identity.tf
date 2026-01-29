@@ -9,7 +9,7 @@ resource "google_iam_workload_identity_pool" "github_pool" {
 # Workload Identity Provider
 resource "google_iam_workload_identity_pool_provider" "github_provider" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
-  workload_identity_pool_provider_id = "github-provider"
+  workload_identity_pool_provider_id = "github-provider-v2"
   display_name                       = "GitHub Provider"
   description                        = "OIDC Provider for GitHub Actions"
   project                            = var.project_id
