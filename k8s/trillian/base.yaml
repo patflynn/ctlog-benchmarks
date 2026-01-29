@@ -10,11 +10,3 @@ metadata:
   namespace: trillian
   annotations:
     iam.gke.io/gcp-service-account: trillian-sa@${PROJECT_ID}.iam.gserviceaccount.com
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: trillian-config
-  namespace: trillian
-data:
-  MYSQL_URI: "root@tcp(127.0.0.1:3306)/trillian"

@@ -40,6 +40,14 @@ for f in k8s/trillian/*.yaml; do
     envsubst < $f > build/$f
 done
 
+echo "   Creating Trillian Config Secret..."
+DB_PASS=$(gcloud secrets versions access latest --secret="trillian-db-password" --project="${PROJECT_ID}")
+# Format: user:password@tcp(host:port)/dbname
+kubectl create secret generic trillian-config \
+    --namespace trillian \
+    --from-literal=MYSQL_URI="trillian:${DB_PASS}@tcp(127.0.0.1:3306)/trillian" \
+    --dry-run=client -o yaml | kubectl apply -f -
+
 echo "   Building and pushing Trillian images..."
 ko apply -f build/k8s/trillian/
 

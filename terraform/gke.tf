@@ -51,3 +51,9 @@ resource "google_service_account" "node_sa" {
   display_name = "GKE Node Service Account"
   project      = var.project_id
 }
+
+resource "google_project_iam_member" "node_sa_storage_viewer" {
+  project = var.project_id
+  role    = "roles/storage.objectViewer"
+  member  = "serviceAccount:${google_service_account.node_sa.email}"
+}

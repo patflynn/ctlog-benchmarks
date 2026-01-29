@@ -23,7 +23,7 @@ spec:
         - "--http_endpoint=0.0.0.0:8091"
         - "--force_master=true"
         envFrom:
-        - configMapRef:
+        - secretRef:
             name: trillian-config
         ports:
         - containerPort: 8090
