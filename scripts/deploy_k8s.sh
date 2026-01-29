@@ -68,7 +68,7 @@ sleep 5
 # Create Tree
 echo "   Creating Log Tree..."
 CREATETREE_BIN="$(go env GOPATH)/bin/createtree"
-TREE_ID=$($CREATETREE_BIN --admin_server=localhost:8090 --display_name="Benchmark" --log_type=LOG)
+TREE_ID=$($CREATETREE_BIN --admin_server=localhost:8090 --display_name="Benchmark")
 echo "   Tree ID: ${TREE_ID}"
 
 # Stop Port Forward
