@@ -138,13 +138,16 @@ curl -sS https://raw.githubusercontent.com/transparency-dev/tesseract/main/stora
 gcloud spanner databases ddl update tesseract-db --instance=tesseract-instance \
     --ddl-file=tesseract_spanner.sql --project="${PROJECT_ID}" || echo "   (Spanner schema might already be initialized)"
 
-echo "   Refreshing Tesseract Signer Secrets..."
-# Fetch current keys and re-add them via gcloud to ensure correct encoding/checksums
-PUB_KEY=$(gcloud secrets versions access 1 --secret="tesseract-signer-pub" --project="${PROJECT_ID}")
-echo "$PUB_KEY" | gcloud secrets versions add tesseract-signer-pub --data-file=- --project="${PROJECT_ID}"
+echo "   Generating and Uploading Tesseract Signer Secrets..."
+# Generate fresh EC P256 keys locally
+openssl ecparam -name prime256v1 -genkey -noout -out tesseract-priv.pem
+openssl ec -in tesseract-priv.pem -pubout -out tesseract-pub.pem
 
-PRIV_KEY=$(gcloud secrets versions access 1 --secret="tesseract-signer-priv" --project="${PROJECT_ID}")
-echo "$PRIV_KEY" | gcloud secrets versions add tesseract-signer-priv --data-file=- --project="${PROJECT_ID}"
+# Upload to Secret Manager (Create new versions)
+gcloud secrets versions add tesseract-signer-priv --data-file=tesseract-priv.pem --project="${PROJECT_ID}"
+gcloud secrets versions add tesseract-signer-pub --data-file=tesseract-pub.pem --project="${PROJECT_ID}"
+
+rm tesseract-priv.pem tesseract-pub.pem
 
 echo "   Building and pushing TesseraCT images..."
 ko apply -f build/k8s/tesseract/
