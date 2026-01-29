@@ -7,10 +7,10 @@
 - [x] **Build `tesseract_hammer`**
     - [x] Resolve dependencies for `tesseract`.
     - [x] Verify `hammer` binary functionality.
-- [ ] **Containerize Tools** (Using `ko` + distroless/static)
+- [x] **Containerize Tools** (Using `ko` + distroless/static)
     - [x] Configure `ko` for `ct_hammer`.
     - [x] Configure `ko` for `tesseract_hammer`.
-    - [ ] Push images to Artifact Registry.
+    - [x] Push images to Artifact Registry (Handled by `deploy_k8s.sh`).
 
 ## 2. Infrastructure (Terraform)
 - [x] **Base Networking & Cluster**
@@ -21,12 +21,12 @@
     - [x] Kubernetes Manifests/Helm for Trillian Log Server.
     - [x] Kubernetes Manifests/Helm for Trillian Log Signer.
     - [x] Kubernetes Manifests/Helm for CTFE.
-    - [ ] Terraform glue to deploy manifests.
+    - [x] Script to deploy manifests (`scripts/deploy_k8s.sh`).
 - [x] **TesseraCT Stack**
     - [x] Cloud Spanner Instance.
     - [x] GCS Bucket.
     - [x] Kubernetes Manifests for TesseraCT Server.
-    - [ ] Terraform glue to deploy manifests.
+    - [x] Script to deploy manifests (`scripts/deploy_k8s.sh`).
 
 ## 3. Automation & Analysis Scripts
 - [ ] **Metric Collection Script**
