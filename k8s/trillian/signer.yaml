@@ -32,4 +32,4 @@ spec:
         image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.14.2
         args:
         - "--port=3306"
-        - "PROJECT_ID:REGION:trillian-mysql"
+        - "${PROJECT_ID}:${REGION}:trillian-mysql"

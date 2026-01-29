@@ -29,12 +29,12 @@
     - [x] Script to deploy manifests (`scripts/deploy_k8s.sh`).
 
 ## 3. Automation & Analysis Scripts
-- [ ] **Metric Collection Script**
-    - [ ] Write Python/Go script to query Cloud Monitoring API.
-    - [ ] Implement query for CPU/Memory (GKE).
-    - [ ] Implement query for Cloud SQL metrics.
-    - [ ] Implement query for Spanner/GCS metrics.
-    - [ ] Calculate "Derived Cost" based on constants.
+- [x] **Metric Collection Script**
+    - [x] Write Python/Go script to query Cloud Monitoring API.
+    - [x] Implement query for CPU/Memory (GKE).
+    - [x] Implement query for Cloud SQL metrics.
+    - [x] Implement query for Spanner/GCS metrics.
+    - [x] Calculate "Derived Cost" based on constants.
 - [ ] **Orchestration Script**
     - [ ] "Ramp-up" logic (start low QPS, increase, hold).
     - [ ] Latency/Error check loop (fail if SLO breached).
