@@ -22,10 +22,10 @@
     - [x] Kubernetes Manifests/Helm for Trillian Log Signer.
     - [x] Kubernetes Manifests/Helm for CTFE.
     - [ ] Terraform glue to deploy manifests.
-- [ ] **TesseraCT Stack**
-    - [ ] Cloud Spanner Instance.
-    - [ ] GCS Bucket.
-    - [ ] Kubernetes Manifests for TesseraCT Server.
+- [x] **TesseraCT Stack**
+    - [x] Cloud Spanner Instance.
+    - [x] GCS Bucket.
+    - [x] Kubernetes Manifests for TesseraCT Server.
     - [ ] Terraform glue to deploy manifests.
 
 ## 3. Automation & Analysis Scripts

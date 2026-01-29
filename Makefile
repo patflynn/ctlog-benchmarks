@@ -16,6 +16,7 @@ bin/hammer:
 containers:
 	ko build github.com/google/certificate-transparency-go/trillian/integration/ct_hammer
 	ko build github.com/transparency-dev/tesseract/internal/hammer
+	ko build github.com/transparency-dev/tesseract/cmd/tesseract/gcp
 
 clean:
 	rm -rf bin/

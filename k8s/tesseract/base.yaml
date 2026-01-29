@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tesseract
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tesseract-sa
+  namespace: tesseract
+  annotations:
+    iam.gke.io/gcp-service-account: tesseract-sa@${PROJECT_ID}.iam.gserviceaccount.com

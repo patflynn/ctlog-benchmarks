@@ -7,7 +7,8 @@ resource "google_project_service" "apis" {
     "container.googleapis.com",
     "sqladmin.googleapis.com",
     "spanner.googleapis.com",
-    "storage-api.googleapis.com"
+    "storage-api.googleapis.com",
+    "secretmanager.googleapis.com"
   ])
 
   project            = var.project_id

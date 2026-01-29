@@ -1,7 +1,6 @@
 # Binaries
 bin/
 *_hammer
-tesseract
 
 # Terraform
 .terraform/

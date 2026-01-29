@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tesseract-server
+  namespace: tesseract
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tesseract-server
+  template:
+    metadata:
+      labels:
+        app: tesseract-server
+    spec:
+      serviceAccountName: tesseract-sa
+      containers:
+      - name: tesseract
+        # TODO: Replace with actual image path after 'ko publish'
+        image: ko.local/github.com/transparency-dev/tesseract/cmd/tesseract/gcp
+        args:
+        - "--bucket=tesseract-storage-${PROJECT_ID}"
+        - "--spanner_db_path=projects/${PROJECT_ID}/instances/tesseract-instance/databases/tesseract-db"
+        - "--signer_public_key_secret_name=projects/${PROJECT_ID}/secrets/tesseract-signer-pub/versions/1"
+        - "--signer_private_key_secret_name=projects/${PROJECT_ID}/secrets/tesseract-signer-priv/versions/1"
+        - "--http_endpoint=0.0.0.0:80"
+        - "--origin=tesseract-benchmark"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tesseract-server
+  namespace: tesseract
+spec:
+  selector:
+    app: tesseract-server
+  ports:
+  - name: http
+    port: 80
+  type: LoadBalancer
