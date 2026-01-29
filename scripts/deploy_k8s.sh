@@ -153,8 +153,6 @@ rm tesseract-priv.pem tesseract-pub.pem
 echo "   Building and pushing TesseraCT images..."
 ko apply -f build/k8s/tesseract/
 
-rm tesseract_spanner.sql
-
 # 5. Wait for Rollout
 echo "⏳ Waiting for Trillian..."
 kubectl rollout status deployment/trillian-logserver -n trillian
