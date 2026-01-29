@@ -25,9 +25,9 @@ def get_lb_ip(service, namespace):
 
 def get_trillian_tree_id():
     print("🔍 Discovering Trillian Tree ID...")
+    # Use jsonpath to extract the config content
     config = run_cmd("kubectl get configmap ctfe-config -n trillian -o jsonpath='{.data.ctfe\.cfg}'")
-    for line in config.split("
-"):
+    for line in config.split("\n"):
         if "log_id:" in line:
             return line.split(":")[1].strip()
     print("❌ Could not find log_id in ctfe-config")
@@ -71,15 +71,12 @@ def main():
     tesseract_ip = get_lb_ip("tesseract-server", "tesseract")
     tree_id = get_trillian_tree_id()
 
-    print(f"✅ Discovered Endpoints:
-  Trillian:  {trillian_ip} (Tree: {tree_id})
-  TesseraCT: {tesseract_ip}")
+    print(f"✅ Discovered Endpoints:\n  Trillian:  {trillian_ip} (Tree: {tree_id})\n  TesseraCT: {tesseract_ip}")
 
     results = {}
 
     # 2. Run Trillian Benchmark
-    print("
-" + "="*40)
+    print("\n" + "="*40)
     print("--- Phase 1: Trillian (MySQL) ---")
     print("="*40)
     t1_start, t1_end = run_hammer("trillian", trillian_ip, tree_id, args.duration, args.qps)
@@ -93,8 +90,7 @@ def main():
     )
 
     # 3. Run TesseraCT Benchmark
-    print("
-" + "="*40)
+    print("\n" + "="*40)
     print("--- Phase 2: TesseraCT (Spanner) ---")
     print("="*40)
     t2_start, t2_end = run_hammer("tesseract", tesseract_ip, None, args.duration, args.qps)
@@ -108,8 +104,7 @@ def main():
     )
 
     # 4. Final Report
-    print("
-" + "="*40)
+    print("\n" + "="*40)
     print("      BENCHMARK SUMMARY")
     print("="*40)
     
