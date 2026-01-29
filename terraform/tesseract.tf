@@ -54,7 +54,11 @@ resource "google_spanner_database_iam_member" "tesseract_spanner_user" {
 }
 
 # --- Secrets (Signer Keys) ---
-# Note: The actual key content must be populated manually or via a setup script.
+resource "tls_private_key" "tesseract_signer" {
+  algorithm = "ECDSA"
+  ecdsa_curve = "P256"
+}
+
 resource "google_secret_manager_secret" "signer_priv" {
   secret_id = "tesseract-signer-priv"
   project   = var.project_id
@@ -63,12 +67,22 @@ resource "google_secret_manager_secret" "signer_priv" {
   }
 }
 
+resource "google_secret_manager_secret_version" "signer_priv_version" {
+  secret = google_secret_manager_secret.signer_priv.id
+  secret_data = tls_private_key.tesseract_signer.private_key_pem
+}
+
 resource "google_secret_manager_secret" "signer_pub" {
   secret_id = "tesseract-signer-pub"
   project   = var.project_id
   replication {
     auto {}
   }
+}
+
+resource "google_secret_manager_secret_version" "signer_pub_version" {
+  secret = google_secret_manager_secret.signer_pub.id
+  secret_data = tls_private_key.tesseract_signer.public_key_pem
 }
 
 resource "google_secret_manager_secret_iam_member" "signer_priv_access" {
