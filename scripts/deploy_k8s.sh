@@ -102,7 +102,6 @@ config {
   private_key: {
     [type.googleapis.com/keyspb.PEMKeyFile] {
       path: "/config/privkey.pem"
-      password: ""
     }
   }
 }
