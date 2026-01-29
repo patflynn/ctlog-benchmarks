@@ -25,6 +25,7 @@ This document tracks issues, bugs, and friction points encountered during the de
 *   **Issue:** The provided `schema.sql` for Spanner does not use `IF NOT EXISTS` logic (which is limited in Spanner DDL).
 *   **Impact:** Automating deployment requires wrapping the DDL update in a "try/catch" or ignoring errors, as re-running the script on an existing database fails.
 
-## 5. Dependency Discovery (Documentation)
-*   **Issue:** Finding the correct schema and binary paths for a specific cloud provider requires deep diving into the repository structure.
-*   **Impact:** Higher barrier to entry for new users compared to Trillian's more centralized (though older) documentation.
+## 6. Mandatory Roots File (Ergonomics)
+*   **Issue:** The server crashes immediately if `--roots_pem_file` is not provided or is empty.
+*   **Impact:** Prevents "zero-config" testing. Unlike some other logs that might start with an empty set, TesseraCT requires at least one root to be explicitly configured at startup.
+*   **Error Message:** `Can't initialize CT HTTP Server: newCertValidationOpts(): empty rootsPemFile`

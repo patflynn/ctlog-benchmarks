@@ -22,6 +22,11 @@ gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --proje
 export KO_DOCKER_REPO="gcr.io/${PROJECT_ID}/${REPO_NAME}"
 echo "📦 Configuring ko to push to: ${KO_DOCKER_REPO}"
 
+# Ensure we have a shared root CA for the benchmark
+echo "🏗️ Generating shared Root CA..."
+openssl ecparam -name prime256v1 -genkey -noout -out shared-root-priv.pem
+openssl req -new -x509 -days 365 -nodes -out shared-roots.pem -key shared-root-priv.pem -subj "/C=US/ST=Test/L=Test/O=Test/CN=BenchmarkRootCA"
+
 # Ensure go.mod is tidy in the CI environment
 go mod tidy
 
@@ -93,7 +98,8 @@ echo "   Generating Keys & Config..."
 openssl ecparam -name prime256v1 -genkey -noout -out privkey-raw.pem
 openssl ec -in privkey-raw.pem -out privkey.pem -aes256 -passout pass:benchmark
 openssl ec -in privkey.pem -pubout -out pubkey.pem -passin pass:benchmark
-openssl req -new -x509 -days 365 -nodes -out roots.pem -key privkey.pem -passin pass:benchmark -subj "/C=US/ST=Test/L=Test/O=Test/CN=RootCA"
+# Use the shared roots file
+cp shared-roots.pem roots.pem
 
 cat <<EOF > ctfe.cfg
 config {
@@ -121,7 +127,7 @@ kubectl create configmap ctfe-config \
 # Restart CTFE to pick up config
 kubectl rollout restart deployment/ctfe -n trillian
 
-# Cleanup local keys
+# Cleanup local keys for Trillian
 rm privkey-raw.pem privkey.pem pubkey.pem roots.pem ctfe.cfg
 
 echo "   Generating and Uploading Tesseract Signer Secrets..."
@@ -142,12 +148,18 @@ echo "   Resolved Secret Versions:"
 echo "   Public:  ${PUB_KEY_SECRET_NAME}"
 echo "   Private: ${PRIV_KEY_SECRET_NAME}"
 
+# Create ConfigMap for Tesseract roots
+kubectl create configmap tesseract-config \
+    --namespace tesseract \
+    --from-file=roots.pem=shared-roots.pem \
+    --dry-run=client -o yaml | kubectl apply -f -
+
 # Process Tesseract Manifests (after exporting secret names)
 for f in k8s/tesseract/*.yaml; do
     envsubst < $f > build/$f
 done
 
-rm tesseract-priv.pem tesseract-pub.pem
+rm tesseract-priv.pem tesseract-pub.pem shared-roots.pem shared-root-priv.pem
 
 echo "   Building and pushing TesseraCT images..."
 ko apply -f build/k8s/tesseract/
