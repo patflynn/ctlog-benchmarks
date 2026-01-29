@@ -22,6 +22,9 @@ gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --proje
 export KO_DOCKER_REPO="gcr.io/${PROJECT_ID}/${REPO_NAME}"
 echo "📦 Configuring ko to push to: ${KO_DOCKER_REPO}"
 
+# Ensure go.mod is tidy in the CI environment
+go mod tidy
+
 # 3. Deploy Trillian
 echo "Deploying Trillian Stack..."
 # We use 'ko resolve' to build images and replace placeholders, then pipe to kubectl
