@@ -1,7 +1,7 @@
 name: Deploy & Verify
 
 on:
-  workflow_dispatch: # Manual trigger for now
+  workflow_dispatch:
   push:
     branches: [ "main" ]
     paths:
