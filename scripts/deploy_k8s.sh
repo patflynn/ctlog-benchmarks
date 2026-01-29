@@ -147,12 +147,14 @@ openssl ec -in tesseract-priv.pem -pubout -out tesseract-pub.pem
 gcloud secrets versions add tesseract-signer-priv --data-file=tesseract-priv.pem --project="${PROJECT_ID}"
 gcloud secrets versions add tesseract-signer-pub --data-file=tesseract-pub.pem --project="${PROJECT_ID}"
 
-# Create K8s Secret for Tesseract (Fallback/Robustness)
-kubectl create secret generic tesseract-keys \
-    --namespace tesseract \
-    --from-file=privkey.pem=tesseract-priv.pem \
-    --from-file=pubkey.pem=tesseract-pub.pem \
-    --dry-run=client -o yaml | kubectl apply -f -
+# Resolve 'latest' to canonical version name (e.g., projects/.../versions/5)
+# This bypasses Tesseract's strict name check which fails on 'latest' alias
+export PUB_KEY_SECRET_NAME=$(gcloud secrets versions describe latest --secret="tesseract-signer-pub" --project="${PROJECT_ID}" --format="value(name)")
+export PRIV_KEY_SECRET_NAME=$(gcloud secrets versions describe latest --secret="tesseract-signer-priv" --project="${PROJECT_ID}" --format="value(name)")
+
+echo "   Resolved Secret Versions:"
+echo "   Public:  ${PUB_KEY_SECRET_NAME}"
+echo "   Private: ${PRIV_KEY_SECRET_NAME}"
 
 rm tesseract-priv.pem tesseract-pub.pem
 
