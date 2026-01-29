@@ -3,40 +3,37 @@
 ## 1. Objective
 Compare the performance and cost-efficiency of **Trillian** (Legacy) and **TesseraCT** (Modern) Certificate Transparency Log implementations on Google Cloud Platform (GCP).
 
-## 2. Systems Under Test (SUT)
+## 2. Design Decisions & Architecture
 
-### A. Trillian (Legacy)
-*   **Repositories:**
-    *   `github.com/google/trillian` (Log Server/Signer)
-    *   `github.com/google/certificate-transparency-go` (CT Front End - CTFE)
-*   **Architecture:** CTFE -> Trillian Log Server -> Cloud SQL (MySQL).
-*   **Storage:** Google Cloud SQL (MySQL).
-    *   *Cost Driver:** Instance Type (vCPU/RAM), Storage Capacity (SSD), IOPS.
+### A. Single GCP Project Strategy
+We will run both implementations in the **same GCP Project** and **same GKE Cluster**.
+*   **Rationale:** Ensures identical network path, latency, and environment variables for a fair comparison.
+*   **Isolation:** We use **GKE Node Taints & Tolerations** to strictly separate the workloads:
+    *   Pool `trillian-pool`: Tainted `workload=trillian`
+    *   Pool `tesseract-pool`: Tainted `workload=tesseract`
+*   **Costing:** We use "Derived Cost" calculated from resource usage metrics (CPU cores * seconds, Spanner Nodes * hours) rather than relying on delayed GCP Billing exports.
 
-### B. TesseraCT (Modern)
-*   **Repository:** `github.com/transparency-dev/tesseract`
-*   **Architecture:** TesseraCT Server -> Spanner + GCS.
-*   **Storage:**
-    *   **Data Bundles:** Google Cloud Storage (GCS).
-    *   **Metadata/Dedup:** Google Cloud Spanner.
-    *   *Cost Driver:* Spanner Compute Capacity (Nodes/Processing Units), Spanner Storage, GCS Storage/Ops.
+### B. CI/CD Driven Benchmarking
+The "Source of Truth" for performance is the GitHub Action run, not a developer's laptop.
+*   **Workflow:** `Infra -> Deploy -> Bench -> Publish -> Destroy`
+*   **Artifacts:** The run produces a summary markdown table committed back to the repo.
+
+### C. Systems Under Test (SUT)
+*   **Trillian (Legacy):**
+    *   **Architecture:** CTFE -> Trillian Log Server -> Cloud SQL (MySQL).
+    *   **Node Pool:** `e2-standard-2` (Generic compute).
+    *   **Storage:** Cloud SQL MySQL 8.0 (Enterprise).
+*   **TesseraCT (Modern):**
+    *   **Architecture:** TesseraCT Server -> Spanner + GCS.
+    *   **Node Pool:** `e2-standard-2` (Generic compute).
+    *   **Storage:** Spanner (100 Processing Units), GCS (Standard).
 
 ## 3. Test Environment (Infrastructure as Code)
-We will use **Terraform** to provision the environments.
+Managed via **Terraform** (`/terraform`) and **ko** for building container images.
 
-*   **Common:**
-    *   GKE Standard Cluster or Managed Instance Groups (MIGs) for compute.
-    *   Same region/zone placement.
-
-*   **Trillian Specifics:**
-    *   Cloud SQL Instance (e.g., `db-custom-4-16384` for baseline).
-    *   Trillian Log Signer & Server deployments.
-    *   CTFE deployment.
-
-*   **TesseraCT Specifics:**
-    *   Spanner Instance (e.g., 100 Processing Units or 1 Node).
-    *   GCS Bucket.
-    *   TesseraCT Server deployment (`src/tesseract/cmd/tesseract/gcp`).
+*   **Common:** GKE Standard Cluster, Workload Identity.
+*   **Trillian:** Cloud SQL Instance (MySQL), Secrets (Password), Service Accounts.
+*   **TesseraCT:** Spanner Instance, GCS Bucket, Secrets (Signer Keys), Service Accounts.
 
 ## 4. Benchmarking Strategy
 
