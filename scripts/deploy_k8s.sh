@@ -53,8 +53,22 @@ ko apply -f build/k8s/trillian/
 
 # --- Provision Trillian Tree ---
 echo "🌱 Provisioning Trillian Tree..."
-# Wait for Log Server to be ready
-kubectl rollout status deployment/trillian-logserver -n trillian --timeout=5m
+# Wait for Log Server to be ready (it might be crashlooping if DB is empty, but sidecar should be up)
+# Actually, if Log Server crashes, the Pod is Running but container is restarting. Port forward works!
+kubectl rollout status deployment/trillian-logserver -n trillian --timeout=5m || true
+
+echo "   Initializing Database Schema..."
+POD_NAME=$(kubectl get pods -n trillian -l app=trillian-logserver -o jsonpath='{.items[0].metadata.name}')
+# Port forward DB port from the Pod
+kubectl port-forward -n trillian pod/$POD_NAME 3306:3306 > /dev/null 2>&1 &
+DB_PF_PID=$!
+sleep 5
+
+# Run Init Script
+go run scripts/init_db.go "trillian:${DB_PASS}@tcp(127.0.0.1:3306)/trillian"
+
+# Stop DB Port Forward
+kill $DB_PF_PID
 
 # Install createtree
 go install github.com/google/trillian/cmd/createtree
