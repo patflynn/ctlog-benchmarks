@@ -51,6 +51,63 @@ kubectl create secret generic trillian-config \
 echo "   Building and pushing Trillian images..."
 ko apply -f build/k8s/trillian/
 
+# --- Provision Trillian Tree ---
+echo "🌱 Provisioning Trillian Tree..."
+# Wait for Log Server to be ready
+kubectl rollout status deployment/trillian-logserver -n trillian --timeout=5m
+
+# Install createtree
+go install github.com/google/trillian/cmd/createtree
+
+# Port Forward to Log Server
+echo "   Starting Port Forward to Log Server..."
+kubectl port-forward svc/trillian-logserver 8090:8090 -n trillian > /dev/null 2>&1 &
+PF_PID=$!
+sleep 5
+
+# Create Tree
+echo "   Creating Log Tree..."
+TREE_ID=$(createtree --admin_server=localhost:8090 --display_name="Benchmark" --log_type=LOG)
+echo "   Tree ID: ${TREE_ID}"
+
+# Stop Port Forward
+kill $PF_PID
+
+# Generate Keys & Config
+echo "   Generating Keys & Config..."
+openssl ecparam -name prime256v1 -genkey -noout -out privkey.pem
+openssl ec -in privkey.pem -pubout -out pubkey.pem
+openssl req -new -x509 -days 365 -nodes -out roots.pem -key privkey.pem -subj "/C=US/ST=Test/L=Test/O=Test/CN=RootCA"
+
+cat <<EOF > ctfe.cfg
+config {
+  log_id: ${TREE_ID}
+  prefix: "benchmark"
+  roots_pem_file: "/config/roots.pem"
+  private_key: {
+    [type.googleapis.com/keyspb.PEMKeyFile] {
+      path: "/config/privkey.pem"
+      password: ""
+    }
+  }
+}
+EOF
+
+# Update/Create CTFE ConfigMap
+kubectl create configmap ctfe-config \
+    --namespace trillian \
+    --from-file=ctfe.cfg=ctfe.cfg \
+    --from-file=roots.pem=roots.pem \
+    --from-file=privkey.pem=privkey.pem \
+    --from-file=pubkey.pem=pubkey.pem \
+    --dry-run=client -o yaml | kubectl apply -f -
+
+# Restart CTFE to pick up config
+kubectl rollout restart deployment/ctfe -n trillian
+
+# Cleanup local keys
+rm privkey.pem pubkey.pem roots.pem ctfe.cfg
+
 # 4. Deploy TesseraCT
 echo "Deploying TesseraCT Stack..."
 for f in k8s/tesseract/*.yaml; do

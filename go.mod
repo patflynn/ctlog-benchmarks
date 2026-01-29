@@ -4,10 +4,12 @@ go 1.24.8
 
 require (
 	github.com/google/certificate-transparency-go v1.3.2
+	github.com/google/trillian v1.7.2
 	github.com/transparency-dev/tesseract v0.1.1
 )
 
 require (
+	bitbucket.org/creachadair/shell v0.0.8 // indirect
 	cel.dev/expr v0.24.0 // indirect
 	cloud.google.com/go v0.123.0 // indirect
 	cloud.google.com/go/auth v0.17.0 // indirect
@@ -45,7 +47,6 @@ require (
 	github.com/golang/mock v1.7.0-rc.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
-	github.com/google/trillian v1.7.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.7 // indirect
 	github.com/googleapis/gax-go/v2 v2.15.0 // indirect
