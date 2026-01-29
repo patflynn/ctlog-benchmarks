@@ -45,10 +45,10 @@ jobs:
         install_components: 'gke-gcloud-auth-plugin'
 
     - name: Get Cluster Credentials
-      run: |
-        gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} 
-          --zone ${{ env.ZONE }} 
-          --project ${{ env.PROJECT_ID }}
+      uses: google-github-actions/get-gke-credentials@v2
+      with:
+        cluster_name: ${{ env.CLUSTER_NAME }}
+        location: ${{ env.ZONE }}
 
     - name: Setup ko
       uses: ko-build/setup-ko@v0.6
