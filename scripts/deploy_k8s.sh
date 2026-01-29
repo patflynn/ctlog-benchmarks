@@ -147,6 +147,13 @@ openssl ec -in tesseract-priv.pem -pubout -out tesseract-pub.pem
 gcloud secrets versions add tesseract-signer-priv --data-file=tesseract-priv.pem --project="${PROJECT_ID}"
 gcloud secrets versions add tesseract-signer-pub --data-file=tesseract-pub.pem --project="${PROJECT_ID}"
 
+# Create K8s Secret for Tesseract (Fallback/Robustness)
+kubectl create secret generic tesseract-keys \
+    --namespace tesseract \
+    --from-file=privkey.pem=tesseract-priv.pem \
+    --from-file=pubkey.pem=tesseract-pub.pem \
+    --dry-run=client -o yaml | kubectl apply -f -
+
 rm tesseract-priv.pem tesseract-pub.pem
 
 echo "   Building and pushing TesseraCT images..."

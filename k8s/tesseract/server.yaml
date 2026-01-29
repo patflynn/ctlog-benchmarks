@@ -20,12 +20,21 @@ spec:
         args:
         - "--bucket=tesseract-storage-${PROJECT_ID}"
         - "--spanner_db_path=projects/${PROJECT_ID}/instances/tesseract-instance/databases/tesseract-db"
-        - "--signer_public_key_secret_name=projects/${PROJECT_ID}/secrets/tesseract-signer-pub/versions/latest"
-        - "--signer_private_key_secret_name=projects/${PROJECT_ID}/secrets/tesseract-signer-priv/versions/latest"
+        - "--signer_public_key_file=/keys/pubkey.pem"
+        - "--signer_private_key_file=/keys/privkey.pem"
         - "--http_endpoint=0.0.0.0:80"
         - "--origin=tesseract-benchmark"
         ports:
         - containerPort: 80
+        volumeMounts:
+        - name: keys
+          mountPath: /keys
+          readOnly: true
+      volumes:
+      - name: keys
+        secret:
+          secretName: tesseract-keys
+
 ---
 apiVersion: v1
 kind: Service
