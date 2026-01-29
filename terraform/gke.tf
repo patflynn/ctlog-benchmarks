@@ -54,6 +54,12 @@ resource "google_service_account" "node_sa" {
 
 resource "google_project_iam_member" "node_sa_storage_viewer" {
   project = var.project_id
-  role    = "roles/storage.objectViewer"
+  role    = "roles/storage.admin" # Upgraded from objectViewer to ensure access
+  member  = "serviceAccount:${google_service_account.node_sa.email}"
+}
+
+resource "google_project_iam_member" "node_sa_ar_reader" {
+  project = var.project_id
+  role    = "roles/artifactregistry.reader"
   member  = "serviceAccount:${google_service_account.node_sa.email}"
 }
