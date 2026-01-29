@@ -130,14 +130,6 @@ for f in k8s/tesseract/*.yaml; do
     envsubst < $f > build/$f
 done
 
-echo "   Initializing Tesseract Spanner Schema..."
-# Download and apply Spanner schema
-curl -sS https://raw.githubusercontent.com/transparency-dev/tesseract/main/storage/spanner/schema.sql > tesseract_spanner.sql
-# Spanner DDL doesn't support 'IF NOT EXISTS' easily in one shot, but we can try to apply it.
-# If tables exist, gcloud will exit with error, so we allow it to fail or we check first.
-gcloud spanner databases ddl update tesseract-db --instance=tesseract-instance \
-    --ddl-file=tesseract_spanner.sql --project="${PROJECT_ID}" || echo "   (Spanner schema might already be initialized)"
-
 echo "   Generating and Uploading Tesseract Signer Secrets..."
 # Generate fresh EC P256 keys locally
 openssl ecparam -name prime256v1 -genkey -noout -out tesseract-priv.pem

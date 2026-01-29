@@ -44,6 +44,15 @@ resource "google_spanner_database" "tesseract_db" {
   project  = var.project_id
   
   deletion_protection = false
+
+  ddl = [
+    "CREATE TABLE Tessera (id INT64 NOT NULL, compatibilityVersion INT64 NOT NULL) PRIMARY KEY (id)",
+    "CREATE TABLE SeqCoord (id INT64 NOT NULL, next INT64 NOT NULL) PRIMARY KEY (id)",
+    "CREATE TABLE Seq (id INT64 NOT NULL, seq INT64 NOT NULL, v BYTES(MAX)) PRIMARY KEY (id, seq)",
+    "CREATE TABLE IntCoord (id INT64 NOT NULL, seq INT64 NOT NULL, rootHash BYTES(32)) PRIMARY KEY (id)",
+    "CREATE TABLE FollowCoord (id INT64 NOT NULL, nextIdx INT64 NOT NULL) PRIMARY KEY (id)",
+    "CREATE TABLE IDSeq (h BYTES(32) NOT NULL, idx INT64 NOT NULL) PRIMARY KEY (h)",
+  ]
 }
 
 resource "google_spanner_database_iam_member" "tesseract_spanner_user" {
