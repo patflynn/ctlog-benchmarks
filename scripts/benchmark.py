@@ -137,20 +137,46 @@ def get_log_size(target_type, ip, project_id):
 
 import threading
 
+import base64
+
 def probe_latency(target_type, ip, results_list, stop_event):
+    # Load a certificate chain to use for probing
+    try:
+        with open("testdata/leaf01.chain", "r") as f:
+            pem_data = f.read()
+        
+        # Simple PEM to base64-DER list conversion
+        chain = []
+        for block in pem_data.split("-----BEGIN CERTIFICATE-----"):
+            if "-----END CERTIFICATE-----" in block:
+                content = block.split("-----END CERTIFICATE-----")[0].replace("\n", "").strip()
+                chain.append(content)
+        
+        payload = json.dumps({"chain": chain}).encode('utf-8')
+    except Exception as e:
+        print(f"⚠️ Failed to load probe certificate: {e}")
+        return
+
     latencies = []
+    url = f"http://{ip}/benchmark/ct/v1/add-chain" if target_type == "trillian" else f"http://{ip}/ct/v1/add-chain"
+    
     while not stop_event.is_set():
         try:
             start = time.time()
-            if target_type == "trillian":
-                run_cmd(f"curl -s http://{ip}/benchmark/ct/v1/get-sth")
-            else:
-                run_cmd(f"curl -s http://{ip}/ct/v1/get-sth")
+            # Use curl to POST the JSON
+            # We use -s for silent, -X POST, -H content-type, and --data-binary
+            # to avoid shell issues with large payloads
+            subprocess.run(
+                ["curl", "-s", "-o", "/dev/null", "-X", "POST", "-H", "Content-Type: application/json", "--data-binary", payload.decode('utf-8'), url],
+                check=True, capture_output=True
+            )
             end = time.time()
             latencies.append((end - start) * 1000) # ms
-        except:
+        except Exception as e:
+            # print(f"⚠️ Latency probe failed: {e}")
             pass
-        time.sleep(5)
+        time.sleep(2) # Probe every 2 seconds for better resolution
+
     if latencies:
         latencies.sort()
         p95 = latencies[int(len(latencies) * 0.95)]
