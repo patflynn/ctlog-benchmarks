@@ -156,15 +156,23 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, root_ca_f
         int_crt = cert_info["tesseract"]["int_crt"]
         int_key = cert_info["tesseract"]["int_key"]
         
+        total_ops = int(qps * duration_min * 60)
+        
         cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime={duration_min}m --show_ui=false " \
-              f"--num_writers=1 --num_readers_random=1 --num_mmd_verifiers=1 " \
+              f"--num_writers=1 --num_readers_random=1 --num_mmd_verifiers=1 --leaf_write_goal={total_ops} " \
               f"--intermediate_ca_cert_path={int_crt} --intermediate_ca_key_path={int_key} --cert_sign_private_key_path={int_key}"
 
     start_time = time.time()
     try:
-        subprocess.run(cmd, shell=True, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"⚠️ Hammer returned error: {e}")
+        # Stream output in real-time to see progress in CI
+        process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        for line in process.stdout:
+            print(line, end='', flush=True)
+        process.wait()
+        if process.returncode != 0:
+             print(f"⚠️ Hammer returned non-zero exit code: {process.returncode}")
+    except Exception as e:
+        print(f"⚠️ Hammer encountered error: {e}")
         
     end_time = time.time()
     return start_time, end_time
