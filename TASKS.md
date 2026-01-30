@@ -20,5 +20,6 @@
     - [x] Opens a Pull Request with results.
 
 ## Phase 3: Analysis & Polishing
-- [ ] **Cost Formula:** Refine `metrics.py` to include Spanner node costs and Cloud SQL instance sizing.
+- [x] **Cost Formula:** Refine `metrics.py` to include Spanner node costs and Cloud SQL instance sizing.
+- [x] **Automated Reporting:** Added `update_readme.py` to populate placeholder tables in README.md.
 - [ ] **Visualization:** (Optional) Generate a simple graph of throughput vs. latency.

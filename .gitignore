@@ -16,5 +16,8 @@ bin/
 # Go
 vendor/
 
+# Temporary
+temp-tesseract/
+
 # OS
 .DS_Store

@@ -61,18 +61,25 @@ def analyze_benchmark(project_id, start_time, end_time, log_type):
         # Cloud SQL Metrics
         sql_filter = f'resource.type = "cloudsql_database" AND resource.labels.database_id = "{project_id}:trillian-mysql"'
         cpu_usage = get_metric_avg(client, project_id, "cloudsql.googleapis.com/database/cpu/usage_time", start_time, end_time, sql_filter)
-        
         report["metrics"]["sql_cpu_cores"] = cpu_usage 
         report["costs"]["sql_compute"] = cpu_usage * duration_hours * PRICING["sql_cpu_hour"]
+
+        # Storage
+        storage_usage = get_metric_avg(client, project_id, "cloudsql.googleapis.com/database/disk/bytes_used", start_time, end_time, sql_filter)
+        report["metrics"]["storage_gb"] = storage_usage / (1024**3)
+        report["costs"]["storage"] = report["metrics"]["storage_gb"] * (duration_hours / (24 * 30)) * PRICING["sql_ram_gb_hour"] # Using a rough storage price proxy or fix constant
     
     elif log_type == "tesseract":
         # Spanner Metrics
         span_filter = 'resource.type = "spanner_instance" AND resource.labels.instance_id = "tesseract-instance"'
         pu_count = get_metric_avg(client, project_id, "spanner.googleapis.com/instance/processing_units", start_time, end_time, span_filter)
-        
-        # Spanner metrics might be integer
         report["metrics"]["spanner_pu"] = pu_count
         report["costs"]["spanner_compute"] = (pu_count / 100.0) * duration_hours * PRICING["spanner_100pu_hour"]
+
+        # Storage
+        storage_usage = get_metric_avg(client, project_id, "spanner.googleapis.com/instance/storage/used_bytes", start_time, end_time, span_filter)
+        report["metrics"]["storage_gb"] = storage_usage / (1024**3)
+        report["costs"]["storage"] = report["metrics"]["storage_gb"] * (duration_hours / (24 * 30)) * 0.30 # Approx $0.30/GB/month
 
     # GKE Shared Compute (Filtered by Namespace)
     gke_filter = f'resource.type = "k8s_container" AND resource.labels.namespace_name = "{log_type}"'
