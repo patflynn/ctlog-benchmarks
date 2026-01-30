@@ -25,6 +25,7 @@
             ko
             python3
             python3Packages.google-cloud-monitoring
+            python3Packages.google-cloud-secret-manager
             python3Packages.google-cloud-storage
             python3Packages.pandas # For data analysis
           ];
