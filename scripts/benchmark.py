@@ -41,16 +41,20 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100):
         if not os.path.exists("bin/ct_hammer"):
             run_cmd("go build -o bin/ct_hammer github.com/google/certificate-transparency-go/trillian/integration/ct_hammer")
         
-        # CTFE URL format usually includes /<prefix>
+        # Calculate total operations for Trillian (since it lacks --runtime)
+        total_ops = int(qps * duration_min * 60)
+        
         url = f"http://{ip}/benchmark" 
-        cmd = f"./bin/ct_hammer --log_config=none --ct_http_servers={url} --mmd=30s --max_write_ops={qps} --max_read_ops={qps} --runtime={duration_min}m"
+        # Trillian hammer flags
+        cmd = f"./bin/ct_hammer --log_config=none --ct_http_servers={url} --mmd=30s --rate_limit={qps} --operations={total_ops}"
     
     else: # tesseract
         if not os.path.exists("bin/hammer"):
              run_cmd("go build -o bin/hammer github.com/transparency-dev/tesseract/internal/hammer")
         
         url = f"http://{ip}"
-        cmd = f"./bin/hammer --log_url={url} --max_write_ops={qps} --max_read_ops={qps} --runtime={duration_min}m"
+        # Tesseract hammer flags
+        cmd = f"./bin/hammer --log_url={url} --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime={duration_min}m --show_ui=false"
 
     start_time = time.time()
     # Stream output to stdout
