@@ -144,7 +144,7 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, root_ca_f
         cmd = f"./bin/ct_hammer --log_config=trillian_cfg.textproto --ct_http_servers={url} --mmd=30s --rate_limit={qps} --operations={total_ops} --testdata_dir=testdata"
         
     else: # tesseract
-        # Build from local temp-tesseract to include ECDSA support patch
+        # Build hammer from upstream
         run_cmd("go build -o bin/hammer github.com/transparency-dev/tesseract/internal/hammer")
         
         os.environ["CT_LOG_PUBLIC_KEY"] = get_tesseract_pub_key_b64()
