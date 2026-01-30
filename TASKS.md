@@ -14,11 +14,10 @@
     - [x] Run `ct_hammer` against both endpoints.
     - [x] Capture start/end timestamps.
     - [x] Call `metrics.py` to get resource stats.
-- [ ] **GitHub Action:** Create `.github/workflows/benchmark.yml` that:
-    - [ ] Provisions Infra.
-    - [ ] Runs `scripts/benchmark.py`.
-    - [ ] Commits updated results to `README.md`.
-    - [ ] Destroys Infra (always).
+- [x] **GitHub Action:** Create `.github/workflows/benchmark.yml` that:
+    - [x] Authenticates to GCP.
+    - [x] Runs `scripts/benchmark.py`.
+    - [x] Opens a Pull Request with results.
 
 ## Phase 3: Analysis & Polishing
 - [ ] **Cost Formula:** Refine `metrics.py` to include Spanner node costs and Cloud SQL instance sizing.

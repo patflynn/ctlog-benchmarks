@@ -37,3 +37,8 @@ This document tracks issues, bugs, and friction points encountered during the de
 ## 8. Log Origin URL Prefixing (Friction)
 *   **Issue:** While the server allows configuring an `--origin`, the routing behavior is inconsistent. If `--origin` is set, the server expects it to be the first part of the path, but standard LBs or internal routing might strip this, leading to 404s.
 *   **Observation:** Setting `write_log_url` to include the origin in the hammer tool is sometimes necessary to satisfy server-side origin checks, but this depends heavily on the ingress/GCLB configuration.
+
+## 9. Signer Key Stickiness (State Consistency)
+*   **Issue:** TesseraCT stores its log state (checkpoints/tiles) in a durable backend like GCS. If the signer keys are re-generated during deployment (e.g., in CI/CD) while the GCS state is preserved, the server will fail to verify signatures on old checkpoints.
+*   **Impact:** New server instances cannot resume operations from existing state if keys change.
+*   **Workaround:** Deployment scripts must check for existing keys in Secret Manager before generating fresh ones to ensure log identity stability.
