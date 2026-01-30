@@ -27,6 +27,15 @@ echo "🏗️ Generating shared Root CA..."
 openssl ecparam -name prime256v1 -genkey -noout -out shared-root-priv.pem
 openssl req -new -x509 -days 365 -nodes -out shared-roots.pem -key shared-root-priv.pem -subj "/C=US/ST=Test/L=Test/O=Test/CN=BenchmarkRootCA"
 
+# Store Root CA in Secret Manager for the benchmark script to use
+gcloud secrets versions add benchmark-root-priv --data-file=shared-root-priv.pem --project="${PROJECT_ID}" || \
+  (gcloud secrets create benchmark-root-priv --replication-policy="automatic" --project="${PROJECT_ID}" && \
+   gcloud secrets versions add benchmark-root-priv --data-file=shared-root-priv.pem --project="${PROJECT_ID}")
+
+gcloud secrets versions add benchmark-root-pub --data-file=shared-roots.pem --project="${PROJECT_ID}" || \
+  (gcloud secrets create benchmark-root-pub --replication-policy="automatic" --project="${PROJECT_ID}" && \
+   gcloud secrets versions add benchmark-root-pub --data-file=shared-roots.pem --project="${PROJECT_ID}")
+
 # Ensure go.mod is tidy in the CI environment
 go mod tidy
 

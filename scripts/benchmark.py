@@ -25,7 +25,6 @@ def get_lb_ip(service, namespace):
 
 def get_trillian_tree_id():
     print("🔍 Discovering Trillian Tree ID...")
-    # Use jsonpath to extract the config content
     config = run_cmd("kubectl get configmap ctfe-config -n trillian -o jsonpath='{.data.ctfe\.cfg}'")
     for line in config.split("\n"):
         if "log_id:" in line:
@@ -33,31 +32,60 @@ def get_trillian_tree_id():
     print("❌ Could not find log_id in ctfe-config")
     sys.exit(1)
 
-def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100):
+def get_trillian_pub_key():
+    print("🔍 Fetching Trillian Public Key...")
+    return run_cmd("kubectl get configmap ctfe-config -n trillian -o jsonpath='{.data.pubkey\.pem}'")
+
+def get_tesseract_pub_key():
+    print("🔍 Fetching TesseraCT Public Key...")
+    return run_cmd("gcloud secrets versions access latest --secret='tesseract-signer-pub'")
+
+def setup_root_ca():
+    print("🔍 Fetching Benchmark Root CA...")
+    root_priv = run_cmd("gcloud secrets versions access latest --secret='benchmark-root-priv'")
+    root_pub = run_cmd("gcloud secrets versions access latest --secret='benchmark-root-pub'")
+    with open("root-priv.pem", "w") as f:
+        f.write(root_priv)
+    with open("root-pub.pem", "w") as f:
+        f.write(root_pub)
+    return "root-priv.pem", "root-pub.pem"
+
+def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, root_ca_files=None):
     print(f"🚀 Starting {target_type} load test ({qps} QPS for {duration_min} min)...")
+    root_priv, root_pub = root_ca_files
     
     if target_type == "trillian":
-        # Build ct_hammer if not exists
+        pub_key = get_trillian_pub_key()
+        # Create temporary Trillian log config
+        url = f"http://{ip}/benchmark"
+        cfg = [{
+            "name": "benchmark",
+            "uri": url,
+            "public_key": pub_key
+        }]
+        with open("trillian_cfg.json", "w") as f:
+            json.dump(cfg, f)
+
         if not os.path.exists("bin/ct_hammer"):
             run_cmd("go build -o bin/ct_hammer github.com/google/certificate-transparency-go/trillian/integration/ct_hammer")
         
-        # Calculate total operations for Trillian (since it lacks --runtime)
         total_ops = int(qps * duration_min * 60)
+        # Note: Trillian hammer also needs the root CA to generate valid certs
+        cmd = f"./bin/ct_hammer --log_config=trillian_cfg.json --ct_http_servers={url} --mmd=30s --rate_limit={qps} --operations={total_ops} --testdata_dir=."
+        # We need to provide roots.pem in the current dir for Trillian hammer
+        run_cmd(f"cp {root_pub} roots.pem")
         
-        url = f"http://{ip}/benchmark" 
-        # Trillian hammer flags
-        cmd = f"./bin/ct_hammer --log_config=none --ct_http_servers={url} --mmd=30s --rate_limit={qps} --operations={total_ops}"
-    
     else: # tesseract
         if not os.path.exists("bin/hammer"):
              run_cmd("go build -o bin/hammer github.com/transparency-dev/tesseract/internal/hammer")
         
         url = f"http://{ip}"
-        # Tesseract hammer flags
-        cmd = f"./bin/hammer --log_url={url} --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime={duration_min}m --show_ui=false"
+        os.environ["CT_LOG_PUBLIC_KEY"] = get_tesseract_pub_key()
+        # Tesseract hammer flags for custom CA
+        cmd = f"./bin/hammer --log_url={url} --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime={duration_min}m --show_ui=false " \
+              f"--intermediate_ca_cert_path={root_pub} --cert_sign_private_key_path={root_priv}"
 
     start_time = time.time()
-    # Stream output to stdout
     subprocess.run(cmd, shell=True, check=True)
     end_time = time.time()
     
@@ -74,6 +102,7 @@ def main():
     trillian_ip = get_lb_ip("ctfe", "trillian")
     tesseract_ip = get_lb_ip("tesseract-server", "tesseract")
     tree_id = get_trillian_tree_id()
+    root_ca_files = setup_root_ca()
 
     print(f"✅ Discovered Endpoints:\n  Trillian:  {trillian_ip} (Tree: {tree_id})\n  TesseraCT: {tesseract_ip}")
 
@@ -83,7 +112,7 @@ def main():
     print("\n" + "="*40)
     print("--- Phase 1: Trillian (MySQL) ---")
     print("="*40)
-    t1_start, t1_end = run_hammer("trillian", trillian_ip, tree_id, args.duration, args.qps)
+    t1_start, t1_end = run_hammer("trillian", trillian_ip, tree_id, args.duration, args.qps, root_ca_files)
     
     print("⏳ Waiting for metrics to settle...")
     time.sleep(30) 
