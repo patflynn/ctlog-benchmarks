@@ -10,10 +10,10 @@ A fully automated, reproducible benchmarking suite comparing the performance and
 
 | Metric | Trillian (MySQL) | TesseraCT (Spanner) |
 | :--- | :--- | :--- |
-| **Max Throughput** | *Pending* | *Pending* |
+| **Max Throughput** | 136.97 QPS | 1.00 QPS |
 | **Latency (p95)** | *Pending* | *Pending* |
-| **Cost per 1M Entries** | *Pending* | *Pending* |
-| **Storage Efficiency** | *Pending* | *Pending* |
+| **Cost per 1M Entries** | $181.8037 | $10243.9805 |
+| **Storage Efficiency** | 0.0000 GB | 0.0000 GB |
 
 *(Detailed run logs and cost breakdown can be found in the workflow artifacts)*
 
