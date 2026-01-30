@@ -155,7 +155,7 @@ kubectl create configmap ctfe-config \
 kubectl rollout restart deployment/ctfe -n trillian
 
 # Cleanup local keys for Trillian
-rm privkey-raw.pem privkey.pem pubkey.pem roots.pem ctfe.cfg
+rm -f privkey-raw.pem privkey.pem pubkey.pem roots.pem ctfe.cfg
 
 echo "   Checking for Tesseract Signer Secrets..."
 if ! gcloud secrets versions access latest --secret=tesseract-signer-priv --project="${PROJECT_ID}" > /dev/null 2>&1; then
@@ -192,7 +192,7 @@ for f in k8s/tesseract/*.yaml; do
     envsubst < $f > build/$f
 done
 
-rm tesseract-priv.pem tesseract-pub.pem shared-roots.pem shared-root-priv.pem
+rm -f tesseract-priv.pem tesseract-pub.pem shared-roots.pem shared-root-priv.pem
 
 echo "   Building and pushing TesseraCT images..."
 ko apply -f build/k8s/tesseract/
