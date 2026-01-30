@@ -23,18 +23,21 @@ export KO_DOCKER_REPO="gcr.io/${PROJECT_ID}/${REPO_NAME}"
 echo "📦 Configuring ko to push to: ${KO_DOCKER_REPO}"
 
 # Ensure we have a shared root CA for the benchmark
-echo "🏗️ Generating shared Root CA (RSA)..."
-openssl genrsa -out shared-root-priv.pem 4096
-openssl req -new -x509 -days 3650 -nodes -out shared-roots.pem -key shared-root-priv.pem -subj "/C=US/ST=Test/L=Test/O=Test/CN=BenchmarkRootCA"
+echo "🏗️ Checking for shared Root CA (RSA)..."
+if ! gcloud secrets versions access latest --secret=benchmark-root-priv --project="${PROJECT_ID}" > /dev/null 2>&1; then
+  echo "   Generating fresh Root CA..."
+  openssl genrsa -out shared-root-priv.pem 4096
+  openssl req -new -x509 -days 3650 -nodes -out shared-roots.pem -key shared-root-priv.pem -subj "/C=US/ST=Test/L=Test/O=Test/CN=BenchmarkRootCA"
 
-# Store Root CA in Secret Manager for the benchmark script to use
-gcloud secrets versions add benchmark-root-priv --data-file=shared-root-priv.pem --project="${PROJECT_ID}" || \
-  (gcloud secrets create benchmark-root-priv --replication-policy="automatic" --project="${PROJECT_ID}" && \
-   gcloud secrets versions add benchmark-root-priv --data-file=shared-root-priv.pem --project="${PROJECT_ID}")
-
-gcloud secrets versions add benchmark-root-pub --data-file=shared-roots.pem --project="${PROJECT_ID}" || \
-  (gcloud secrets create benchmark-root-pub --replication-policy="automatic" --project="${PROJECT_ID}" && \
-   gcloud secrets versions add benchmark-root-pub --data-file=shared-roots.pem --project="${PROJECT_ID}")
+  gcloud secrets create benchmark-root-priv --replication-policy="automatic" --project="${PROJECT_ID}" || true
+  gcloud secrets versions add benchmark-root-priv --data-file=shared-root-priv.pem --project="${PROJECT_ID}"
+  
+  gcloud secrets create benchmark-root-pub --replication-policy="automatic" --project="${PROJECT_ID}" || true
+  gcloud secrets versions add benchmark-root-pub --data-file=shared-roots.pem --project="${PROJECT_ID}"
+else
+  echo "   Using existing Root CA from Secret Manager."
+  gcloud secrets versions access latest --secret=benchmark-root-pub --project="${PROJECT_ID}" > shared-roots.pem
+fi
 
 # Ensure go.mod is tidy in the CI environment
 go mod tidy
@@ -102,11 +105,26 @@ echo "   Tree ID: ${TREE_ID}"
 # Stop Port Forward
 kill $PF_PID
 
-# Generate Keys & Config
-echo "   Generating Keys & Config..."
-openssl ecparam -name prime256v1 -genkey -noout -out privkey-raw.pem
-openssl ec -in privkey-raw.pem -out privkey.pem -aes256 -passout pass:benchmark
-openssl ec -in privkey.pem -pubout -out pubkey.pem -passin pass:benchmark
+# Generate or Retrieve Keys
+echo "   Retrieving or Generating Trillian CTFE Keys..."
+if gcloud secrets versions access latest --secret=trillian-ctfe-priv --project="${PROJECT_ID}" > /dev/null 2>&1; then
+  echo "   Using existing CTFE keys from Secret Manager."
+  gcloud secrets versions access latest --secret=trillian-ctfe-priv --project="${PROJECT_ID}" > privkey.pem
+  gcloud secrets versions access latest --secret=trillian-ctfe-pub --project="${PROJECT_ID}" > pubkey.pem
+else
+  echo "   Generating fresh CTFE keys..."
+  openssl ecparam -name prime256v1 -genkey -noout -out privkey-raw.pem
+  openssl ec -in privkey-raw.pem -out privkey.pem -aes256 -passout pass:benchmark
+  openssl ec -in privkey.pem -pubout -out pubkey.pem -passin pass:benchmark
+  rm privkey-raw.pem
+  
+  gcloud secrets create trillian-ctfe-priv --replication-policy="automatic" --project="${PROJECT_ID}" || true
+  gcloud secrets versions add trillian-ctfe-priv --data-file=privkey.pem --project="${PROJECT_ID}"
+  
+  gcloud secrets create trillian-ctfe-pub --replication-policy="automatic" --project="${PROJECT_ID}" || true
+  gcloud secrets versions add trillian-ctfe-pub --data-file=pubkey.pem --project="${PROJECT_ID}"
+fi
+
 # Use the shared roots file
 cp shared-roots.pem roots.pem
 
@@ -139,14 +157,20 @@ kubectl rollout restart deployment/ctfe -n trillian
 # Cleanup local keys for Trillian
 rm privkey-raw.pem privkey.pem pubkey.pem roots.pem ctfe.cfg
 
-echo "   Generating and Uploading Tesseract Signer Secrets..."
-# Generate fresh EC P256 keys locally
-openssl ecparam -name prime256v1 -genkey -noout -out tesseract-priv.pem
-openssl ec -in tesseract-priv.pem -pubout -out tesseract-pub.pem
+echo "   Checking for Tesseract Signer Secrets..."
+if ! gcloud secrets versions access latest --secret=tesseract-signer-priv --project="${PROJECT_ID}" > /dev/null 2>&1; then
+  echo "   Generating fresh Tesseract Signer Keys..."
+  openssl ecparam -name prime256v1 -genkey -noout -out tesseract-priv.pem
+  openssl ec -in tesseract-priv.pem -pubout -out tesseract-pub.pem
 
-# Upload to Secret Manager (Create new versions)
-gcloud secrets versions add tesseract-signer-priv --data-file=tesseract-priv.pem --project="${PROJECT_ID}"
-gcloud secrets versions add tesseract-signer-pub --data-file=tesseract-pub.pem --project="${PROJECT_ID}"
+  gcloud secrets create tesseract-signer-priv --replication-policy="automatic" --project="${PROJECT_ID}" || true
+  gcloud secrets versions add tesseract-signer-priv --data-file=tesseract-priv.pem --project="${PROJECT_ID}"
+
+  gcloud secrets create tesseract-signer-pub --replication-policy="automatic" --project="${PROJECT_ID}" || true
+  gcloud secrets versions add tesseract-signer-pub --data-file=tesseract-pub.pem --project="${PROJECT_ID}"
+else
+  echo "   Using existing Tesseract Signer Keys."
+fi
 
 # Resolve 'latest' to canonical version name (e.g., projects/.../versions/5)
 # This bypasses Tesseract's strict name check which fails on 'latest' alias
