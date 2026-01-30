@@ -23,9 +23,9 @@ export KO_DOCKER_REPO="gcr.io/${PROJECT_ID}/${REPO_NAME}"
 echo "📦 Configuring ko to push to: ${KO_DOCKER_REPO}"
 
 # Ensure we have a shared root CA for the benchmark
-echo "🏗️ Generating shared Root CA..."
-openssl ecparam -name prime256v1 -genkey -noout -out shared-root-priv.pem
-openssl req -new -x509 -days 365 -nodes -out shared-roots.pem -key shared-root-priv.pem -subj "/C=US/ST=Test/L=Test/O=Test/CN=BenchmarkRootCA"
+echo "🏗️ Generating shared Root CA (RSA)..."
+openssl genrsa -out shared-root-priv.pem 4096
+openssl req -new -x509 -days 3650 -nodes -out shared-roots.pem -key shared-root-priv.pem -subj "/C=US/ST=Test/L=Test/O=Test/CN=BenchmarkRootCA"
 
 # Store Root CA in Secret Manager for the benchmark script to use
 gcloud secrets versions add benchmark-root-priv --data-file=shared-root-priv.pem --project="${PROJECT_ID}" || \
