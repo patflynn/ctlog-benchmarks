@@ -65,17 +65,17 @@ def generate_ct_testdata(root_priv, root_pub, dest_dir):
 
     shutil.copy(root_pub, os.path.join(dest_dir, "cacert.pem"))
     
-    # Trillian Intermediate (EC)
+    # Trillian Intermediate (RSA)
     tril_int_key = os.path.join(dest_dir, "tril-int.key")
-    run_cmd(f"openssl ecparam -name prime256v1 -genkey -noout -out {tril_int_key}")
+    run_cmd(f"openssl genrsa -out {tril_int_key} 2048")
     run_cmd(f"openssl req -new -key {tril_int_key} -out {os.path.join(dest_dir, 'tril-int.csr')} -subj '/CN=Trillian Intermediate'")
     run_cmd(f"openssl x509 -req -in {os.path.join(dest_dir, 'tril-int.csr')} -CA {root_pub} -CAkey {root_priv} -CAcreateserial -out {os.path.join(dest_dir, 'tril-int.crt')} -days 365 -extfile {ext_file} -extensions v3_ca")
     # Encrypt for ct_hammer
-    run_cmd(f"openssl ec -in {tril_int_key} -out {os.path.join(dest_dir, 'int-ca.privkey.pem')} -des3 -passout pass:babelfish")
+    run_cmd(f"openssl rsa -in {tril_int_key} -out {os.path.join(dest_dir, 'int-ca.privkey.pem')} -des3 -passout pass:babelfish")
     
     # Generate leaf01.chain for Trillian
     leaf_key = os.path.join(dest_dir, "leaf01.key")
-    run_cmd(f"openssl ecparam -name prime256v1 -genkey -noout -out {leaf_key}")
+    run_cmd(f"openssl genrsa -out {leaf_key} 2048")
     run_cmd(f"openssl req -new -key {leaf_key} -out {os.path.join(dest_dir, 'leaf01.csr')} -subj '/CN=benchmark-leaf-01'")
     run_cmd(f"openssl x509 -req -in {os.path.join(dest_dir, 'leaf01.csr')} -CA {os.path.join(dest_dir, 'tril-int.crt')} -CAkey {tril_int_key} -CAcreateserial -out {os.path.join(dest_dir, 'leaf01.crt')} -days 365")
     
