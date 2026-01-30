@@ -75,6 +75,11 @@ jobs:
           --duration ${{ inputs.duration }} \
           --qps ${{ inputs.qps }} 2>&1 | tee benchmark_output.txt
 
+    - name: Update README
+      if: success()
+      run: |
+        python3 scripts/update_readme.py
+
     - name: Parse Results (Simple)
       if: success()
       run: |
@@ -119,3 +124,4 @@ jobs:
         base: main
         add-paths: |
           RESULTS.md
+          README.md
