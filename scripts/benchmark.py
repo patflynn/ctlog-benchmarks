@@ -221,8 +221,9 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, root_ca_f
         int_crt = cert_info["tesseract"]["int_crt"]
         int_key = cert_info["tesseract"]["int_key"]
         total_ops = int(qps * duration_min * 60)
+        # Increase writers to 10 to ensure we can hit target QPS
         cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime={duration_min}m --show_ui=false " \
-              f"--num_writers=2 --num_readers_random=1 --num_mmd_verifiers=1 --leaf_write_goal={total_ops} " \
+              f"--num_writers=10 --num_readers_random=1 --num_mmd_verifiers=1 --leaf_write_goal={total_ops} " \
               f"--intermediate_ca_cert_path={int_crt} --intermediate_ca_key_path={int_key} --cert_sign_private_key_path={int_key}"
 
     start_time = time.time()
@@ -241,7 +242,18 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, root_ca_f
     probe_thread.join()
     p95_latency = probe_results[0] if probe_results else 0
     
-    final_size = get_log_size(target_type, ip, project_id)
+    print("⏳ Waiting for log to quiesce and checkpoint to update...")
+    time.sleep(15)
+    
+    # Retry getting the final size a few times as GCS checkpoints might lag
+    final_size = initial_size
+    for i in range(5):
+        final_size = get_log_size(target_type, ip, project_id)
+        if final_size > initial_size:
+            break
+        print(f"  ... still at {final_size}, retrying ({i+1}/5)...")
+        time.sleep(5)
+
     print(f"📈 Final tree size: {final_size}")
     
     achieved_qps = (final_size - initial_size) / (end_time - start_time)
