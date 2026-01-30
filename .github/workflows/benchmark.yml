@@ -69,9 +69,9 @@ jobs:
     - name: Run Benchmark Script
       id: bench
       run: |
-        python3 scripts/benchmark.py 
-          --project_id ${{ env.PROJECT_ID }} 
-          --duration ${{ inputs.duration }} 
+        python3 scripts/benchmark.py \
+          --project_id ${{ env.PROJECT_ID }} \
+          --duration ${{ inputs.duration }} \
           --qps ${{ inputs.qps }} > benchmark_output.txt 2>&1
         
         cat benchmark_output.txt
