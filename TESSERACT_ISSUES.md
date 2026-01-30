@@ -29,3 +29,11 @@ This document tracks issues, bugs, and friction points encountered during the de
 *   **Issue:** The server crashes immediately if `--roots_pem_file` is not provided or is empty.
 *   **Impact:** Prevents "zero-config" testing. Unlike some other logs that might start with an empty set, TesseraCT requires at least one root to be explicitly configured at startup.
 *   **Error Message:** `Can't initialize CT HTTP Server: newCertValidationOpts(): empty rootsPemFile`
+
+## 7. Hammer Tool Certificate Constraints (Compatibility)
+*   **Issue:** The `hammer` tool requires intermediate certificates to have `CA:TRUE` and `keyCertSign` usage, even if they are only used for leaf generation during testing.
+*   **Impact:** Certificates generated without these explicit extensions (which many simple `openssl` commands omit by default) will cause the hammer to fail with cryptic "invalid signature" or "parent cannot sign" errors.
+
+## 8. Log Origin URL Prefixing (Friction)
+*   **Issue:** While the server allows configuring an `--origin`, the routing behavior is inconsistent. If `--origin` is set, the server expects it to be the first part of the path, but standard LBs or internal routing might strip this, leading to 404s.
+*   **Observation:** Setting `write_log_url` to include the origin in the hammer tool is sometimes necessary to satisfy server-side origin checks, but this depends heavily on the ingress/GCLB configuration.

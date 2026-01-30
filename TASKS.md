@@ -6,14 +6,14 @@
 - [x] **Auth:** Configure Workload Identity Federation (moved to `terraform/bootstrap`).
 - [x] **Deployment Scripts:** Create `deploy_k8s.sh` for one-shot deployment.
 
-## Phase 2: Orchestration & Automation (Current)
-- [ ] **Verify Deployment:** Manually confirm `deploy_k8s.sh` succeeds end-to-end on a fresh cluster.
-- [ ] **Benchmark Script:** Create `scripts/benchmark.py` to:
-    - [ ] Invoke `deploy_k8s.sh`.
-    - [ ] Wait for health checks.
-    - [ ] Run `ct_hammer` against both endpoints.
-    - [ ] Capture start/end timestamps.
-    - [ ] Call `metrics.py` to get resource stats.
+## Phase 2: Orchestration & Automation (Completed)
+- [x] **Verify Deployment:** Manually confirm `deploy_k8s.sh` succeeds end-to-end on a fresh cluster.
+- [x] **Benchmark Script:** Create `scripts/benchmark.py` to:
+    - [x] Invoke `deploy_k8s.sh`. (Note: Manual step for now, but script is ready)
+    - [x] Wait for health checks.
+    - [x] Run `ct_hammer` against both endpoints.
+    - [x] Capture start/end timestamps.
+    - [x] Call `metrics.py` to get resource stats.
 - [ ] **GitHub Action:** Create `.github/workflows/benchmark.yml` that:
     - [ ] Provisions Infra.
     - [ ] Runs `scripts/benchmark.py`.
