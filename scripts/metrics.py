@@ -1,6 +1,7 @@
 import argparse
 import time
 import json
+import sys
 from google.cloud import monitoring_v3
 from datetime import datetime, timezone
 
@@ -24,53 +25,54 @@ def get_metric_avg(client, project_id, metric_type, start_time, end_time, filter
         }
     )
     
-    results = client.list_time_series(
-        request={
-            "name": project_name,
-            "filter": f'metric.type = "{metric_type}" AND {filter_str}',
-            "interval": interval,
-            "view": monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
-        }
-    )
-    
-    total_val = 0
-    count = 0
-    for series in results:
-        for point in series.points:
-            total_val += point.value.double_value
-            count += 1
-            
-    return total_val / count if count > 0 else 0
+    try:
+        results = client.list_time_series(
+            request={
+                "name": project_name,
+                "filter": f'metric.type = "{metric_type}" AND {filter_str}',
+                "interval": interval,
+                "view": monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
+            }
+        )
+        
+        total_val = 0
+        count = 0
+        for series in results:
+            for point in series.points:
+                total_val += point.value.double_value
+                count += 1
+                
+        return total_val / count if count > 0 else 0
+    except Exception as e:
+        print(f"⚠️ Error fetching {metric_type}: {e}", file=sys.stderr)
+        return 0
 
 def analyze_benchmark(project_id, start_time, end_time, log_type):
     client = monitoring_v3.MetricServiceClient()
+    # Ensure window is at least 1 minute for Monitoring API to have data
+    if (end_time - start_time) < 60:
+        end_time = start_time + 60
+
     duration_hours = (end_time - start_time) / 3600.0
     
-    print(f"📊 Analyzing {log_type} metrics for {duration_hours:.2f} hours...")
-    
-    report = {"log_type": log_type, "duration_hours": duration_hours, "metrics": {}}
+    report = {"log_type": log_type, "duration_hours": duration_hours, "metrics": {}, "costs": {}}
 
     if log_type == "trillian":
         # Cloud SQL Metrics
-        sql_filter = 'resource.type = "cloudsql_database" AND resource.labels.database_id = "{project_id}:trillian-mysql"'
-        cpu_usage = get_metric_avg(client, project_id, "database/cpu/usage_time", start_time, end_time, sql_filter)
-        # Note: This is a cumulative counter in some cases, might need delta. 
-        # Simplified for now.
+        sql_filter = f'resource.type = "cloudsql_database" AND resource.labels.database_id = "{project_id}:trillian-mysql"'
+        cpu_usage = get_metric_avg(client, project_id, "cloudsql.googleapis.com/database/cpu/usage_time", start_time, end_time, sql_filter)
         
-        report["metrics"]["sql_cpu_cores"] = cpu_usage # Average cores used
-        report["costs"] = {
-            "sql_compute": cpu_usage * duration_hours * PRICING["sql_cpu_hour"]
-        }
+        report["metrics"]["sql_cpu_cores"] = cpu_usage 
+        report["costs"]["sql_compute"] = cpu_usage * duration_hours * PRICING["sql_cpu_hour"]
     
     elif log_type == "tesseract":
         # Spanner Metrics
         span_filter = 'resource.type = "spanner_instance" AND resource.labels.instance_id = "tesseract-instance"'
-        pu_count = get_metric_avg(client, project_id, "spanner/instance/processing_units", start_time, end_time, span_filter)
+        pu_count = get_metric_avg(client, project_id, "spanner.googleapis.com/instance/processing_units", start_time, end_time, span_filter)
         
+        # Spanner metrics might be integer
         report["metrics"]["spanner_pu"] = pu_count
-        report["costs"] = {
-            "spanner_compute": (pu_count / 100.0) * duration_hours * PRICING["spanner_100pu_hour"]
-        }
+        report["costs"]["spanner_compute"] = (pu_count / 100.0) * duration_hours * PRICING["spanner_100pu_hour"]
 
     # GKE Shared Compute (Filtered by Namespace)
     gke_filter = f'resource.type = "k8s_container" AND resource.labels.namespace_name = "{log_type}"'
