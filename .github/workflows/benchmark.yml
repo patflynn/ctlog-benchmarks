@@ -73,9 +73,7 @@ jobs:
         python3 scripts/benchmark.py \
           --project_id ${{ env.PROJECT_ID }} \
           --duration ${{ inputs.duration }} \
-          --qps ${{ inputs.qps }} > benchmark_output.txt 2>&1
-        
-        cat benchmark_output.txt
+          --qps ${{ inputs.qps }} 2>&1 | tee benchmark_output.txt
 
     - name: Parse Results (Simple)
       if: success()
