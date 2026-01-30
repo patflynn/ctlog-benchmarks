@@ -70,9 +70,8 @@ def generate_ct_testdata(root_priv, root_pub, dest_dir):
     run_cmd(f"openssl ecparam -name prime256v1 -genkey -noout -out {tril_int_key}")
     run_cmd(f"openssl req -new -key {tril_int_key} -out {os.path.join(dest_dir, 'tril-int.csr')} -subj '/CN=Trillian Intermediate'")
     run_cmd(f"openssl x509 -req -in {os.path.join(dest_dir, 'tril-int.csr')} -CA {root_pub} -CAkey {root_priv} -CAcreateserial -out {os.path.join(dest_dir, 'tril-int.crt')} -days 365 -extfile {ext_file} -extensions v3_ca")
-        # Encrypt for ct_hammer
-        run_cmd(f"openssl ec -in {tril_int_key} -out {os.path.join(dest_dir, 'int-ca.privkey.pem')} -des3 -passout pass:babelfish")
-    
+    # Encrypt for ct_hammer
+    run_cmd(f"openssl ec -in {tril_int_key} -out {os.path.join(dest_dir, 'int-ca.privkey.pem')} -des3 -passout pass:babelfish")
     
     # Generate leaf01.chain for Trillian
     leaf_key = os.path.join(dest_dir, "leaf01.key")
