@@ -117,5 +117,3 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 )
-
-replace github.com/transparency-dev/tesseract => ./temp-tesseract
