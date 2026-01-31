@@ -17,32 +17,28 @@ def update_readme():
         print("❌ Missing results for one or both systems")
         return
 
-    # Calculate Costs per 1M Entries
     def cost_per_1m(r):
         qps = r.get("achieved_qps", 0)
-        cost_total = r.get("total_cost", 0)
-        duration_sec = r.get("duration_hours", 0) * 3600
-        total_entries = qps * duration_sec
-        if total_entries == 0:
+        cost_hr = r.get("cost_per_hour", 0)
+        if qps <= 0:
             return "N/A"
-        return f"${(cost_total / total_entries * 1_000_000):.4f}"
+        entries_per_hour = qps * 3600
+        return f"${(cost_hr / entries_per_hour * 1_000_000):.2f}"
 
     tr_cost_1m = cost_per_1m(trillian)
     te_cost_1m = cost_per_1m(tesseract)
 
     metrics = {
         "Max Throughput": (f"{trillian.get('achieved_qps', 0):.2f} QPS", f"{tesseract.get('achieved_qps', 0):.2f} QPS"),
-        "Latency (p95)": (f"{trillian.get('p95_latency', 0):.2f} ms", f"{tesseract.get('p95_latency', 0):.2f} ms"),
+        "Infra Cost/hr": (f"${trillian.get('cost_per_hour', 0):.4f}", f"${tesseract.get('cost_per_hour', 0):.4f}"),
         "Cost per 1M Entries": (tr_cost_1m, te_cost_1m),
-        "Storage Efficiency": (f"{trillian['metrics'].get('storage_gb', 0):.4f} GB", f"{tesseract['metrics'].get('storage_gb', 0):.4f} GB")
     }
 
     with open("README.md", "r") as f:
         content = f.read()
 
     for label, (tr_val, te_val) in metrics.items():
-        # Match | **Label** | *Pending* | *Pending* |
-        pattern = rf"\| \*\*{label}\*\* \| .*? \| .*? \|"
+        pattern = rf"\| \*\*{re.escape(label)}\*\* \| .*? \| .*? \|"
         replacement = f"| **{label}** | {tr_val} | {te_val} |"
         content = re.sub(pattern, replacement, content)
 

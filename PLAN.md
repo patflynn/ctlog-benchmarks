@@ -8,24 +8,22 @@ Compare the performance and cost-efficiency of **Trillian** (Legacy) and **Tesse
 ### A. Single GCP Project Strategy
 We will run both implementations in the **same GCP Project** and **same GKE Cluster**.
 *   **Rationale:** Ensures identical network path, latency, and environment variables for a fair comparison.
-*   **Isolation:** We use **GKE Node Taints & Tolerations** to strictly separate the workloads:
-    *   Pool `trillian-pool`: Tainted `workload=trillian`
-    *   Pool `tesseract-pool`: Tainted `workload=tesseract`
-*   **Costing:** We use "Derived Cost" calculated from resource usage metrics (CPU cores * seconds, Spanner Nodes * hours) rather than relying on delayed GCP Billing exports.
+*   **Node Pool:** Single shared `benchmark-pool` with 2x `e2-standard-2` nodes. Both workloads run on the same pool — isolation is achieved through sequential execution, not node taints.
+*   **Costing:** We use **Deterministic Cost** calculated from known infrastructure pricing (Terraform config) via `costs.json`, not Cloud Monitoring queries or delayed GCP Billing exports.
 
 ### B. CI/CD Driven Benchmarking
 The "Source of Truth" for performance is the GitHub Action run, not a developer's laptop.
-*   **Workflow:** `Infra -> Deploy -> Bench -> Publish -> Destroy`
-*   **Artifacts:** The run produces a summary markdown table committed back to the repo.
+*   **Workflow:** `Infra -> Deploy -> Smoke Test -> Bench -> Publish -> Destroy`
+*   **Artifacts:** The run produces a summary JSON and markdown table committed back to the repo via Pull Request with full cost breakdown.
 
 ### C. Systems Under Test (SUT)
 *   **Trillian (Legacy):**
     *   **Architecture:** CTFE -> Trillian Log Server -> Cloud SQL (MySQL).
-    *   **Node Pool:** `e2-standard-2` (Generic compute).
-    *   **Storage:** Cloud SQL MySQL 8.0 (Enterprise).
+    *   **Compute:** Shared `e2-standard-2` nodes.
+    *   **Storage:** Cloud SQL MySQL 8.0 (db-f1-micro).
 *   **TesseraCT (Modern):**
     *   **Architecture:** TesseraCT Server -> Spanner + GCS.
-    *   **Node Pool:** `e2-standard-2` (Generic compute).
+    *   **Compute:** Shared `e2-standard-2` nodes.
     *   **Storage:** Spanner (100 Processing Units), GCS (Standard).
 
 ## 3. Test Environment (Infrastructure as Code)
@@ -38,66 +36,42 @@ Managed via **Terraform** (`/terraform`) and **ko** for building container image
 ## 4. Benchmarking Strategy
 
 ### Tools
-*   **Trillian:** `src/certificate-transparency-go/trillian/integration/ct_hammer`
-    *   *Build:* `go build github.com/google/certificate-transparency-go/trillian/integration/ct_hammer`
-*   **TesseraCT:** `src/tesseract/internal/hammer`
-    *   *Build:* `go build github.com/transparency-dev/tesseract/internal/hammer`
+*   **Trillian:** `ct_hammer` from `certificate-transparency-go`
+*   **TesseraCT:** `hammer` from `tesseract/internal`
 
-### Scenarios
+### Pre-flight
+1.  **Smoke test:** Verify both systems accept add-chain requests before committing to a full benchmark run.
+2.  **Build tools:** Compile both hammer binaries upfront.
 
-#### Phase 1: Cost per Increment (Scaling)
-*   **Goal:** Determine the marginal cost of adding 500 QPS (Write) and 1000 QPS (Read).
-*   **Method:**
-    1.  Start with minimal valid infrastructure.
-    2.  Ramp up load using `hammer` tools (adjusting `--max_write_ops`, `--max_read_ops`).
-    3.  Scale infrastructure (Auto-scaling or manual step-up) to maintain SLO (<500ms latency, <1% error).
-    4.  Record resource usage at stable state.
+### Measurement
+*   **Primary metric:** Sustained write QPS (measured from tree size delta over elapsed time).
+*   **Cost metric:** $/1M entries = (cost_per_hour / achieved_qps / 3600) × 1,000,000
+*   **Validation:** Hammer exit codes are checked. Minimum thresholds on elapsed time (30s) and entries written (10) are enforced. Results with insufficient data are rejected.
+*   **Duration:** Default 15 minutes per system. Longer runs produce more stable results.
 
-#### Phase 2: Fixed Investment (Capacity)
-*   **Goal:** Maximize QPS for a fixed daily budget (e.g., $50/day).
-*   **Budget Allocation:**
-    *   **Trillian:** ~2 vCPU Cloud SQL + 2 vCPU Compute.
-    *   **TesseraCT:** ~100 PU Spanner + 2 vCPU Compute. (Note: Spanner minimums might dictate the budget floor).
-*   **Method:**
-    1.  Fix the backend resources.
-    2.  Increase load until saturation (Latency spike or Error rate > 1%).
-    3.  Compare max sustainable QPS.
+### What We Don't Measure
+*   **Write latency:** TesseraCT blocks writes on checkpoint integration at a 1-second batch interval. This is an architectural choice, not a bottleneck. Comparing write latency between the two systems would measure a design decision, not performance.
 
-## 5. Metrics & Cost Analysis
-*   **Primary Metric:** `$/(1000 QPS)` for Writes and Reads.
-*   **Secondary Metric:** Max QPS @ Fixed Budget.
-*   **Data Collection:**
-    *   GCP Cloud Monitoring (CPU, Memory, DB Load).
-    *   Client-side metrics from `hammer` tools (Latency histograms, Throughput).
+## 5. Cost Model
 
-### Cost Estimation Methodology
-**Problem:** GCP Billing data has a 24-48 hour latency, making it unsuitable for iterative benchmarking.
-**Solution:** We will use **Derived Cost** based on real-time resource usage metrics multiplied by public list prices for `us-central1`.
+### Deterministic Infrastructure Costs
+All costs are derived from the Terraform configuration and GCP list prices for `us-central1`. See [`costs.json`](costs.json) for the full machine-readable breakdown.
 
-#### 1. Resource Metering (via Cloud Monitoring API)
-We will query the following metrics over the benchmark window:
+| | Trillian | TesseraCT |
+|:---|:---|:---|
+| Shared GKE (50%) | $0.178/hr | $0.178/hr |
+| Dedicated Backend | $0.015/hr (Cloud SQL) | $0.090/hr (Spanner) |
+| **Total** | **$0.193/hr** | **$0.268/hr** |
 
-| Resource | Metric URL | Unit |
-| :--- | :--- | :--- |
-| **GKE Compute** | `kubernetes.io/node/cpu/allocatable_utilization` | vCPU-seconds |
-| **GKE Memory** | `kubernetes.io/node/memory/allocatable_utilization` | GB-seconds |
-| **Cloud SQL CPU** | `database/cpu/usage_time` | vCPU-seconds |
-| **Cloud SQL Storage** | `database/disk/bytes_used` | GB-months |
-| **Spanner Compute** | `spanner/instance/processing_units` | PU-seconds |
-| **Spanner Storage** | `spanner/instance/storage/used_bytes` | GB-months |
-| **GCS Storage** | `storage/total_bytes` | GB-months |
-| **GCS Ops** | `storage/api/request_count` | 10k Ops |
+Variable costs (storage growth, GCS operations) are negligible at benchmark scale and not included in the base calculation.
 
-#### 2. Pricing Constants (us-central1)
-*Pricing references to be hardcoded in the analysis script (approximate standard rates):*
-*   **e2-standard nodes:** ~$0.0335/vCPU/hour, ~$0.0045/GB/hour
-*   **Cloud SQL (Enterprise):** ~$0.0413/vCPU/hour, ~$0.0070/GB/hour
-*   **Spanner:** ~$0.09/100PU/hour
-*   **GCS:** $0.020/GB/month, $0.005/10k Class A Ops
+### Why Not Cloud Monitoring?
+GCP Billing data has 24-48 hour latency. Cloud Monitoring metrics for CPU usage are cumulative counters that require careful delta computation and are subject to collection delays. Since the infrastructure is defined in Terraform and the pricing is public, deterministic calculation is both simpler and more accurate.
 
 ## 6. Execution Steps
 1.  **Build Tools:** Compile `ct_hammer` and `tesseract/hammer`.
-2.  **Provision Infra:** Create Terraform for both stacks.
-3.  **Run Phase 1:** Execute scaling tests.
-4.  **Run Phase 2:** Execute capacity tests.
-5.  **Analyze:** Aggregate logs and billing estimates.
+2.  **Smoke Test:** Verify both systems accept writes.
+3.  **Run Trillian:** Execute load test, record tree size delta and elapsed time.
+4.  **Run TesseraCT:** Execute load test, record tree size delta and elapsed time.
+5.  **Calculate Costs:** Apply deterministic cost model from `costs.json`.
+6.  **Publish:** Open PR with results table, cost breakdown, and raw `benchmark_summary.json`.
