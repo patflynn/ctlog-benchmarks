@@ -6,7 +6,7 @@ on:
       duration:
         description: 'Duration in minutes per test'
         required: true
-        default: '5'
+        default: '15'
       qps:
         description: 'Target QPS'
         required: true
@@ -80,30 +80,49 @@ jobs:
       run: |
         python3 scripts/update_readme.py
 
-    - name: Parse Results (Simple)
+    - name: Parse Results
       if: success()
       run: |
-        # Extract Costs from output
-        TR_COST=$(grep "Trillian Cost:" benchmark_output.txt | awk '{print $3}')
-        TE_COST=$(grep "TesseraCT Cost:" benchmark_output.txt | awk '{print $3}')
-        
-        echo "TR_COST=$TR_COST" >> $GITHUB_ENV
-        echo "TE_COST=$TE_COST" >> $GITHUB_ENV
+        # Extract values from benchmark_summary.json for the PR body
+        TR_QPS=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='trillian'); print(f\"{r['achieved_qps']:.2f}\")")
+        TE_QPS=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='tesseract'); print(f\"{r['achieved_qps']:.2f}\")")
+        TR_COST_HR=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='trillian'); print(f\"{r['cost_per_hour']:.4f}\")")
+        TE_COST_HR=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='tesseract'); print(f\"{r['cost_per_hour']:.4f}\")")
+        TR_TOTAL=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='trillian'); print(f\"{r['total_cost']:.4f}\")")
+        TE_TOTAL=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='tesseract'); print(f\"{r['total_cost']:.4f}\")")
+        TR_COST_1M=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='trillian'); qps=r['achieved_qps']; print(f\"{r['cost_per_hour']/(qps*3600)*1e6:.2f}\" if qps>0 else 'N/A')")
+        TE_COST_1M=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='tesseract'); qps=r['achieved_qps']; print(f\"{r['cost_per_hour']/(qps*3600)*1e6:.2f}\" if qps>0 else 'N/A')")
+
+        echo "TR_QPS=$TR_QPS" >> $GITHUB_ENV
+        echo "TE_QPS=$TE_QPS" >> $GITHUB_ENV
+        echo "TR_COST_HR=$TR_COST_HR" >> $GITHUB_ENV
+        echo "TE_COST_HR=$TE_COST_HR" >> $GITHUB_ENV
+        echo "TR_TOTAL=$TR_TOTAL" >> $GITHUB_ENV
+        echo "TE_TOTAL=$TE_TOTAL" >> $GITHUB_ENV
+        echo "TR_COST_1M=$TR_COST_1M" >> $GITHUB_ENV
+        echo "TE_COST_1M=$TE_COST_1M" >> $GITHUB_ENV
 
     - name: Publish Results
       if: success()
       continue-on-error: true
       run: |
         DATE=$(date +%Y-%m-%d)
-        
-        # 1. Create content
-        echo "## Benchmark Results ($DATE)" > RESULTS.md
-        echo "| System | Duration | QPS | Cost |" >> RESULTS.md
-        echo "|---|---|---|---|" >> RESULTS.md
-        echo "| Trillian | ${{ inputs.duration }}m | ${{ inputs.qps }} | $TR_COST |" >> RESULTS.md
-        echo "| TesseraCT | ${{ inputs.duration }}m | ${{ inputs.qps }} | $TE_COST |" >> RESULTS.md
-        
-        # 2. Write to Job Summary (Visible in Actions UI)
+
+        cat > RESULTS.md << HEREDOC
+        ## Benchmark Results ($DATE)
+
+        | Metric | Trillian (MySQL) | TesseraCT (Spanner) |
+        |---|---|---|
+        | **Duration** | ${{ inputs.duration }}m | ${{ inputs.duration }}m |
+        | **Target QPS** | ${{ inputs.qps }} | ${{ inputs.qps }} |
+        | **Achieved QPS** | $TR_QPS | $TE_QPS |
+        | **Infra Cost/hr** | \$$TR_COST_HR | \$$TE_COST_HR |
+        | **Benchmark Cost** | \$$TR_TOTAL | \$$TE_TOTAL |
+        | **Cost per 1M Entries** | \$$TR_COST_1M | \$$TE_COST_1M |
+
+        Cost model: deterministic from [costs.json](costs.json) (Terraform-derived infrastructure rates).
+        HEREDOC
+
         cat RESULTS.md >> $GITHUB_STEP_SUMMARY
 
     - name: Create Pull Request
@@ -114,14 +133,25 @@ jobs:
         commit-message: "Docs: Update benchmark results"
         title: "Benchmark Results: ${{ inputs.duration }}m @ ${{ inputs.qps }} QPS"
         body: |
-          Automated benchmark results.
-          
-          | System | Duration | QPS | Cost |
-          |---|---|---|---|
-          | Trillian | ${{ inputs.duration }}m | ${{ inputs.qps }} | ${{ env.TR_COST }} |
-          | TesseraCT | ${{ inputs.duration }}m | ${{ inputs.qps }} | ${{ env.TE_COST }} |
+          ## Results
+
+          | Metric | Trillian (MySQL) | TesseraCT (Spanner) |
+          |---|---|---|
+          | **Achieved QPS** | ${{ env.TR_QPS }} | ${{ env.TE_QPS }} |
+          | **Infra Cost/hr** | $${{ env.TR_COST_HR }} | $${{ env.TE_COST_HR }} |
+          | **Cost per 1M Entries** | $${{ env.TR_COST_1M }} | $${{ env.TE_COST_1M }} |
+
+          ## Cost Model
+
+          Fixed infrastructure costs from [`costs.json`](costs.json):
+          - **Trillian:** $0.178/hr (shared GKE) + $0.015/hr (Cloud SQL db-f1-micro) = **$0.193/hr**
+          - **TesseraCT:** $0.178/hr (shared GKE) + $0.090/hr (Spanner 100 PU) = **$0.268/hr**
+          - **Cost per 1M** = (cost_per_hour / achieved_qps / 3600) × 1,000,000
+
+          Duration: ${{ inputs.duration }}m, Target QPS: ${{ inputs.qps }}
         branch: "benchmark-results-${{ github.run_id }}"
         base: main
         add-paths: |
           RESULTS.md
           README.md
+          benchmark_summary.json

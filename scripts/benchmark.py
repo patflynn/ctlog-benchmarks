@@ -70,8 +70,9 @@ def generate_ct_testdata(root_priv, root_pub, dest_dir):
     run_cmd(f"openssl genrsa -out {tril_int_key} 2048")
     run_cmd(f"openssl req -new -key {tril_int_key} -out {os.path.join(dest_dir, 'tril-int.csr')} -subj '/CN=Trillian Intermediate'")
     run_cmd(f"openssl x509 -req -in {os.path.join(dest_dir, 'tril-int.csr')} -CA {root_pub} -CAkey {root_priv} -CAcreateserial -out {os.path.join(dest_dir, 'tril-int.crt')} -days 365 -extfile {ext_file} -extensions v3_ca")
-    # Encrypt for ct_hammer
-    run_cmd(f"openssl rsa -in {tril_int_key} -out {os.path.join(dest_dir, 'int-ca.privkey.pem')} -des3 -passout pass:babelfish")
+    # Encrypt for ct_hammer (must use -traditional for PKCS#1 PEM with DEK-Info header;
+    # OpenSSL 3.x defaults to PKCS#8 which ct_hammer cannot parse)
+    run_cmd(f"openssl rsa -in {tril_int_key} -out {os.path.join(dest_dir, 'int-ca.privkey.pem')} -des3 -passout pass:babelfish -traditional")
     
     # Generate leaf01.chain for Trillian
     leaf_key = os.path.join(dest_dir, "leaf01.key")
@@ -135,52 +136,44 @@ def get_log_size(target_type, ip, project_id):
         except:
             return 0
 
-import threading
-
-import base64
-
-def probe_latency(target_type, ip, results_list, stop_event):
-    # Load a certificate chain to use for probing
+def smoke_test(target_type, ip, project_id):
+    """Verify the system can accept writes before running the full benchmark."""
+    print(f"🔍 Smoke test: checking {target_type} can accept writes...")
+    initial_size = get_log_size(target_type, ip, project_id)
+    # Submit a single add-chain request via curl
     try:
         with open("testdata/leaf01.chain", "r") as f:
             pem_data = f.read()
-        
-        # Simple PEM to base64-DER list conversion
         chain = []
         for block in pem_data.split("-----BEGIN CERTIFICATE-----"):
             if "-----END CERTIFICATE-----" in block:
                 content = block.split("-----END CERTIFICATE-----")[0].replace("\n", "").strip()
                 chain.append(content)
-        
-        payload = json.dumps({"chain": chain}).encode('utf-8')
+        payload = json.dumps({"chain": chain})
+        url = f"http://{ip}/benchmark/ct/v1/add-chain" if target_type == "trillian" else f"http://{ip}/ct/v1/add-chain"
+        result = subprocess.run(
+            ["curl", "-s", "-w", "%{http_code}", "-X", "POST",
+             "-H", "Content-Type: application/json",
+             "--data-binary", payload, url],
+            capture_output=True, text=True, timeout=30
+        )
+        status_code = result.stdout[-3:]
+        if status_code != "200":
+            print(f"❌ Smoke test failed for {target_type}: HTTP {status_code}")
+            print(f"   Response: {result.stdout[:-3]}")
+            sys.exit(1)
     except Exception as e:
-        print(f"⚠️ Failed to load probe certificate: {e}")
-        return
+        print(f"❌ Smoke test failed for {target_type}: {e}")
+        sys.exit(1)
 
-    latencies = []
-    url = f"http://{ip}/benchmark/ct/v1/add-chain" if target_type == "trillian" else f"http://{ip}/ct/v1/add-chain"
-    
-    while not stop_event.is_set():
-        try:
-            start = time.time()
-            # Use curl to POST the JSON
-            # We use -s for silent, -X POST, -H content-type, and --data-binary
-            # to avoid shell issues with large payloads
-            subprocess.run(
-                ["curl", "-s", "-o", "/dev/null", "-X", "POST", "-H", "Content-Type: application/json", "--data-binary", payload.decode('utf-8'), url],
-                check=True, capture_output=True
-            )
-            end = time.time()
-            latencies.append((end - start) * 1000) # ms
-        except Exception as e:
-            # print(f"⚠️ Latency probe failed: {e}")
-            pass
-        time.sleep(2) # Probe every 2 seconds for better resolution
+    # Allow time for checkpoint integration (TesseraCT batches on 1s interval)
+    time.sleep(3)
+    final_size = get_log_size(target_type, ip, project_id)
+    if final_size <= initial_size:
+        print(f"⚠️  Smoke test warning: tree size didn't increase ({initial_size} -> {final_size}), may be lagging")
+    else:
+        print(f"✅ Smoke test passed for {target_type} (tree: {initial_size} -> {final_size})")
 
-    if latencies:
-        latencies.sort()
-        p95 = latencies[int(len(latencies) * 0.95)]
-        results_list.append(p95)
 
 def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, root_ca_files=None, project_id=None, cert_info=None):
     print(f"🚀 Starting {target_type} load test ({qps} QPS for {duration_min} min)...")
@@ -189,14 +182,7 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, root_ca_f
     initial_size = get_log_size(target_type, ip, project_id)
     print(f"📈 Initial tree size: {initial_size}")
 
-    # Start latency probe
-    stop_probe = threading.Event()
-    probe_results = []
-    probe_thread = threading.Thread(target=probe_latency, args=(target_type, ip, probe_results, stop_probe))
-    probe_thread.start()
-
     if target_type == "trillian":
-        # ... (rest of trillian setup)
         der_hex = get_trillian_pub_key_der_hex()
         with open("trillian_cfg.textproto", "w") as f:
             f.write(f'config {{\n')
@@ -207,22 +193,21 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, root_ca_f
             f.write(f'    der: "{der_hex}"\n')
             f.write(f'  }}\n')
             f.write(f'}}\n')
-        run_cmd("go build -o bin/ct_hammer github.com/google/certificate-transparency-go/trillian/integration/ct_hammer")
         total_ops = int(qps * duration_min * 60)
         url = f"http://{ip}"
         run_cmd(f"cp {root_pub} roots.pem")
         cmd = f"./bin/ct_hammer --log_config=trillian_cfg.textproto --ct_http_servers={url} --mmd=30s --rate_limit={qps} --operations={total_ops} --testdata_dir=testdata --ignore_errors"
     else:
-        # ... (rest of tesseract setup)
-        run_cmd("go build -o bin/hammer github.com/transparency-dev/tesseract/internal/hammer")
         os.environ["CT_LOG_PUBLIC_KEY"] = get_tesseract_pub_key_b64()
         log_url = f"gs://tesseract-storage-{project_id}/"
         write_url = f"http://{ip}"
         int_crt = cert_info["tesseract"]["int_crt"]
         int_key = cert_info["tesseract"]["int_key"]
         total_ops = int(qps * duration_min * 60)
+        # Scale writers with target QPS (1 writer per ~50 QPS, minimum 4)
+        num_writers = max(4, qps // 50)
         cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime={duration_min}m --show_ui=false " \
-              f"--num_writers=2 --num_readers_random=1 --num_mmd_verifiers=1 --leaf_write_goal={total_ops} " \
+              f"--num_writers={num_writers} --num_readers_random=1 --num_mmd_verifiers=1 --leaf_write_goal={total_ops} " \
               f"--intermediate_ca_cert_path={int_crt} --intermediate_ca_key_path={int_key} --cert_sign_private_key_path={int_key}"
 
     start_time = time.time()
@@ -233,28 +218,39 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, root_ca_f
         process.wait()
     except Exception as e:
         print(f"⚠️ Hammer encountered error: {e}")
-        
-    end_time = time.time()
-    
-    # Stop latency probe
-    stop_probe.set()
-    probe_thread.join()
-    p95_latency = probe_results[0] if probe_results else 0
-    
-    final_size = get_log_size(target_type, ip, project_id)
-    print(f"📈 Final tree size: {final_size}")
-    
-    achieved_qps = (final_size - initial_size) / (end_time - start_time)
-    print(f"🚀 Achieved QPS: {achieved_qps:.2f}")
-    print(f"⏱️ p95 Latency (probe): {p95_latency:.2f} ms")
 
-    return start_time, end_time, achieved_qps, p95_latency
+    end_time = time.time()
+    elapsed = end_time - start_time
+
+    # Validate hammer actually ran
+    if process.returncode != 0:
+        print(f"❌ {target_type} hammer exited with code {process.returncode}")
+        sys.exit(1)
+
+    final_size = get_log_size(target_type, ip, project_id)
+    entries_written = final_size - initial_size
+    print(f"📈 Final tree size: {final_size} ({entries_written} new entries)")
+
+    # Guard against bogus results from crashed or stalled hammers
+    min_elapsed = 30  # seconds
+    min_entries = 10
+    if elapsed < min_elapsed:
+        print(f"❌ Benchmark ran for only {elapsed:.1f}s (minimum {min_elapsed}s). Results not valid.")
+        sys.exit(1)
+    if entries_written < min_entries:
+        print(f"❌ Only {entries_written} entries written (minimum {min_entries}). Results not valid.")
+        sys.exit(1)
+
+    achieved_qps = entries_written / elapsed
+    print(f"📊 Achieved QPS: {achieved_qps:.2f} ({entries_written} entries / {elapsed:.1f}s)")
+
+    return start_time, end_time, achieved_qps
 
 def main():
     # ... (rest of main setup)
     parser = argparse.ArgumentParser()
     parser.add_argument("--project_id", required=True)
-    parser.add_argument("--duration", type=int, default=5, help="Benchmark duration in minutes")
+    parser.add_argument("--duration", type=int, default=15, help="Benchmark duration in minutes")
     parser.add_argument("--qps", type=int, default=100, help="Target QPS")
     args = parser.parse_args()
 
@@ -266,52 +262,56 @@ def main():
 
     print(f"✅ Discovered Endpoints:\n  Trillian:  {trillian_ip} (Tree: {tree_id})\n  TesseraCT: {tesseract_ip}")
 
+    # Build hammer tools upfront
+    print("\n🔨 Building hammer tools...")
+    run_cmd("go build -o bin/ct_hammer github.com/google/certificate-transparency-go/trillian/integration/ct_hammer")
+    run_cmd("go build -o bin/hammer github.com/transparency-dev/tesseract/internal/hammer")
+
+    # Smoke tests: verify both systems accept writes before committing to a full run
+    print("\n" + "="*40)
+    print("--- Smoke Tests ---")
+    print("="*40)
+    smoke_test("trillian", trillian_ip, args.project_id)
+    smoke_test("tesseract", tesseract_ip, args.project_id)
+
     final_results = []
 
     # 3. Run Trillian Benchmark
     print("\n" + "="*40)
     print("--- Phase 1: Trillian (MySQL) ---")
     print("="*40)
-    t1_start, t1_end, qps1, lat1 = run_hammer("trillian", trillian_ip, tree_id, args.duration, args.qps, root_ca_files, args.project_id, cert_info)
-    
-    print("⏳ Waiting for metrics to settle...")
-    time.sleep(30) 
-    
+    t1_start, t1_end, qps1 = run_hammer("trillian", trillian_ip, tree_id, args.duration, args.qps, root_ca_files, args.project_id, cert_info)
+
     res1 = subprocess.check_output(
         f"python3 scripts/metrics.py --project_id {args.project_id} --start {t1_start} --end {t1_end} --type trillian",
         shell=True, text=True
     )
     data1 = json.loads(res1)
     data1["achieved_qps"] = qps1
-    data1["p95_latency"] = lat1
     final_results.append(data1)
 
     # 4. Run TesseraCT Benchmark
     print("\n" + "="*40)
     print("--- Phase 2: TesseraCT (Spanner) ---")
     print("="*40)
-    t2_start, t2_end, qps2, lat2 = run_hammer("tesseract", tesseract_ip, None, args.duration, args.qps, root_ca_files, args.project_id, cert_info)
-    
-    print("⏳ Waiting for metrics to settle...")
-    time.sleep(30)
-    
+    t2_start, t2_end, qps2 = run_hammer("tesseract", tesseract_ip, None, args.duration, args.qps, root_ca_files, args.project_id, cert_info)
+
     res2 = subprocess.check_output(
         f"python3 scripts/metrics.py --project_id {args.project_id} --start {t2_start} --end {t2_end} --type tesseract",
         shell=True, text=True
     )
     data2 = json.loads(res2)
     data2["achieved_qps"] = qps2
-    data2["p95_latency"] = lat2
     final_results.append(data2)
 
-    # ... (rest of main summary)
+    # Summary
     print("\n" + "="*40)
     print("      BENCHMARK SUMMARY")
     print("="*40)
     for r in final_results:
         print(f"{r['log_type'].capitalize()} Achieved QPS: {r['achieved_qps']:.2f}")
-        print(f"{r['log_type'].capitalize()} p95 Latency:  {r['p95_latency']:.2f} ms")
         print(f"{r['log_type'].capitalize()} Total Cost:  ${r['total_cost']:.4f}")
+        print(f"{r['log_type'].capitalize()} Cost/hr:     ${r.get('cost_per_hour', 0):.4f}")
         print("-" * 20)
     print("="*40)
     with open("benchmark_summary.json", "w") as f:
