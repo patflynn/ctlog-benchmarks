@@ -3,7 +3,13 @@ name: Infrastructure
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'terraform/**'
+      - '!terraform/bootstrap/**'
   pull_request:
+    paths:
+      - 'terraform/**'
+      - '!terraform/bootstrap/**'
   workflow_dispatch:
 
 permissions:
