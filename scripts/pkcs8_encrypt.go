@@ -37,15 +37,25 @@ func main() {
 		os.Exit(1)
 	}
 
-	rsaKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "parse PKCS#1: %v\n", err)
-		os.Exit(1)
-	}
-
-	pkcs8DER, err := x509.MarshalPKCS8PrivateKey(rsaKey)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "marshal PKCS#8: %v\n", err)
+	// OpenSSL 3.x genrsa outputs PKCS#8 ("PRIVATE KEY"); older versions output PKCS#1
+	// ("RSA PRIVATE KEY"). Handle both.
+	var pkcs8DER []byte
+	if key, err := x509.ParsePKCS8PrivateKey(block.Bytes); err == nil {
+		// Already PKCS#8 — re-marshal to get clean DER
+		pkcs8DER, err = x509.MarshalPKCS8PrivateKey(key)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "marshal PKCS#8: %v\n", err)
+			os.Exit(1)
+		}
+	} else if rsaKey, err := x509.ParsePKCS1PrivateKey(block.Bytes); err == nil {
+		// PKCS#1 — convert to PKCS#8
+		pkcs8DER, err = x509.MarshalPKCS8PrivateKey(rsaKey)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "marshal PKCS#8: %v\n", err)
+			os.Exit(1)
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "failed to parse key as PKCS#8 or PKCS#1\n")
 		os.Exit(1)
 	}
 
