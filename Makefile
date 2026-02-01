@@ -1,4 +1,4 @@
-.PHONY: all clean containers
+.PHONY: all clean containers test
 
 # Default base image for ko (distroless static)
 export KO_DEFAULTBASEIMAGE := gcr.io/distroless/static:nonroot
@@ -17,6 +17,9 @@ containers:
 	ko build github.com/google/certificate-transparency-go/trillian/integration/ct_hammer
 	ko build github.com/transparency-dev/tesseract/internal/hammer
 	ko build github.com/transparency-dev/tesseract/cmd/tesseract/gcp
+
+test:
+	go test -v ./...
 
 clean:
 	rm -rf bin/

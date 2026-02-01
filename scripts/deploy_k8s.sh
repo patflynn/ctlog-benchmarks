@@ -22,22 +22,9 @@ gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --proje
 export KO_DOCKER_REPO="gcr.io/${PROJECT_ID}/${REPO_NAME}"
 echo "📦 Configuring ko to push to: ${KO_DOCKER_REPO}"
 
-# Ensure we have a shared root CA for the benchmark
-echo "🏗️ Checking for shared Root CA (RSA)..."
-if ! gcloud secrets versions access latest --secret=benchmark-root-priv --project="${PROJECT_ID}" > /dev/null 2>&1; then
-  echo "   Generating fresh Root CA..."
-  openssl genrsa -out shared-root-priv.pem 4096
-  openssl req -new -x509 -days 3650 -nodes -out shared-roots.pem -key shared-root-priv.pem -subj "/C=US/ST=Test/L=Test/O=Test/CN=BenchmarkRootCA"
-
-  gcloud secrets create benchmark-root-priv --replication-policy="automatic" --project="${PROJECT_ID}" || true
-  gcloud secrets versions add benchmark-root-priv --data-file=shared-root-priv.pem --project="${PROJECT_ID}"
-  
-  gcloud secrets create benchmark-root-pub --replication-policy="automatic" --project="${PROJECT_ID}" || true
-  gcloud secrets versions add benchmark-root-pub --data-file=shared-roots.pem --project="${PROJECT_ID}"
-else
-  echo "   Using existing Root CA from Secret Manager."
-  gcloud secrets versions access latest --secret=benchmark-root-pub --project="${PROJECT_ID}" > shared-roots.pem
-fi
+# Use pre-baked testdata from upstream projects (no dynamic key generation)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Ensure go.mod is tidy in the CI environment
 go mod tidy
@@ -105,28 +92,10 @@ echo "   Tree ID: ${TREE_ID}"
 # Stop Port Forward
 kill $PF_PID
 
-# Generate or Retrieve Keys
-echo "   Retrieving or Generating Trillian CTFE Keys..."
-if gcloud secrets versions access latest --secret=trillian-ctfe-priv --project="${PROJECT_ID}" > /dev/null 2>&1; then
-  echo "   Using existing CTFE keys from Secret Manager."
-  gcloud secrets versions access latest --secret=trillian-ctfe-priv --project="${PROJECT_ID}" > privkey.pem
-  gcloud secrets versions access latest --secret=trillian-ctfe-pub --project="${PROJECT_ID}" > pubkey.pem
-else
-  echo "   Generating fresh CTFE keys..."
-  openssl ecparam -name prime256v1 -genkey -noout -out privkey-raw.pem
-  openssl ec -in privkey-raw.pem -out privkey.pem -aes256 -passout pass:benchmark
-  openssl ec -in privkey.pem -pubout -out pubkey.pem -passin pass:benchmark
-  rm privkey-raw.pem
-  
-  gcloud secrets create trillian-ctfe-priv --replication-policy="automatic" --project="${PROJECT_ID}" || true
-  gcloud secrets versions add trillian-ctfe-priv --data-file=privkey.pem --project="${PROJECT_ID}"
-  
-  gcloud secrets create trillian-ctfe-pub --replication-policy="automatic" --project="${PROJECT_ID}" || true
-  gcloud secrets versions add trillian-ctfe-pub --data-file=pubkey.pem --project="${PROJECT_ID}"
-fi
-
-# Use the shared roots file
-cp shared-roots.pem roots.pem
+# Use pre-baked CTFE keys and roots from upstream testdata
+cp "${REPO_ROOT}/testdata/trillian/ct-http-server.privkey.pem" privkey.pem
+cp "${REPO_ROOT}/testdata/trillian/ct-http-server.pubkey.pem" pubkey.pem
+cp "${REPO_ROOT}/testdata/trillian/fake-ca.cert" roots.pem
 
 cat <<EOF > ctfe.cfg
 config {
@@ -136,7 +105,7 @@ config {
   private_key: {
     [type.googleapis.com/keyspb.PEMKeyFile] {
       path: "/config/privkey.pem"
-      password: "benchmark"
+      password: "dirk"
     }
   }
 }
@@ -157,20 +126,7 @@ kubectl rollout restart deployment/ctfe -n trillian
 # Cleanup local keys for Trillian
 rm -f privkey-raw.pem privkey.pem pubkey.pem roots.pem ctfe.cfg
 
-echo "   Checking for Tesseract Signer Secrets..."
-if ! gcloud secrets versions access latest --secret=tesseract-signer-priv --project="${PROJECT_ID}" > /dev/null 2>&1; then
-  echo "   Generating fresh Tesseract Signer Keys..."
-  openssl ecparam -name prime256v1 -genkey -noout -out tesseract-priv.pem
-  openssl ec -in tesseract-priv.pem -pubout -out tesseract-pub.pem
-
-  gcloud secrets create tesseract-signer-priv --replication-policy="automatic" --project="${PROJECT_ID}" || true
-  gcloud secrets versions add tesseract-signer-priv --data-file=tesseract-priv.pem --project="${PROJECT_ID}"
-
-  gcloud secrets create tesseract-signer-pub --replication-policy="automatic" --project="${PROJECT_ID}" || true
-  gcloud secrets versions add tesseract-signer-pub --data-file=tesseract-pub.pem --project="${PROJECT_ID}"
-else
-  echo "   Using existing Tesseract Signer Keys."
-fi
+# Tesseract signer keys are managed by Terraform — no generation needed here
 
 # Resolve 'latest' to canonical version name (e.g., projects/.../versions/5)
 # This bypasses Tesseract's strict name check which fails on 'latest' alias
@@ -184,7 +140,7 @@ echo "   Private: ${PRIV_KEY_SECRET_NAME}"
 # Create ConfigMap for Tesseract roots
 kubectl create configmap tesseract-config \
     --namespace tesseract \
-    --from-file=roots.pem=shared-roots.pem \
+    --from-file=roots.pem="${REPO_ROOT}/testdata/tesseract/test_root_ca_cert.pem" \
     --dry-run=client -o yaml | kubectl apply -f -
 
 # Process Tesseract Manifests (after exporting secret names)
@@ -192,7 +148,7 @@ for f in k8s/tesseract/*.yaml; do
     envsubst < $f > build/$f
 done
 
-rm -f tesseract-priv.pem tesseract-pub.pem shared-roots.pem shared-root-priv.pem
+# No local key files to clean up — all testdata lives in the repo
 
 echo "   Building and pushing TesseraCT images..."
 ko apply -f build/k8s/tesseract/
