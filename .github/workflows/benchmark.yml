@@ -10,11 +10,11 @@ on:
       qps:
         description: 'Target QPS (single-QPS mode)'
         required: true
-        default: '500'
+        default: '50'
       tier:
         description: 'Infrastructure tier (small/medium/large)'
         required: false
-        default: 'small'
+        default: 'large'
       sweep:
         description: 'Enable QPS sweep mode'
         required: false
@@ -23,7 +23,7 @@ on:
       qps_levels:
         description: 'Comma-separated QPS levels for sweep mode'
         required: false
-        default: '50,100,250,500'
+        default: 'auto'
 
 concurrency:
   group: benchmark
@@ -46,7 +46,7 @@ jobs:
   benchmark:
     name: Run Benchmark
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     environment: BENCHMARKING
 
     steps:
