@@ -175,6 +175,50 @@ func TestTesseractLeafSigningKey(t *testing.T) {
 	}
 }
 
+func TestTesseractLeafChain(t *testing.T) {
+	data, err := os.ReadFile("testdata/tesseract/leaf01.chain")
+	if err != nil {
+		t.Fatalf("ReadFile: %v", err)
+	}
+
+	var certs []*x509.Certificate
+	rest := data
+	for {
+		var block *pem.Block
+		block, rest = pem.Decode(rest)
+		if block == nil {
+			break
+		}
+		cert, err := x509.ParseCertificate(block.Bytes)
+		if err != nil {
+			t.Fatalf("ParseCertificate (cert %d): %v", len(certs), err)
+		}
+		certs = append(certs, cert)
+	}
+
+	if len(certs) < 2 {
+		t.Fatalf("expected at least 2 certificates in chain, got %d", len(certs))
+	}
+
+	// Verify chain: leaf should be signed by intermediate, intermediate by root
+	rootCert := parseCert(t, "testdata/tesseract/test_root_ca_cert.pem")
+	roots := x509.NewCertPool()
+	roots.AddCert(rootCert)
+
+	intermediates := x509.NewCertPool()
+	for _, cert := range certs[1:] {
+		intermediates.AddCert(cert)
+	}
+
+	_, err = certs[0].Verify(x509.VerifyOptions{
+		Roots:         roots,
+		Intermediates: intermediates,
+	})
+	if err != nil {
+		t.Fatalf("chain verification failed: %v", err)
+	}
+}
+
 func TestTesseractCerts(t *testing.T) {
 	for _, file := range []string{
 		"testdata/tesseract/test_root_ca_cert.pem",
