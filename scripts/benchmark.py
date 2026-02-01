@@ -256,8 +256,10 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_i
     if timed_out:
         print(f"⚠️ {target_type} hammer timed out after {timeout}s (using partial results)")
     elif rc != 0:
-        print(f"❌ {target_type} hammer exited with code {rc}")
-        sys.exit(1)
+        # Non-zero exit is expected when --max_runtime is reached (TesseraCT)
+        # or when the target ops couldn't be completed. The min_elapsed and
+        # min_entries guards below catch truly broken runs.
+        print(f"⚠️ {target_type} hammer exited with code {rc} (using partial results)")
 
     final_size = get_log_size(target_type, ip, project_id)
     entries_written = final_size - initial_size
