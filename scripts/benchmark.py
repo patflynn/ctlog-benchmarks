@@ -237,7 +237,10 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_i
         os.environ["CT_LOG_PUBLIC_KEY"] = get_tesseract_pub_key_b64()
         log_url = f"gs://tesseract-storage-{project_id}/"
         write_url = f"http://{ip}"
-        total_ops = int(qps * duration_seconds)
+        # Cap leaf_write_goal the same way as Trillian ops so the hammer
+        # can meet the goal within --max_runtime on small-tier infra.
+        effective_qps = min(qps, 100)
+        total_ops = int(effective_qps * duration_seconds)
         # Scale writers with target QPS (1 writer per ~50 QPS, minimum 4)
         num_writers = max(4, qps // 50)
         cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime={duration_min}m --show_ui=false " \
