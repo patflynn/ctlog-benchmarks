@@ -4,13 +4,26 @@ on:
   workflow_dispatch:
     inputs:
       duration:
-        description: 'Duration in minutes per test'
+        description: 'Duration in minutes per test (single-QPS mode)'
         required: true
         default: '15'
       qps:
-        description: 'Target QPS'
+        description: 'Target QPS (single-QPS mode)'
         required: true
         default: '500'
+      tier:
+        description: 'Infrastructure tier (small/medium/large)'
+        required: false
+        default: 'small'
+      sweep:
+        description: 'Enable QPS sweep mode'
+        required: false
+        type: boolean
+        default: false
+      qps_levels:
+        description: 'Comma-separated QPS levels for sweep mode'
+        required: false
+        default: '50,100,250,500'
 
 permissions:
   contents: write # To update README
@@ -67,63 +80,93 @@ jobs:
     - name: Install Python Deps
       run: pip install -r scripts/requirements.txt
 
-    - name: Run Benchmark Script
+    - name: Run Benchmark
       id: bench
       run: |
-        python3 scripts/benchmark.py \
-          --project_id ${{ env.PROJECT_ID }} \
-          --duration ${{ inputs.duration }} \
-          --qps ${{ inputs.qps }} 2>&1 | tee benchmark_output.txt
+        if [ "${{ inputs.sweep }}" = "true" ]; then
+          python3 scripts/benchmark.py \
+            --project_id ${{ env.PROJECT_ID }} \
+            --tier ${{ inputs.tier }} \
+            --qps_levels ${{ inputs.qps_levels }} \
+            --sweep_duration ${{ inputs.duration }} \
+            --warmup 60 2>&1 | tee benchmark_output.txt
+        else
+          python3 scripts/benchmark.py \
+            --project_id ${{ env.PROJECT_ID }} \
+            --tier ${{ inputs.tier }} \
+            --duration ${{ inputs.duration }} \
+            --qps ${{ inputs.qps }} \
+            --warmup 60 2>&1 | tee benchmark_output.txt
+        fi
 
     - name: Update README
       if: success()
       run: |
         python3 scripts/update_readme.py
 
+    - name: Generate Report
+      if: success()
+      run: |
+        python3 scripts/report.py benchmark_summary.json > REPORT.md
+        cat REPORT.md >> $GITHUB_STEP_SUMMARY
+
     - name: Parse Results
       if: success()
       run: |
-        # Extract values from benchmark_summary.json for the PR body
-        TR_QPS=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='trillian'); print(f\"{r['achieved_qps']:.2f}\")")
-        TE_QPS=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='tesseract'); print(f\"{r['achieved_qps']:.2f}\")")
-        TR_COST_HR=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='trillian'); print(f\"{r['cost_per_hour']:.4f}\")")
-        TE_COST_HR=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='tesseract'); print(f\"{r['cost_per_hour']:.4f}\")")
-        TR_TOTAL=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='trillian'); print(f\"{r['total_cost']:.4f}\")")
-        TE_TOTAL=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='tesseract'); print(f\"{r['total_cost']:.4f}\")")
-        TR_COST_1M=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='trillian'); qps=r['achieved_qps']; print(f\"{r['cost_per_hour']/(qps*3600)*1e6:.2f}\" if qps>0 else 'N/A')")
-        TE_COST_1M=$(python3 -c "import json; d=json.load(open('benchmark_summary.json')); r=next(x for x in d if x['log_type']=='tesseract'); qps=r['achieved_qps']; print(f\"{r['cost_per_hour']/(qps*3600)*1e6:.2f}\" if qps>0 else 'N/A')")
+        # Extract best values from benchmark_summary.json for the PR body
+        TR_QPS=$(python3 -c "
+import json
+d=json.load(open('benchmark_summary.json'))
+results = d['results'] if isinstance(d, dict) else d
+tr = [r for r in results if r['log_type']=='trillian']
+print(f\"{max(r['achieved_qps'] for r in tr):.2f}\" if tr else 'N/A')
+")
+        TE_QPS=$(python3 -c "
+import json
+d=json.load(open('benchmark_summary.json'))
+results = d['results'] if isinstance(d, dict) else d
+te = [r for r in results if r['log_type']=='tesseract']
+print(f\"{max(r['achieved_qps'] for r in te):.2f}\" if te else 'N/A')
+")
+        TR_COST_HR=$(python3 -c "
+import json
+d=json.load(open('benchmark_summary.json'))
+results = d['results'] if isinstance(d, dict) else d
+tr = [r for r in results if r['log_type']=='trillian']
+best = max(tr, key=lambda r: r['achieved_qps'])
+print(f\"{best['cost_per_hour']:.4f}\")
+")
+        TE_COST_HR=$(python3 -c "
+import json
+d=json.load(open('benchmark_summary.json'))
+results = d['results'] if isinstance(d, dict) else d
+te = [r for r in results if r['log_type']=='tesseract']
+best = max(te, key=lambda r: r['achieved_qps'])
+print(f\"{best['cost_per_hour']:.4f}\")
+")
+        TR_COST_1M=$(python3 -c "
+import json
+d=json.load(open('benchmark_summary.json'))
+results = d['results'] if isinstance(d, dict) else d
+tr = [r for r in results if r['log_type']=='trillian']
+best = max(tr, key=lambda r: r['achieved_qps'])
+print(f\"{best['cost_per_1m_entries']:.2f}\" if best.get('cost_per_1m_entries',0)>0 else 'N/A')
+")
+        TE_COST_1M=$(python3 -c "
+import json
+d=json.load(open('benchmark_summary.json'))
+results = d['results'] if isinstance(d, dict) else d
+te = [r for r in results if r['log_type']=='tesseract']
+best = max(te, key=lambda r: r['achieved_qps'])
+print(f\"{best['cost_per_1m_entries']:.2f}\" if best.get('cost_per_1m_entries',0)>0 else 'N/A')
+")
 
         echo "TR_QPS=$TR_QPS" >> $GITHUB_ENV
         echo "TE_QPS=$TE_QPS" >> $GITHUB_ENV
         echo "TR_COST_HR=$TR_COST_HR" >> $GITHUB_ENV
         echo "TE_COST_HR=$TE_COST_HR" >> $GITHUB_ENV
-        echo "TR_TOTAL=$TR_TOTAL" >> $GITHUB_ENV
-        echo "TE_TOTAL=$TE_TOTAL" >> $GITHUB_ENV
         echo "TR_COST_1M=$TR_COST_1M" >> $GITHUB_ENV
         echo "TE_COST_1M=$TE_COST_1M" >> $GITHUB_ENV
-
-    - name: Publish Results
-      if: success()
-      continue-on-error: true
-      run: |
-        DATE=$(date +%Y-%m-%d)
-
-        cat > RESULTS.md << HEREDOC
-        ## Benchmark Results ($DATE)
-
-        | Metric | Trillian (MySQL) | TesseraCT (Spanner) |
-        |---|---|---|
-        | **Duration** | ${{ inputs.duration }}m | ${{ inputs.duration }}m |
-        | **Target QPS** | ${{ inputs.qps }} | ${{ inputs.qps }} |
-        | **Achieved QPS** | $TR_QPS | $TE_QPS |
-        | **Infra Cost/hr** | \$$TR_COST_HR | \$$TE_COST_HR |
-        | **Benchmark Cost** | \$$TR_TOTAL | \$$TE_TOTAL |
-        | **Cost per 1M Entries** | \$$TR_COST_1M | \$$TE_COST_1M |
-
-        Cost model: deterministic from [costs.json](costs.json) (Terraform-derived infrastructure rates).
-        HEREDOC
-
-        cat RESULTS.md >> $GITHUB_STEP_SUMMARY
 
     - name: Create Pull Request
       if: success()
@@ -131,27 +174,22 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         commit-message: "Docs: Update benchmark results"
-        title: "Benchmark Results: ${{ inputs.duration }}m @ ${{ inputs.qps }} QPS"
+        title: "Benchmark Results: ${{ inputs.tier }} tier @ ${{ inputs.sweep == 'true' && inputs.qps_levels || inputs.qps }} QPS"
         body: |
-          ## Results
+          ## Results — Tier: ${{ inputs.tier }}
 
           | Metric | Trillian (MySQL) | TesseraCT (Spanner) |
           |---|---|---|
-          | **Achieved QPS** | ${{ env.TR_QPS }} | ${{ env.TE_QPS }} |
+          | **Peak QPS** | ${{ env.TR_QPS }} | ${{ env.TE_QPS }} |
           | **Infra Cost/hr** | $${{ env.TR_COST_HR }} | $${{ env.TE_COST_HR }} |
           | **Cost per 1M Entries** | $${{ env.TR_COST_1M }} | $${{ env.TE_COST_1M }} |
 
-          ## Cost Model
+          See full report in `REPORT.md` and raw data in `benchmark_summary.json`.
 
-          Fixed infrastructure costs from [`costs.json`](costs.json):
-          - **Trillian:** $0.178/hr (shared GKE) + $0.015/hr (Cloud SQL db-f1-micro) = **$0.193/hr**
-          - **TesseraCT:** $0.178/hr (shared GKE) + $0.090/hr (Spanner 100 PU) = **$0.268/hr**
-          - **Cost per 1M** = (cost_per_hour / achieved_qps / 3600) × 1,000,000
-
-          Duration: ${{ inputs.duration }}m, Target QPS: ${{ inputs.qps }}
+          Mode: ${{ inputs.sweep == 'true' && 'QPS sweep' || 'Single QPS' }}, Tier: ${{ inputs.tier }}
         branch: "benchmark-results-${{ github.run_id }}"
         base: main
         add-paths: |
-          RESULTS.md
+          REPORT.md
           README.md
           benchmark_summary.json

@@ -6,13 +6,23 @@ import sys
 COSTS_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "costs.json")
 
 
-def load_costs():
+def load_costs(tier="small"):
     with open(COSTS_FILE, "r") as f:
-        return json.load(f)
+        data = json.load(f)
+
+    # Support tiered format (new) and flat format (legacy)
+    if "tiers" in data:
+        if tier not in data["tiers"]:
+            print(f"Unknown tier '{tier}'. Available: {', '.join(data['tiers'].keys())}", file=sys.stderr)
+            sys.exit(1)
+        return data["tiers"][tier]
+    else:
+        # Legacy flat format — return as-is
+        return data
 
 
-def analyze_benchmark(project_id, start_time, end_time, log_type):
-    costs = load_costs()
+def analyze_benchmark(project_id, start_time, end_time, log_type, tier="small"):
+    costs = load_costs(tier)
     duration_hours = (end_time - start_time) / 3600.0
 
     system_costs = costs[log_type]
@@ -69,7 +79,8 @@ if __name__ == "__main__":
     parser.add_argument("--start", type=float, required=True, help="Unix timestamp")
     parser.add_argument("--end", type=float, required=True, help="Unix timestamp")
     parser.add_argument("--type", choices=["trillian", "tesseract"], required=True)
+    parser.add_argument("--tier", default="small", help="Infrastructure tier (small/medium/large)")
     args = parser.parse_args()
 
-    result = analyze_benchmark(args.project_id, args.start, args.end, args.type)
+    result = analyze_benchmark(args.project_id, args.start, args.end, args.type, args.tier)
     print(json.dumps(result, indent=2))

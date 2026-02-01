@@ -35,7 +35,7 @@ resource "google_spanner_instance" "tesseract_instance" {
   display_name = "TesseraCT Instance"
   project      = var.project_id
 
-  processing_units = 100 # Minimum for benchmark start
+  processing_units = var.spanner_processing_units
   force_destroy    = true
 }
 

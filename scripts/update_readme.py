@@ -4,20 +4,36 @@ import re
 
 def update_readme():
     if not os.path.exists("benchmark_summary.json"):
-        print("❌ benchmark_summary.json not found")
+        print("benchmark_summary.json not found")
         return
 
     with open("benchmark_summary.json", "r") as f:
-        results = json.load(f)
+        data = json.load(f)
 
-    trillian = next((r for r in results if r["log_type"] == "trillian"), None)
-    tesseract = next((r for r in results if r["log_type"] == "tesseract"), None)
-
-    if not trillian or not tesseract:
-        print("❌ Missing results for one or both systems")
+    # Support both new format ({tier, results: [...]}) and legacy format ([...])
+    if isinstance(data, dict) and "results" in data:
+        all_results = data["results"]
+    elif isinstance(data, list):
+        all_results = data
+    else:
+        print("Unrecognized benchmark_summary.json format")
         return
 
+    # For README, use the highest achieved QPS per system
+    trillian_results = [r for r in all_results if r["log_type"] == "trillian"]
+    tesseract_results = [r for r in all_results if r["log_type"] == "tesseract"]
+
+    if not trillian_results or not tesseract_results:
+        print("Missing results for one or both systems")
+        return
+
+    trillian = max(trillian_results, key=lambda r: r.get("achieved_qps", 0))
+    tesseract = max(tesseract_results, key=lambda r: r.get("achieved_qps", 0))
+
     def cost_per_1m(r):
+        # Prefer pre-computed cost_per_1m_entries if available
+        if "cost_per_1m_entries" in r and r["cost_per_1m_entries"] > 0:
+            return f"${r['cost_per_1m_entries']:.2f}"
         qps = r.get("achieved_qps", 0)
         cost_hr = r.get("cost_per_hour", 0)
         if qps <= 0:
@@ -44,7 +60,7 @@ def update_readme():
 
     with open("README.md", "w") as f:
         f.write(content)
-    print("✅ README.md updated with latest results")
+    print("README.md updated with latest results")
 
 if __name__ == "__main__":
     update_readme()

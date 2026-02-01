@@ -6,7 +6,7 @@ resource "google_sql_database_instance" "trillian_db" {
   project          = var.project_id
 
   settings {
-    tier = "db-f1-micro" # Smallest for initial setup
+    tier = var.cloud_sql_tier
     ip_configuration {
       ipv4_enabled = true
       # No authorized networks - we use Cloud SQL Proxy
