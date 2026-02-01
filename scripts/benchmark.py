@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import signal
 import subprocess
 import threading
@@ -393,6 +394,7 @@ def main():
 
     summary = {
         "tier": args.tier,
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "results": results,
     }
     with open("benchmark_summary.json", "w") as f:
