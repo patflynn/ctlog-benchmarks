@@ -14,7 +14,7 @@ on:
       tier:
         description: 'Infrastructure tier (small/medium/large)'
         required: false
-        default: 'small'
+        default: 'large'
       sweep:
         description: 'Enable QPS sweep mode'
         required: false

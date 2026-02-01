@@ -11,6 +11,11 @@ on:
       - 'terraform/**'
       - '!terraform/bootstrap/**'
   workflow_dispatch:
+    inputs:
+      tier:
+        description: 'Infrastructure tier (small/medium/large)'
+        required: false
+        default: 'large'
 
 permissions:
   contents: read
@@ -52,8 +57,8 @@ jobs:
           -backend-config="prefix=terraform/state"
 
     - name: Terraform Plan
-      run: terraform plan -var="project_id=${{ env.PROJECT_ID }}" -input=false
+      run: terraform plan -var="project_id=${{ env.PROJECT_ID }}" -var-file=tiers/${{ inputs.tier || 'large' }}.tfvars -input=false
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve -var="project_id=${{ env.PROJECT_ID }}" -input=false
+      run: terraform apply -auto-approve -var="project_id=${{ env.PROJECT_ID }}" -var-file=tiers/${{ inputs.tier || 'large' }}.tfvars -input=false
