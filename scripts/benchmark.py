@@ -186,7 +186,10 @@ def run_warmup(target_type, ip, tree_id=None, qps=100, warmup_seconds=60, projec
         os.environ["CT_LOG_PUBLIC_KEY"] = get_tesseract_pub_key_b64()
         log_url = f"gs://tesseract-storage-{project_id}/"
         write_url = f"http://{ip}/tesseract-benchmark"
-        num_writers = max(4, qps // 50)
+        # TesseraCT's PublicationAwaiter blocks each write until the entry is
+        # included in a published checkpoint (~2-3s latency).  We need enough
+        # concurrent writers to keep the pipeline full at the target QPS.
+        num_writers = max(4, qps * 3)
         cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime=1m --show_ui=false -v=1 " \
               f"--num_writers={num_writers} --num_readers_random=1 --num_mmd_verifiers=1 --leaf_write_goal={warmup_ops} " \
               f"--intermediate_ca_cert_path=testdata/tesseract/test_intermediate_ca_cert.pem --intermediate_ca_key_path=testdata/tesseract/test_intermediate_ca_private_key.pem --cert_sign_private_key_path=testdata/tesseract/test_leaf_cert_signing_private_key.pem"
@@ -237,8 +240,10 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_i
         log_url = f"gs://tesseract-storage-{project_id}/"
         write_url = f"http://{ip}/tesseract-benchmark"
         total_ops = int(qps * duration_seconds)
-        # Scale writers with target QPS (1 writer per ~50 QPS, minimum 4)
-        num_writers = max(4, qps // 50)
+        # TesseraCT's PublicationAwaiter blocks each write until the entry is
+        # included in a published checkpoint (~2-3s latency).  We need enough
+        # concurrent writers to keep the pipeline full at the target QPS.
+        num_writers = max(4, qps * 3)
         cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime={duration_min}m --show_ui=false -v=1 " \
               f"--num_writers={num_writers} --num_readers_random=1 --num_mmd_verifiers=1 --leaf_write_goal={total_ops} " \
               f"--intermediate_ca_cert_path=testdata/tesseract/test_intermediate_ca_cert.pem --intermediate_ca_key_path=testdata/tesseract/test_intermediate_ca_private_key.pem --cert_sign_private_key_path=testdata/tesseract/test_leaf_cert_signing_private_key.pem"
