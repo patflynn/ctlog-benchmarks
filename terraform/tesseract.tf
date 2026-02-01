@@ -106,3 +106,18 @@ resource "google_secret_manager_secret_iam_member" "signer_pub_access" {
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.tesseract_sa.email}"
 }
+
+# --- Observability (OTel) ---
+# Tessera uses OpenTelemetry for metrics and traces; the GCP exporter
+# needs these project-level roles to publish telemetry data.
+resource "google_project_iam_member" "tesseract_monitoring_writer" {
+  project = var.project_id
+  role    = "roles/monitoring.metricWriter"
+  member  = "serviceAccount:${google_service_account.tesseract_sa.email}"
+}
+
+resource "google_project_iam_member" "tesseract_trace_agent" {
+  project = var.project_id
+  role    = "roles/cloudtrace.agent"
+  member  = "serviceAccount:${google_service_account.tesseract_sa.email}"
+}
