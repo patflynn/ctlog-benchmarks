@@ -79,7 +79,8 @@ def smoke_test(target_type, ip, project_id):
     initial_size = get_log_size(target_type, ip, project_id)
     # Submit a single add-chain request via curl
     try:
-        with open("testdata/trillian/leaf01.chain", "r") as f:
+        chain_file = "testdata/trillian/leaf01.chain" if target_type == "trillian" else "testdata/tesseract/leaf01.chain"
+        with open(chain_file, "r") as f:
             pem_data = f.read()
         chain = []
         for block in pem_data.split("-----BEGIN CERTIFICATE-----"):
