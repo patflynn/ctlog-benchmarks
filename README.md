@@ -10,9 +10,9 @@ A fully automated, reproducible benchmarking suite comparing the performance and
 
 | Metric | Trillian (MySQL) | TesseraCT (Spanner) |
 | :--- | :--- | :--- |
-| **Max Throughput** | *Pending* | *Pending* |
-| **Infra Cost/hr** | *Pending* | *Pending* |
-| **Cost per 1M Entries** | *Pending* | *Pending* |
+| **Max Throughput** | 2.03 QPS | 4.98 QPS |
+| **Infra Cost/hr** | $0.1930 | $0.2680 |
+| **Cost per 1M Entries** | $26.41 | $14.94 |
 
 Cost model: deterministic from [`costs.json`](costs.json) (Terraform-derived infrastructure rates).
 

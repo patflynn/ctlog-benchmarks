@@ -1,0 +1,23 @@
+{
+  "tier": "small",
+  "results": [
+    {
+      "log_type": "trillian",
+      "target_qps": 500,
+      "achieved_qps": 2.03,
+      "entries_written": 670,
+      "elapsed_seconds": 330.0,
+      "cost_per_hour": 0.193,
+      "cost_per_1m_entries": 26.41
+    },
+    {
+      "log_type": "tesseract",
+      "target_qps": 500,
+      "achieved_qps": 4.98,
+      "entries_written": 1500,
+      "elapsed_seconds": 300.9,
+      "cost_per_hour": 0.268,
+      "cost_per_1m_entries": 14.94
+    }
+  ]
+}
