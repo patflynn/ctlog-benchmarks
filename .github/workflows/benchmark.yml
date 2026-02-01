@@ -113,60 +113,24 @@ jobs:
     - name: Parse Results
       if: success()
       run: |
-        # Extract best values from benchmark_summary.json for the PR body
-        TR_QPS=$(python3 -c "
-import json
-d=json.load(open('benchmark_summary.json'))
-results = d['results'] if isinstance(d, dict) else d
-tr = [r for r in results if r['log_type']=='trillian']
-print(f\"{max(r['achieved_qps'] for r in tr):.2f}\" if tr else 'N/A')
-")
-        TE_QPS=$(python3 -c "
-import json
-d=json.load(open('benchmark_summary.json'))
-results = d['results'] if isinstance(d, dict) else d
-te = [r for r in results if r['log_type']=='tesseract']
-print(f\"{max(r['achieved_qps'] for r in te):.2f}\" if te else 'N/A')
-")
-        TR_COST_HR=$(python3 -c "
-import json
-d=json.load(open('benchmark_summary.json'))
-results = d['results'] if isinstance(d, dict) else d
-tr = [r for r in results if r['log_type']=='trillian']
-best = max(tr, key=lambda r: r['achieved_qps'])
-print(f\"{best['cost_per_hour']:.4f}\")
-")
-        TE_COST_HR=$(python3 -c "
-import json
-d=json.load(open('benchmark_summary.json'))
-results = d['results'] if isinstance(d, dict) else d
-te = [r for r in results if r['log_type']=='tesseract']
-best = max(te, key=lambda r: r['achieved_qps'])
-print(f\"{best['cost_per_hour']:.4f}\")
-")
-        TR_COST_1M=$(python3 -c "
-import json
-d=json.load(open('benchmark_summary.json'))
-results = d['results'] if isinstance(d, dict) else d
-tr = [r for r in results if r['log_type']=='trillian']
-best = max(tr, key=lambda r: r['achieved_qps'])
-print(f\"{best['cost_per_1m_entries']:.2f}\" if best.get('cost_per_1m_entries',0)>0 else 'N/A')
-")
-        TE_COST_1M=$(python3 -c "
-import json
-d=json.load(open('benchmark_summary.json'))
-results = d['results'] if isinstance(d, dict) else d
-te = [r for r in results if r['log_type']=='tesseract']
-best = max(te, key=lambda r: r['achieved_qps'])
-print(f\"{best['cost_per_1m_entries']:.2f}\" if best.get('cost_per_1m_entries',0)>0 else 'N/A')
-")
-
-        echo "TR_QPS=$TR_QPS" >> $GITHUB_ENV
-        echo "TE_QPS=$TE_QPS" >> $GITHUB_ENV
-        echo "TR_COST_HR=$TR_COST_HR" >> $GITHUB_ENV
-        echo "TE_COST_HR=$TE_COST_HR" >> $GITHUB_ENV
-        echo "TR_COST_1M=$TR_COST_1M" >> $GITHUB_ENV
-        echo "TE_COST_1M=$TE_COST_1M" >> $GITHUB_ENV
+        python3 - <<'PYEOF'
+        import json, os
+        d = json.load(open('benchmark_summary.json'))
+        results = d['results'] if isinstance(d, dict) else d
+        def best(log_type):
+            hits = [r for r in results if r['log_type'] == log_type]
+            return max(hits, key=lambda r: r['achieved_qps']) if hits else None
+        tr = best('trillian')
+        te = best('tesseract')
+        env = os.environ.get('GITHUB_ENV', '/dev/null')
+        with open(env, 'a') as f:
+            f.write(f"TR_QPS={tr['achieved_qps']:.2f}\n" if tr else 'TR_QPS=N/A\n')
+            f.write(f"TE_QPS={te['achieved_qps']:.2f}\n" if te else 'TE_QPS=N/A\n')
+            f.write(f"TR_COST_HR={tr['cost_per_hour']:.4f}\n" if tr else 'TR_COST_HR=N/A\n')
+            f.write(f"TE_COST_HR={te['cost_per_hour']:.4f}\n" if te else 'TE_COST_HR=N/A\n')
+            f.write(f"TR_COST_1M={tr['cost_per_1m_entries']:.2f}\n" if tr and tr.get('cost_per_1m_entries',0)>0 else 'TR_COST_1M=N/A\n')
+            f.write(f"TE_COST_1M={te['cost_per_1m_entries']:.2f}\n" if te and te.get('cost_per_1m_entries',0)>0 else 'TE_COST_1M=N/A\n')
+        PYEOF
 
     - name: Create Pull Request
       if: success()
