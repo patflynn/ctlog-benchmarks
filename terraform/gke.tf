@@ -30,11 +30,11 @@ resource "google_container_node_pool" "benchmark_pool" {
   location   = var.zone
   cluster    = google_container_cluster.primary.name
   project    = var.project_id
-  node_count = 2
+  node_count = var.gke_node_count
 
   node_config {
     preemptible  = false
-    machine_type = "e2-standard-2" # 2 vCPU, 8GB RAM
+    machine_type = var.gke_machine_type
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM.
     service_account = google_service_account.node_sa.email

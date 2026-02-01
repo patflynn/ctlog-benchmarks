@@ -8,60 +8,194 @@
     "gcs": "https://cloud.google.com/storage/pricing",
     "lb": "https://cloud.google.com/vpc/network-pricing"
   },
-  "shared": {
-    "gke_cluster_mgmt": {
-      "description": "GKE Standard cluster management fee",
-      "hourly_rate": 0.10
-    },
-    "gke_nodes": {
-      "description": "2x e2-standard-2 (2 vCPU, 8GB RAM each) in benchmark-pool",
-      "machine_type": "e2-standard-2",
-      "count": 2,
-      "per_node_hourly": {
-        "cpu": 0.0670,
-        "ram": 0.0360
+  "tiers": {
+    "small": {
+      "gke_machine_type": "e2-standard-2",
+      "gke_node_count": 2,
+      "cloud_sql_tier": "db-f1-micro",
+      "spanner_processing_units": 100,
+      "shared": {
+        "gke_cluster_mgmt": {
+          "description": "GKE Standard cluster management fee",
+          "hourly_rate": 0.10
+        },
+        "gke_nodes": {
+          "description": "2x e2-standard-2 (2 vCPU, 8GB RAM each) in benchmark-pool",
+          "machine_type": "e2-standard-2",
+          "count": 2,
+          "per_node_hourly": {
+            "cpu": 0.0670,
+            "ram": 0.0360
+          },
+          "hourly_rate": 0.2060
+        },
+        "load_balancers": {
+          "description": "2x forwarding rules (one per system)",
+          "count": 2,
+          "per_rule_hourly": 0.025,
+          "hourly_rate": 0.05
+        },
+        "total_hourly": 0.3560
       },
-      "hourly_rate": 0.2060
+      "trillian": {
+        "cloud_sql": {
+          "description": "Cloud SQL MySQL 8.0, db-f1-micro (shared vCPU, 0.6GB RAM)",
+          "tier": "db-f1-micro",
+          "hourly_rate": 0.0150
+        },
+        "cloud_sql_storage": {
+          "description": "Cloud SQL SSD storage",
+          "per_gb_monthly": 0.170
+        },
+        "shared_allocation": 0.1780,
+        "dedicated_hourly": 0.0150,
+        "total_hourly": 0.1930
+      },
+      "tesseract": {
+        "spanner": {
+          "description": "Cloud Spanner, 100 Processing Units, regional config",
+          "processing_units": 100,
+          "hourly_rate": 0.0900
+        },
+        "spanner_storage": {
+          "description": "Spanner SSD storage",
+          "per_gb_monthly": 0.30
+        },
+        "gcs": {
+          "description": "GCS Standard storage",
+          "per_gb_monthly": 0.020,
+          "class_a_per_10k_ops": 0.05
+        },
+        "shared_allocation": 0.1780,
+        "dedicated_hourly": 0.0900,
+        "total_hourly": 0.2680
+      }
     },
-    "load_balancers": {
-      "description": "2x forwarding rules (one per system)",
-      "count": 2,
-      "per_rule_hourly": 0.025,
-      "hourly_rate": 0.05
+    "medium": {
+      "_note": "Prices are estimates from GCP list pricing. Verify before running this tier.",
+      "gke_machine_type": "e2-standard-2",
+      "gke_node_count": 3,
+      "cloud_sql_tier": "db-n1-standard-1",
+      "spanner_processing_units": 300,
+      "shared": {
+        "gke_cluster_mgmt": {
+          "description": "GKE Standard cluster management fee",
+          "hourly_rate": 0.10
+        },
+        "gke_nodes": {
+          "description": "3x e2-standard-2 (2 vCPU, 8GB RAM each) in benchmark-pool",
+          "machine_type": "e2-standard-2",
+          "count": 3,
+          "per_node_hourly": {
+            "cpu": 0.0670,
+            "ram": 0.0360
+          },
+          "hourly_rate": 0.3090
+        },
+        "load_balancers": {
+          "description": "2x forwarding rules (one per system)",
+          "count": 2,
+          "per_rule_hourly": 0.025,
+          "hourly_rate": 0.05
+        },
+        "total_hourly": 0.4590
+      },
+      "trillian": {
+        "cloud_sql": {
+          "description": "Cloud SQL MySQL 8.0, db-n1-standard-1 (1 vCPU, 3.75GB RAM)",
+          "tier": "db-n1-standard-1",
+          "hourly_rate": 0.0500
+        },
+        "cloud_sql_storage": {
+          "description": "Cloud SQL SSD storage",
+          "per_gb_monthly": 0.170
+        },
+        "shared_allocation": 0.2295,
+        "dedicated_hourly": 0.0500,
+        "total_hourly": 0.2795
+      },
+      "tesseract": {
+        "spanner": {
+          "description": "Cloud Spanner, 300 Processing Units, regional config",
+          "processing_units": 300,
+          "hourly_rate": 0.2700
+        },
+        "spanner_storage": {
+          "description": "Spanner SSD storage",
+          "per_gb_monthly": 0.30
+        },
+        "gcs": {
+          "description": "GCS Standard storage",
+          "per_gb_monthly": 0.020,
+          "class_a_per_10k_ops": 0.05
+        },
+        "shared_allocation": 0.2295,
+        "dedicated_hourly": 0.2700,
+        "total_hourly": 0.4995
+      }
     },
-    "total_hourly": 0.3560
-  },
-  "trillian": {
-    "cloud_sql": {
-      "description": "Cloud SQL MySQL 8.0, db-f1-micro (shared vCPU, 0.6GB RAM)",
-      "tier": "db-f1-micro",
-      "hourly_rate": 0.0150
-    },
-    "cloud_sql_storage": {
-      "description": "Cloud SQL SSD storage",
-      "per_gb_monthly": 0.170
-    },
-    "shared_allocation": 0.1780,
-    "dedicated_hourly": 0.0150,
-    "total_hourly": 0.1930
-  },
-  "tesseract": {
-    "spanner": {
-      "description": "Cloud Spanner, 100 Processing Units, regional config",
-      "processing_units": 100,
-      "hourly_rate": 0.0900
-    },
-    "spanner_storage": {
-      "description": "Spanner SSD storage",
-      "per_gb_monthly": 0.30
-    },
-    "gcs": {
-      "description": "GCS Standard storage",
-      "per_gb_monthly": 0.020,
-      "class_a_per_10k_ops": 0.05
-    },
-    "shared_allocation": 0.1780,
-    "dedicated_hourly": 0.0900,
-    "total_hourly": 0.2680
+    "large": {
+      "_note": "Prices are estimates from GCP list pricing. Verify before running this tier.",
+      "gke_machine_type": "e2-standard-4",
+      "gke_node_count": 3,
+      "cloud_sql_tier": "db-n1-standard-2",
+      "spanner_processing_units": 1000,
+      "shared": {
+        "gke_cluster_mgmt": {
+          "description": "GKE Standard cluster management fee",
+          "hourly_rate": 0.10
+        },
+        "gke_nodes": {
+          "description": "3x e2-standard-4 (4 vCPU, 16GB RAM each) in benchmark-pool",
+          "machine_type": "e2-standard-4",
+          "count": 3,
+          "per_node_hourly": {
+            "cpu": 0.1340,
+            "ram": 0.0720
+          },
+          "hourly_rate": 0.6180
+        },
+        "load_balancers": {
+          "description": "2x forwarding rules (one per system)",
+          "count": 2,
+          "per_rule_hourly": 0.025,
+          "hourly_rate": 0.05
+        },
+        "total_hourly": 0.7680
+      },
+      "trillian": {
+        "cloud_sql": {
+          "description": "Cloud SQL MySQL 8.0, db-n1-standard-2 (2 vCPU, 7.5GB RAM)",
+          "tier": "db-n1-standard-2",
+          "hourly_rate": 0.1055
+        },
+        "cloud_sql_storage": {
+          "description": "Cloud SQL SSD storage",
+          "per_gb_monthly": 0.170
+        },
+        "shared_allocation": 0.3840,
+        "dedicated_hourly": 0.1055,
+        "total_hourly": 0.4895
+      },
+      "tesseract": {
+        "spanner": {
+          "description": "Cloud Spanner, 1000 Processing Units, regional config",
+          "processing_units": 1000,
+          "hourly_rate": 0.9000
+        },
+        "spanner_storage": {
+          "description": "Spanner SSD storage",
+          "per_gb_monthly": 0.30
+        },
+        "gcs": {
+          "description": "GCS Standard storage",
+          "per_gb_monthly": 0.020,
+          "class_a_per_10k_ops": 0.05
+        },
+        "shared_allocation": 0.3840,
+        "dedicated_hourly": 0.9000,
+        "total_hourly": 1.2840
+      }
+    }
   }
 }

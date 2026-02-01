@@ -112,7 +112,54 @@ def smoke_test(target_type, ip, project_id):
         print(f"✅ Smoke test passed for {target_type} (tree: {initial_size} -> {final_size})")
 
 
-def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_id=None):
+def run_warmup(target_type, ip, tree_id=None, qps=100, warmup_seconds=60, project_id=None):
+    """Run a warmup pass to eliminate cold-start noise (especially Spanner)."""
+    print(f"🔥 Warming up {target_type} ({warmup_seconds}s at {qps} QPS)...")
+
+    warmup_ops = int(qps * warmup_seconds)
+
+    if target_type == "trillian":
+        der_hex = get_trillian_pub_key_der_hex()
+        run_cmd("cp testdata/trillian/fake-ca.cert roots.pem")
+        with open("trillian_cfg.textproto", "w") as f:
+            f.write(f'config {{\n')
+            f.write(f'  log_id: {tree_id}\n')
+            f.write(f'  prefix: "benchmark"\n')
+            f.write(f'  roots_pem_file: "roots.pem"\n')
+            f.write(f'  public_key {{\n')
+            f.write(f'    der: "{der_hex}"\n')
+            f.write(f'  }}\n')
+            f.write(f'}}\n')
+        url = f"http://{ip}"
+        cmd = f"./bin/ct_hammer --log_config=trillian_cfg.textproto --ct_http_servers={url} --mmd=30s --rate_limit={qps} --operations={warmup_ops} --testdata_dir=testdata/trillian --ignore_errors"
+    else:
+        os.environ["CT_LOG_PUBLIC_KEY"] = get_tesseract_pub_key_b64()
+        log_url = f"gs://tesseract-storage-{project_id}/"
+        write_url = f"http://{ip}"
+        num_writers = max(4, qps // 50)
+        cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime=1m --show_ui=false " \
+              f"--num_writers={num_writers} --num_readers_random=1 --num_mmd_verifiers=1 --leaf_write_goal={warmup_ops} " \
+              f"--intermediate_ca_cert_path=testdata/tesseract/test_intermediate_ca_cert.pem --intermediate_ca_key_path=testdata/tesseract/test_intermediate_ca_private_key.pem --cert_sign_private_key_path=testdata/tesseract/test_leaf_cert_signing_private_key.pem"
+
+    try:
+        process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        for line in process.stdout:
+            print(line, end='', flush=True)
+        process.wait()
+        if process.returncode != 0:
+            print(f"⚠️  Warmup exited with code {process.returncode} (continuing anyway)")
+    except Exception as e:
+        print(f"⚠️  Warmup encountered error: {e} (continuing anyway)")
+
+    print(f"🔥 Warmup complete, settling for 5s...")
+    time.sleep(5)
+
+
+def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_id=None, warmup_seconds=60):
+    # Run warmup phase if enabled
+    if warmup_seconds > 0:
+        run_warmup(target_type, ip, tree_id, qps, warmup_seconds, project_id)
+
     print(f"🚀 Starting {target_type} load test ({qps} QPS for {duration_min} min)...")
 
     initial_size = get_log_size(target_type, ip, project_id)
@@ -178,14 +225,46 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_i
     achieved_qps = entries_written / elapsed
     print(f"📊 Achieved QPS: {achieved_qps:.2f} ({entries_written} entries / {elapsed:.1f}s)")
 
-    return start_time, end_time, achieved_qps
+    return start_time, end_time, achieved_qps, entries_written, elapsed
+
+def run_single_benchmark(target_type, ip, tree_id, duration_min, qps, project_id, warmup_seconds, tier):
+    """Run a benchmark for one system at one QPS level and return a result dict."""
+    t_start, t_end, achieved_qps, entries_written, elapsed = run_hammer(
+        target_type, ip, tree_id, duration_min, qps, project_id, warmup_seconds
+    )
+
+    res = subprocess.check_output(
+        f"python3 scripts/metrics.py --project_id {project_id} --start {t_start} --end {t_end} --type {target_type} --tier {tier}",
+        shell=True, text=True
+    )
+    data = json.loads(res)
+
+    cost_per_hour = data.get("cost_per_hour", 0)
+    if achieved_qps > 0:
+        cost_per_1m = cost_per_hour / (achieved_qps * 3600) * 1_000_000
+    else:
+        cost_per_1m = 0
+
+    return {
+        "log_type": target_type,
+        "target_qps": qps,
+        "achieved_qps": round(achieved_qps, 2),
+        "entries_written": entries_written,
+        "elapsed_seconds": round(elapsed, 1),
+        "cost_per_hour": round(cost_per_hour, 4),
+        "cost_per_1m_entries": round(cost_per_1m, 2),
+    }
+
 
 def main():
-    # ... (rest of main setup)
     parser = argparse.ArgumentParser()
     parser.add_argument("--project_id", required=True)
-    parser.add_argument("--duration", type=int, default=15, help="Benchmark duration in minutes")
-    parser.add_argument("--qps", type=int, default=100, help="Target QPS")
+    parser.add_argument("--duration", type=int, default=15, help="Benchmark duration in minutes (single-QPS mode)")
+    parser.add_argument("--qps", type=int, default=100, help="Target QPS (single-QPS mode)")
+    parser.add_argument("--warmup", type=int, default=60, help="Warmup duration in seconds (0 to disable)")
+    parser.add_argument("--tier", default="small", help="Infrastructure tier (small/medium/large)")
+    parser.add_argument("--qps_levels", default=None, help="Comma-separated QPS levels for sweep mode (e.g. 50,100,250,500)")
+    parser.add_argument("--sweep_duration", type=int, default=5, help="Duration in minutes per QPS level during sweep")
     args = parser.parse_args()
 
     trillian_ip = get_lb_ip("ctfe", "trillian")
@@ -206,48 +285,51 @@ def main():
     smoke_test("trillian", trillian_ip, args.project_id)
     smoke_test("tesseract", tesseract_ip, args.project_id)
 
-    final_results = []
+    results = []
 
-    # 3. Run Trillian Benchmark
-    print("\n" + "="*40)
-    print("--- Phase 1: Trillian (MySQL) ---")
-    print("="*40)
-    t1_start, t1_end, qps1 = run_hammer("trillian", trillian_ip, tree_id, args.duration, args.qps, args.project_id)
+    if args.qps_levels:
+        # Sweep mode: iterate over QPS levels
+        qps_levels = [int(q.strip()) for q in args.qps_levels.split(",")]
+        for qps_level in qps_levels:
+            print("\n" + "="*40)
+            print(f"--- Sweep: {qps_level} QPS — Trillian (MySQL) ---")
+            print("="*40)
+            r = run_single_benchmark("trillian", trillian_ip, tree_id, args.sweep_duration, qps_level, args.project_id, args.warmup, args.tier)
+            results.append(r)
 
-    res1 = subprocess.check_output(
-        f"python3 scripts/metrics.py --project_id {args.project_id} --start {t1_start} --end {t1_end} --type trillian",
-        shell=True, text=True
-    )
-    data1 = json.loads(res1)
-    data1["achieved_qps"] = qps1
-    final_results.append(data1)
+            print("\n" + "="*40)
+            print(f"--- Sweep: {qps_level} QPS — TesseraCT (Spanner) ---")
+            print("="*40)
+            r = run_single_benchmark("tesseract", tesseract_ip, None, args.sweep_duration, qps_level, args.project_id, args.warmup, args.tier)
+            results.append(r)
+    else:
+        # Single-QPS mode (backward compatible)
+        print("\n" + "="*40)
+        print("--- Phase 1: Trillian (MySQL) ---")
+        print("="*40)
+        r = run_single_benchmark("trillian", trillian_ip, tree_id, args.duration, args.qps, args.project_id, args.warmup, args.tier)
+        results.append(r)
 
-    # 4. Run TesseraCT Benchmark
-    print("\n" + "="*40)
-    print("--- Phase 2: TesseraCT (Spanner) ---")
-    print("="*40)
-    t2_start, t2_end, qps2 = run_hammer("tesseract", tesseract_ip, None, args.duration, args.qps, args.project_id)
-
-    res2 = subprocess.check_output(
-        f"python3 scripts/metrics.py --project_id {args.project_id} --start {t2_start} --end {t2_end} --type tesseract",
-        shell=True, text=True
-    )
-    data2 = json.loads(res2)
-    data2["achieved_qps"] = qps2
-    final_results.append(data2)
+        print("\n" + "="*40)
+        print("--- Phase 2: TesseraCT (Spanner) ---")
+        print("="*40)
+        r = run_single_benchmark("tesseract", tesseract_ip, None, args.duration, args.qps, args.project_id, args.warmup, args.tier)
+        results.append(r)
 
     # Summary
     print("\n" + "="*40)
     print("      BENCHMARK SUMMARY")
     print("="*40)
-    for r in final_results:
-        print(f"{r['log_type'].capitalize()} Achieved QPS: {r['achieved_qps']:.2f}")
-        print(f"{r['log_type'].capitalize()} Total Cost:  ${r['total_cost']:.4f}")
-        print(f"{r['log_type'].capitalize()} Cost/hr:     ${r.get('cost_per_hour', 0):.4f}")
-        print("-" * 20)
+    for r in results:
+        print(f"{r['log_type'].capitalize()} @ {r['target_qps']} QPS: achieved {r['achieved_qps']:.2f} QPS, ${r['cost_per_hour']:.4f}/hr, ${r['cost_per_1m_entries']:.2f}/1M entries")
     print("="*40)
+
+    summary = {
+        "tier": args.tier,
+        "results": results,
+    }
     with open("benchmark_summary.json", "w") as f:
-        json.dump(final_results, f, indent=2)
+        json.dump(summary, f, indent=2)
 
 
 
