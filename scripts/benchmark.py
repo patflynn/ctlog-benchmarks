@@ -316,7 +316,7 @@ def main():
     parser.add_argument("--warmup", type=int, default=60, help="Warmup duration in seconds (0 to disable)")
     parser.add_argument("--tier", default="large", help="Infrastructure tier (small/medium/large)")
     parser.add_argument("--qps_levels", default=None, help="Comma-separated QPS levels for sweep mode (e.g. 50,100,250,500), or 'auto' for tier-aware defaults")
-    parser.add_argument("--sweep_duration", type=int, default=5, help="Duration in minutes per QPS level during sweep")
+    parser.add_argument("--sweep_duration", type=int, default=3, help="Duration in minutes per QPS level during sweep")
     args = parser.parse_args()
 
     trillian_ip = get_lb_ip("ctfe", "trillian")
