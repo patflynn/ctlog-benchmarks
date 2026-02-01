@@ -6,7 +6,7 @@ on:
       duration:
         description: 'Duration in minutes per test (single-QPS mode)'
         required: true
-        default: '15'
+        default: '5'
       qps:
         description: 'Target QPS (single-QPS mode)'
         required: true
@@ -25,6 +25,10 @@ on:
         required: false
         default: '50,100,250,500'
 
+concurrency:
+  group: benchmark
+  cancel-in-progress: true
+
 permissions:
   contents: write # To update README
   pull-requests: write # To create PRs
@@ -42,6 +46,7 @@ jobs:
   benchmark:
     name: Run Benchmark
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment: BENCHMARKING
 
     steps:
