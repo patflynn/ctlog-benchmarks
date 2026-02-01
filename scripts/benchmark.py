@@ -7,6 +7,12 @@ import json
 import sys
 import os
 
+TIER_DEFAULT_QPS_LEVELS = {
+    "small":  [5, 10, 25, 50],
+    "medium": [25, 50, 100, 250],
+    "large":  [50, 100, 250, 500],
+}
+
 def run_cmd(cmd):
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
@@ -159,10 +165,7 @@ def run_warmup(target_type, ip, tree_id=None, qps=100, warmup_seconds=60, projec
     """Run a warmup pass to eliminate cold-start noise (especially Spanner)."""
     print(f"🔥 Warming up {target_type} ({warmup_seconds}s at {qps} QPS)...")
 
-    # Cap assumed throughput at 100 QPS for operation count so the warmup
-    # has a realistic chance of completing within the time window.
-    effective_qps = min(qps, 100)
-    warmup_ops = int(effective_qps * warmup_seconds)
+    warmup_ops = int(qps * warmup_seconds)
 
     if target_type == "trillian":
         der_hex = get_trillian_pub_key_der_hex()
@@ -225,22 +228,14 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_i
             f.write(f'    der: "{der_hex}"\n')
             f.write(f'  }}\n')
             f.write(f'}}\n')
-        # Cap assumed throughput at 100 QPS for the operations count.
-        # ct_hammer is operation-count-based with no time limit, so using
-        # the full target QPS (e.g. 500) produces an ops count that a
-        # small-tier db-f1-micro can never complete in time.
-        effective_qps = min(qps, 100)
-        total_ops = int(effective_qps * duration_seconds)
+        total_ops = int(qps * duration_seconds)
         url = f"http://{ip}"
         cmd = f"./bin/ct_hammer --log_config=trillian_cfg.textproto --ct_http_servers={url} --mmd=30s --rate_limit={qps} --operations={total_ops} --testdata_dir=testdata/trillian --ignore_errors"
     else:
         os.environ["CT_LOG_PUBLIC_KEY"] = get_tesseract_pub_key_b64()
         log_url = f"gs://tesseract-storage-{project_id}/"
         write_url = f"http://{ip}"
-        # Cap leaf_write_goal the same way as Trillian ops so the hammer
-        # can meet the goal within --max_runtime on small-tier infra.
-        effective_qps = min(qps, 100)
-        total_ops = int(effective_qps * duration_seconds)
+        total_ops = int(qps * duration_seconds)
         # Scale writers with target QPS (1 writer per ~50 QPS, minimum 4)
         num_writers = max(4, qps // 50)
         cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime={duration_min}m --show_ui=false " \
@@ -316,10 +311,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--project_id", required=True)
     parser.add_argument("--duration", type=int, default=15, help="Benchmark duration in minutes (single-QPS mode)")
-    parser.add_argument("--qps", type=int, default=100, help="Target QPS (single-QPS mode)")
+    parser.add_argument("--qps", type=int, default=50, help="Target QPS (single-QPS mode)")
     parser.add_argument("--warmup", type=int, default=60, help="Warmup duration in seconds (0 to disable)")
     parser.add_argument("--tier", default="small", help="Infrastructure tier (small/medium/large)")
-    parser.add_argument("--qps_levels", default=None, help="Comma-separated QPS levels for sweep mode (e.g. 50,100,250,500)")
+    parser.add_argument("--qps_levels", default=None, help="Comma-separated QPS levels for sweep mode (e.g. 50,100,250,500), or 'auto' for tier-aware defaults")
     parser.add_argument("--sweep_duration", type=int, default=5, help="Duration in minutes per QPS level during sweep")
     args = parser.parse_args()
 
@@ -345,18 +340,34 @@ def main():
 
     if args.qps_levels:
         # Sweep mode: iterate over QPS levels
-        qps_levels = [int(q.strip()) for q in args.qps_levels.split(",")]
+        if args.qps_levels == "auto":
+            if args.tier not in TIER_DEFAULT_QPS_LEVELS:
+                print(f"❌ Unknown tier '{args.tier}' for auto QPS levels. Known tiers: {', '.join(TIER_DEFAULT_QPS_LEVELS.keys())}")
+                sys.exit(1)
+            qps_levels = TIER_DEFAULT_QPS_LEVELS[args.tier]
+            print(f"📋 Auto QPS levels for tier '{args.tier}': {qps_levels}")
+        else:
+            qps_levels = [int(q.strip()) for q in args.qps_levels.split(",")]
+
+        # Run warmup once per system before the sweep loop
+        if args.warmup > 0:
+            print("\n" + "="*40)
+            print("--- Pre-sweep Warmup ---")
+            print("="*40)
+            run_warmup("trillian", trillian_ip, tree_id, qps_levels[0], args.warmup, args.project_id)
+            run_warmup("tesseract", tesseract_ip, project_id=args.project_id, qps=qps_levels[0], warmup_seconds=args.warmup)
+
         for qps_level in qps_levels:
             print("\n" + "="*40)
             print(f"--- Sweep: {qps_level} QPS — Trillian (MySQL) ---")
             print("="*40)
-            r = run_single_benchmark("trillian", trillian_ip, tree_id, args.sweep_duration, qps_level, args.project_id, args.warmup, args.tier)
+            r = run_single_benchmark("trillian", trillian_ip, tree_id, args.sweep_duration, qps_level, args.project_id, 0, args.tier)
             results.append(r)
 
             print("\n" + "="*40)
             print(f"--- Sweep: {qps_level} QPS — TesseraCT (Spanner) ---")
             print("="*40)
-            r = run_single_benchmark("tesseract", tesseract_ip, None, args.sweep_duration, qps_level, args.project_id, args.warmup, args.tier)
+            r = run_single_benchmark("tesseract", tesseract_ip, None, args.sweep_duration, qps_level, args.project_id, 0, args.tier)
             results.append(r)
     else:
         # Single-QPS mode (backward compatible)
