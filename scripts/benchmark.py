@@ -137,7 +137,7 @@ def smoke_test(target_type, ip, project_id):
                 content = block.split("-----END CERTIFICATE-----")[0].replace("\n", "").strip()
                 chain.append(content)
         payload = json.dumps({"chain": chain})
-        url = f"http://{ip}/benchmark/ct/v1/add-chain" if target_type == "trillian" else f"http://{ip}/ct/v1/add-chain"
+        url = f"http://{ip}/benchmark/ct/v1/add-chain" if target_type == "trillian" else f"http://{ip}/tesseract-benchmark/ct/v1/add-chain"
         result = subprocess.run(
             ["curl", "-s", "-w", "%{http_code}", "-X", "POST",
              "-H", "Content-Type: application/json",
@@ -185,7 +185,7 @@ def run_warmup(target_type, ip, tree_id=None, qps=100, warmup_seconds=60, projec
     else:
         os.environ["CT_LOG_PUBLIC_KEY"] = get_tesseract_pub_key_b64()
         log_url = f"gs://tesseract-storage-{project_id}/"
-        write_url = f"http://{ip}"
+        write_url = f"http://{ip}/tesseract-benchmark"
         num_writers = max(4, qps // 50)
         cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime=1m --show_ui=false -v=1 " \
               f"--num_writers={num_writers} --num_readers_random=1 --num_mmd_verifiers=1 --leaf_write_goal={warmup_ops} " \
@@ -235,7 +235,7 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_i
     else:
         os.environ["CT_LOG_PUBLIC_KEY"] = get_tesseract_pub_key_b64()
         log_url = f"gs://tesseract-storage-{project_id}/"
-        write_url = f"http://{ip}"
+        write_url = f"http://{ip}/tesseract-benchmark"
         total_ops = int(qps * duration_seconds)
         # Scale writers with target QPS (1 writer per ~50 QPS, minimum 4)
         num_writers = max(4, qps // 50)
