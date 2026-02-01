@@ -34,8 +34,9 @@ resource "google_spanner_instance" "tesseract_instance" {
   config       = "regional-${var.region}"
   display_name = "TesseraCT Instance"
   project      = var.project_id
-  
+
   processing_units = 100 # Minimum for benchmark start
+  force_destroy    = true
 }
 
 resource "google_spanner_database" "tesseract_db" {
