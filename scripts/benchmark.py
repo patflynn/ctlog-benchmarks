@@ -1,5 +1,7 @@
 import argparse
+import signal
 import subprocess
+import threading
 import time
 import json
 import sys
@@ -12,6 +14,46 @@ def run_cmd(cmd):
         print(result.stderr)
         sys.exit(1)
     return result.stdout.strip()
+
+def run_streaming(cmd, timeout_seconds=None):
+    """Run a command with streaming output and an optional hard timeout.
+
+    Returns (returncode, timed_out). When timed_out is True the process was
+    killed after exceeding timeout_seconds — callers should treat partial
+    results as usable rather than fatal.
+    """
+    process = subprocess.Popen(
+        cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        text=True, start_new_session=True)
+
+    timed_out = False
+
+    def _kill():
+        nonlocal timed_out
+        timed_out = True
+        print(f"\n⏰ Timeout ({timeout_seconds}s) reached, stopping process...")
+        try:
+            os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+        except OSError:
+            pass
+
+    timer = None
+    if timeout_seconds:
+        timer = threading.Timer(timeout_seconds, _kill)
+        timer.start()
+
+    try:
+        for line in process.stdout:
+            print(line, end='', flush=True)
+        process.wait()
+    except Exception:
+        pass
+    finally:
+        if timer:
+            timer.cancel()
+
+    return process.returncode, timed_out
+
 
 def get_lb_ip(service, namespace):
     print(f"🔍 Finding IP for {service} in {namespace}...")
@@ -117,7 +159,10 @@ def run_warmup(target_type, ip, tree_id=None, qps=100, warmup_seconds=60, projec
     """Run a warmup pass to eliminate cold-start noise (especially Spanner)."""
     print(f"🔥 Warming up {target_type} ({warmup_seconds}s at {qps} QPS)...")
 
-    warmup_ops = int(qps * warmup_seconds)
+    # Cap assumed throughput at 100 QPS for operation count so the warmup
+    # has a realistic chance of completing within the time window.
+    effective_qps = min(qps, 100)
+    warmup_ops = int(effective_qps * warmup_seconds)
 
     if target_type == "trillian":
         der_hex = get_trillian_pub_key_der_hex()
@@ -142,15 +187,15 @@ def run_warmup(target_type, ip, tree_id=None, qps=100, warmup_seconds=60, projec
               f"--num_writers={num_writers} --num_readers_random=1 --num_mmd_verifiers=1 --leaf_write_goal={warmup_ops} " \
               f"--intermediate_ca_cert_path=testdata/tesseract/test_intermediate_ca_cert.pem --intermediate_ca_key_path=testdata/tesseract/test_intermediate_ca_private_key.pem --cert_sign_private_key_path=testdata/tesseract/test_leaf_cert_signing_private_key.pem"
 
-    try:
-        process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        for line in process.stdout:
-            print(line, end='', flush=True)
-        process.wait()
-        if process.returncode != 0:
-            print(f"⚠️  Warmup exited with code {process.returncode} (continuing anyway)")
-    except Exception as e:
-        print(f"⚠️  Warmup encountered error: {e} (continuing anyway)")
+    # Hard timeout: warmup duration + 30s grace. Trillian's ct_hammer is
+    # operation-count-based with no built-in time limit, so this prevents
+    # it from running indefinitely if the backend can't sustain target QPS.
+    timeout = warmup_seconds + 30
+    rc, timed_out = run_streaming(cmd, timeout_seconds=timeout)
+    if timed_out:
+        print(f"⚠️  Warmup timed out after {timeout}s (continuing anyway)")
+    elif rc != 0:
+        print(f"⚠️  Warmup exited with code {rc} (continuing anyway)")
 
     print(f"🔥 Warmup complete, settling for 5s...")
     time.sleep(5)
@@ -166,6 +211,8 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_i
     initial_size = get_log_size(target_type, ip, project_id)
     print(f"📈 Initial tree size: {initial_size}")
 
+    duration_seconds = duration_min * 60
+
     if target_type == "trillian":
         der_hex = get_trillian_pub_key_der_hex()
         run_cmd("cp testdata/trillian/fake-ca.cert roots.pem")
@@ -178,35 +225,38 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_i
             f.write(f'    der: "{der_hex}"\n')
             f.write(f'  }}\n')
             f.write(f'}}\n')
-        total_ops = int(qps * duration_min * 60)
+        # Cap assumed throughput at 100 QPS for the operations count.
+        # ct_hammer is operation-count-based with no time limit, so using
+        # the full target QPS (e.g. 500) produces an ops count that a
+        # small-tier db-f1-micro can never complete in time.
+        effective_qps = min(qps, 100)
+        total_ops = int(effective_qps * duration_seconds)
         url = f"http://{ip}"
         cmd = f"./bin/ct_hammer --log_config=trillian_cfg.textproto --ct_http_servers={url} --mmd=30s --rate_limit={qps} --operations={total_ops} --testdata_dir=testdata/trillian --ignore_errors"
     else:
         os.environ["CT_LOG_PUBLIC_KEY"] = get_tesseract_pub_key_b64()
         log_url = f"gs://tesseract-storage-{project_id}/"
         write_url = f"http://{ip}"
-        total_ops = int(qps * duration_min * 60)
+        total_ops = int(qps * duration_seconds)
         # Scale writers with target QPS (1 writer per ~50 QPS, minimum 4)
         num_writers = max(4, qps // 50)
         cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={qps} --max_read_ops={int(qps/10)} --max_runtime={duration_min}m --show_ui=false " \
               f"--num_writers={num_writers} --num_readers_random=1 --num_mmd_verifiers=1 --leaf_write_goal={total_ops} " \
               f"--intermediate_ca_cert_path=testdata/tesseract/test_intermediate_ca_cert.pem --intermediate_ca_key_path=testdata/tesseract/test_intermediate_ca_private_key.pem --cert_sign_private_key_path=testdata/tesseract/test_leaf_cert_signing_private_key.pem"
 
-    start_time = time.time()
-    try:
-        process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        for line in process.stdout:
-            print(line, end='', flush=True)
-        process.wait()
-    except Exception as e:
-        print(f"⚠️ Hammer encountered error: {e}")
+    # Hard timeout: intended duration + 30s grace. This is the backstop
+    # that prevents ct_hammer from running indefinitely.
+    timeout = duration_seconds + 30
 
+    start_time = time.time()
+    rc, timed_out = run_streaming(cmd, timeout_seconds=timeout)
     end_time = time.time()
     elapsed = end_time - start_time
 
-    # Validate hammer actually ran
-    if process.returncode != 0:
-        print(f"❌ {target_type} hammer exited with code {process.returncode}")
+    if timed_out:
+        print(f"⚠️ {target_type} hammer timed out after {timeout}s (using partial results)")
+    elif rc != 0:
+        print(f"❌ {target_type} hammer exited with code {rc}")
         sys.exit(1)
 
     final_size = get_log_size(target_type, ip, project_id)
