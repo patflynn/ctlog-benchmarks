@@ -14,11 +14,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
-
-env:
-  WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
-  WIF_SERVICE_ACCOUNT: ${{ vars.GCP_WIF_SA }}
 
 jobs:
   validate:
@@ -30,21 +25,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v3
-      with:
-        workload_identity_provider: ${{ env.WIF_PROVIDER }}
-        service_account: ${{ env.WIF_SERVICE_ACCOUNT }}
-
-    - name: Setup gcloud
-      uses: google-github-actions/setup-gcloud@v2
-
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
     - name: Validate costs
+      env:
+        GOOGLE_API_KEY: ${{ secrets.GCP_BILLING_API_KEY }}
       run: |
         args="--threshold ${{ inputs.threshold }}"
         if [ -n "${{ inputs.tier }}" ]; then
