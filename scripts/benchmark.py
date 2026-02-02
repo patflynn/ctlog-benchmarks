@@ -377,18 +377,24 @@ def main():
             run_warmup("trillian", trillian_ip, tree_id, qps_levels[0], args.warmup, args.project_id)
             run_warmup("tesseract", tesseract_ip, project_id=args.project_id, qps=qps_levels[0], warmup_seconds=args.warmup)
 
-        for qps_level in qps_levels:
-            print("\n" + "="*40)
-            print(f"--- Sweep: {qps_level} QPS — Trillian (MySQL) ---")
-            print("="*40)
-            r = run_single_benchmark("trillian", trillian_ip, tree_id, args.sweep_duration, qps_level, args.project_id, 0, args.tier)
-            results.append(r)
-
-            print("\n" + "="*40)
-            print(f"--- Sweep: {qps_level} QPS — TesseraCT (Spanner) ---")
-            print("="*40)
-            r = run_single_benchmark("tesseract", tesseract_ip, None, args.sweep_duration, qps_level, args.project_id, 0, args.tier)
-            results.append(r)
+        # Run each system's sweep independently so we can short-circuit
+        # when a system is saturated (achieved QPS below the target).
+        for system_type, ip, tree in [("trillian", trillian_ip, tree_id), ("tesseract", tesseract_ip, None)]:
+            saturated = False
+            for qps_level in qps_levels:
+                if saturated:
+                    print(f"\n⏭️  Skipping {system_type} @ {qps_level} QPS (saturated at previous level)")
+                    continue
+                print("\n" + "="*40)
+                print(f"--- Sweep: {qps_level} QPS — {system_type.capitalize()} ---")
+                print("="*40)
+                r = run_single_benchmark(system_type, ip, tree, args.sweep_duration, qps_level, args.project_id, 0, args.tier)
+                results.append(r)
+                # If achieved QPS is below the target, the server is
+                # saturated — higher targets will produce the same result.
+                if r["achieved_qps"] < qps_level * 0.9:
+                    print(f"📊 {system_type.capitalize()} saturated: achieved {r['achieved_qps']:.1f} QPS < {qps_level} QPS target")
+                    saturated = True
     else:
         # Single-QPS mode (backward compatible)
         print("\n" + "="*40)
