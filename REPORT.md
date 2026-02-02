@@ -2,13 +2,10 @@
 
 | Target QPS | Trillian QPS | TesseraCT QPS | Trillian $/1M | TesseraCT $/1M |
 |---:|---:|---:|---:|---:|
-| 50 | 18.0 | 2.0 | $7.55 | $178.70 |
-| 100 | 16.8 | 2.0 | $8.09 | $178.72 |
-| 250 | 16.0 | 2.5 | $8.50 | $142.95 |
-| 500 | 17.3 | 5.0 | $7.87 | $71.50 |
+| 50 | 9.7 | 46.4 | $14.10 | $7.68 |
 
 ### Findings
-- Trillian (db-n1-standard-2) saturates at ~18 QPS
-- TesseraCT (1000 PU Spanner) saturates at ~2 QPS
-- No cost-per-entry crossover detected within tested QPS range
+- Trillian (db-n1-standard-2) saturates at ~9 QPS
+- TesseraCT (1000 PU Spanner) sustains target through 50 QPS
+- TesseraCT cost-per-entry becomes favorable above ~50 QPS
 
