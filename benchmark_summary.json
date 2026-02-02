@@ -1,78 +1,24 @@
 {
   "tier": "large",
-  "timestamp": "2026-02-01T21:34:01.407315+00:00",
+  "timestamp": "2026-02-02T02:33:38.769992+00:00",
   "results": [
     {
       "log_type": "trillian",
       "target_qps": 50,
-      "achieved_qps": 18.0,
-      "entries_written": 5941,
+      "achieved_qps": 9.65,
+      "entries_written": 3183,
       "elapsed_seconds": 330.0,
       "cost_per_hour": 0.4895,
-      "cost_per_1m_entries": 7.55
+      "cost_per_1m_entries": 14.1
     },
     {
       "log_type": "tesseract",
       "target_qps": 50,
-      "achieved_qps": 2.0,
-      "entries_written": 600,
-      "elapsed_seconds": 300.6,
+      "achieved_qps": 46.43,
+      "entries_written": 13970,
+      "elapsed_seconds": 300.9,
       "cost_per_hour": 1.284,
-      "cost_per_1m_entries": 178.7
-    },
-    {
-      "log_type": "trillian",
-      "target_qps": 100,
-      "achieved_qps": 16.81,
-      "entries_written": 5548,
-      "elapsed_seconds": 330.0,
-      "cost_per_hour": 0.4895,
-      "cost_per_1m_entries": 8.09
-    },
-    {
-      "log_type": "tesseract",
-      "target_qps": 100,
-      "achieved_qps": 2.0,
-      "entries_written": 600,
-      "elapsed_seconds": 300.6,
-      "cost_per_hour": 1.284,
-      "cost_per_1m_entries": 178.72
-    },
-    {
-      "log_type": "trillian",
-      "target_qps": 250,
-      "achieved_qps": 16.0,
-      "entries_written": 5279,
-      "elapsed_seconds": 330.0,
-      "cost_per_hour": 0.4895,
-      "cost_per_1m_entries": 8.5
-    },
-    {
-      "log_type": "tesseract",
-      "target_qps": 250,
-      "achieved_qps": 2.5,
-      "entries_written": 750,
-      "elapsed_seconds": 300.6,
-      "cost_per_hour": 1.284,
-      "cost_per_1m_entries": 142.95
-    },
-    {
-      "log_type": "trillian",
-      "target_qps": 500,
-      "achieved_qps": 17.28,
-      "entries_written": 5703,
-      "elapsed_seconds": 330.0,
-      "cost_per_hour": 0.4895,
-      "cost_per_1m_entries": 7.87
-    },
-    {
-      "log_type": "tesseract",
-      "target_qps": 500,
-      "achieved_qps": 4.99,
-      "entries_written": 1500,
-      "elapsed_seconds": 300.7,
-      "cost_per_hour": 1.284,
-      "cost_per_1m_entries": 71.5
+      "cost_per_1m_entries": 7.68
     }
   ]
 }
