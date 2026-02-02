@@ -11,14 +11,14 @@ A fully automated, reproducible benchmarking suite comparing the performance and
 <!-- BENCHMARK-RESULTS-START -->
 **Tier: large** — db-n1-standard-2 / Spanner 1000 PU / 3× e2-standard-4
   
-*Last updated: 2026-02-01T21:34:01.407315+00:00*
+*Last updated: 2026-02-02T03:26:05.060163+00:00*
 
 | Target QPS | Trillian QPS | TesseraCT QPS | Trillian $/1M | TesseraCT $/1M |
 | ---: | ---: | ---: | ---: | ---: |
-| 50 | 18.00 | 2.00 | $7.55 | $178.70 |
-| 100 | 16.81 | 2.00 | $8.09 | $178.72 |
-| 250 | 16.00 | 2.50 | $8.50 | $142.95 |
-| 500 | 17.28 | 4.99 | $7.87 | $71.50 |
+| 50 | 9.30 | 123.57 | $14.62 | $2.89 |
+| 100 | 9.59 | 248.01 | $14.17 | $1.44 |
+| 250 | 9.56 | 618.85 | $14.23 | $0.58 |
+| 500 | 9.25 | 1008.11 | $14.70 | $0.35 |
 <!-- BENCHMARK-RESULTS-END -->
 
 Cost model: deterministic from [`costs.json`](costs.json) (Terraform-derived infrastructure rates).

@@ -1,78 +1,78 @@
 {
   "tier": "large",
-  "timestamp": "2026-02-01T21:34:01.407315+00:00",
+  "timestamp": "2026-02-02T03:26:05.060163+00:00",
   "results": [
     {
       "log_type": "trillian",
       "target_qps": 50,
-      "achieved_qps": 18.0,
-      "entries_written": 5941,
+      "achieved_qps": 9.3,
+      "entries_written": 3069,
       "elapsed_seconds": 330.0,
       "cost_per_hour": 0.4895,
-      "cost_per_1m_entries": 7.55
+      "cost_per_1m_entries": 14.62
     },
     {
       "log_type": "tesseract",
       "target_qps": 50,
-      "achieved_qps": 2.0,
-      "entries_written": 600,
-      "elapsed_seconds": 300.6,
+      "achieved_qps": 123.57,
+      "entries_written": 37250,
+      "elapsed_seconds": 301.5,
       "cost_per_hour": 1.284,
-      "cost_per_1m_entries": 178.7
+      "cost_per_1m_entries": 2.89
     },
     {
       "log_type": "trillian",
       "target_qps": 100,
-      "achieved_qps": 16.81,
-      "entries_written": 5548,
+      "achieved_qps": 9.59,
+      "entries_written": 3166,
       "elapsed_seconds": 330.0,
       "cost_per_hour": 0.4895,
-      "cost_per_1m_entries": 8.09
+      "cost_per_1m_entries": 14.17
     },
     {
       "log_type": "tesseract",
       "target_qps": 100,
-      "achieved_qps": 2.0,
-      "entries_written": 600,
-      "elapsed_seconds": 300.6,
+      "achieved_qps": 248.01,
+      "entries_written": 74756,
+      "elapsed_seconds": 301.4,
       "cost_per_hour": 1.284,
-      "cost_per_1m_entries": 178.72
+      "cost_per_1m_entries": 1.44
     },
     {
       "log_type": "trillian",
       "target_qps": 250,
-      "achieved_qps": 16.0,
-      "entries_written": 5279,
+      "achieved_qps": 9.56,
+      "entries_written": 3154,
       "elapsed_seconds": 330.0,
       "cost_per_hour": 0.4895,
-      "cost_per_1m_entries": 8.5
+      "cost_per_1m_entries": 14.23
     },
     {
       "log_type": "tesseract",
       "target_qps": 250,
-      "achieved_qps": 2.5,
-      "entries_written": 750,
-      "elapsed_seconds": 300.6,
+      "achieved_qps": 618.85,
+      "entries_written": 186792,
+      "elapsed_seconds": 301.8,
       "cost_per_hour": 1.284,
-      "cost_per_1m_entries": 142.95
+      "cost_per_1m_entries": 0.58
     },
     {
       "log_type": "trillian",
       "target_qps": 500,
-      "achieved_qps": 17.28,
-      "entries_written": 5703,
+      "achieved_qps": 9.25,
+      "entries_written": 3052,
       "elapsed_seconds": 330.0,
       "cost_per_hour": 0.4895,
-      "cost_per_1m_entries": 7.87
+      "cost_per_1m_entries": 14.7
     },
     {
       "log_type": "tesseract",
       "target_qps": 500,
-      "achieved_qps": 4.99,
-      "entries_written": 1500,
-      "elapsed_seconds": 300.7,
+      "achieved_qps": 1008.11,
+      "entries_written": 303945,
+      "elapsed_seconds": 301.5,
       "cost_per_hour": 1.284,
-      "cost_per_1m_entries": 71.5
+      "cost_per_1m_entries": 0.35
     }
   ]
 }
