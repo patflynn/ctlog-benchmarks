@@ -367,17 +367,15 @@ def main():
         else:
             qps_levels = [int(q.strip()) for q in args.qps_levels.split(",")]
 
-        # Run warmup once per system before the sweep loop
-        if args.warmup > 0:
-            print("\n" + "="*40)
-            print("--- Pre-sweep Warmup ---")
-            print("="*40)
-            run_warmup("trillian", trillian_ip, tree_id, qps_levels[0], args.warmup, args.project_id)
-            run_warmup("tesseract", tesseract_ip, project_id=args.project_id, qps=qps_levels[0], warmup_seconds=args.warmup)
-
         # Run each system's sweep independently so we can short-circuit
         # when a system is saturated (achieved QPS below the target).
+        # Warmup runs just before each system's sweep to avoid cool-down.
         for system_type, ip, tree in [("trillian", trillian_ip, tree_id), ("tesseract", tesseract_ip, None)]:
+            if args.warmup > 0:
+                print("\n" + "="*40)
+                print(f"--- Warmup: {system_type.capitalize()} ---")
+                print("="*40)
+                run_warmup(system_type, ip, tree, qps_levels[0], args.warmup, args.project_id)
             saturated = False
             for qps_level in qps_levels:
                 if saturated:
