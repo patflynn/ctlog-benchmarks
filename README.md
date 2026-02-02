@@ -11,13 +11,14 @@ A fully automated, reproducible benchmarking suite comparing the performance and
 <!-- BENCHMARK-RESULTS-START -->
 **Tier: large** — db-n1-standard-2 / Spanner 1000 PU / 3× e2-standard-4
   
-*Last updated: 2026-02-02T02:33:38.769992+00:00*
+*Last updated: 2026-02-02T03:26:05.060163+00:00*
 
-| Metric | Trillian (MySQL) | TesseraCT (Spanner) |
-| :--- | :--- | :--- |
-| **Achieved QPS** | 9.65 | 46.43 |
-| **Infra Cost/hr** | $0.4895 | $1.2840 |
-| **Cost per 1M Entries** | $14.10 | $7.68 |
+| Target QPS | Trillian QPS | TesseraCT QPS | Trillian $/1M | TesseraCT $/1M |
+| ---: | ---: | ---: | ---: | ---: |
+| 50 | 9.30 | 123.57 | $14.62 | $2.89 |
+| 100 | 9.59 | 248.01 | $14.17 | $1.44 |
+| 250 | 9.56 | 618.85 | $14.23 | $0.58 |
+| 500 | 9.25 | 1008.11 | $14.70 | $0.35 |
 <!-- BENCHMARK-RESULTS-END -->
 
 Cost model: deterministic from [`costs.json`](costs.json) (Terraform-derived infrastructure rates).

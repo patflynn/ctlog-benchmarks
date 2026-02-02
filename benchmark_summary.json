@@ -1,24 +1,78 @@
 {
   "tier": "large",
-  "timestamp": "2026-02-02T02:33:38.769992+00:00",
+  "timestamp": "2026-02-02T03:26:05.060163+00:00",
   "results": [
     {
       "log_type": "trillian",
       "target_qps": 50,
-      "achieved_qps": 9.65,
-      "entries_written": 3183,
+      "achieved_qps": 9.3,
+      "entries_written": 3069,
       "elapsed_seconds": 330.0,
       "cost_per_hour": 0.4895,
-      "cost_per_1m_entries": 14.1
+      "cost_per_1m_entries": 14.62
     },
     {
       "log_type": "tesseract",
       "target_qps": 50,
-      "achieved_qps": 46.43,
-      "entries_written": 13970,
-      "elapsed_seconds": 300.9,
+      "achieved_qps": 123.57,
+      "entries_written": 37250,
+      "elapsed_seconds": 301.5,
       "cost_per_hour": 1.284,
-      "cost_per_1m_entries": 7.68
+      "cost_per_1m_entries": 2.89
+    },
+    {
+      "log_type": "trillian",
+      "target_qps": 100,
+      "achieved_qps": 9.59,
+      "entries_written": 3166,
+      "elapsed_seconds": 330.0,
+      "cost_per_hour": 0.4895,
+      "cost_per_1m_entries": 14.17
+    },
+    {
+      "log_type": "tesseract",
+      "target_qps": 100,
+      "achieved_qps": 248.01,
+      "entries_written": 74756,
+      "elapsed_seconds": 301.4,
+      "cost_per_hour": 1.284,
+      "cost_per_1m_entries": 1.44
+    },
+    {
+      "log_type": "trillian",
+      "target_qps": 250,
+      "achieved_qps": 9.56,
+      "entries_written": 3154,
+      "elapsed_seconds": 330.0,
+      "cost_per_hour": 0.4895,
+      "cost_per_1m_entries": 14.23
+    },
+    {
+      "log_type": "tesseract",
+      "target_qps": 250,
+      "achieved_qps": 618.85,
+      "entries_written": 186792,
+      "elapsed_seconds": 301.8,
+      "cost_per_hour": 1.284,
+      "cost_per_1m_entries": 0.58
+    },
+    {
+      "log_type": "trillian",
+      "target_qps": 500,
+      "achieved_qps": 9.25,
+      "entries_written": 3052,
+      "elapsed_seconds": 330.0,
+      "cost_per_hour": 0.4895,
+      "cost_per_1m_entries": 14.7
+    },
+    {
+      "log_type": "tesseract",
+      "target_qps": 500,
+      "achieved_qps": 1008.11,
+      "entries_written": 303945,
+      "elapsed_seconds": 301.5,
+      "cost_per_hour": 1.284,
+      "cost_per_1m_entries": 0.35
     }
   ]
 }
