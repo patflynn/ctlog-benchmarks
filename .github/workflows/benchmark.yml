@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       duration:
-        description: 'Duration in minutes per test (single-QPS mode)'
+        description: 'Duration in seconds per test'
         required: true
-        default: '5'
+        default: '30'
       qps:
         description: 'Target QPS (single-QPS mode)'
         required: true
@@ -46,7 +46,7 @@ jobs:
   benchmark:
     name: Run Benchmark
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 30
     environment: BENCHMARKING
 
     steps:

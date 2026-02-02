@@ -215,17 +215,15 @@ def run_warmup(target_type, ip, tree_id=None, qps=100, warmup_seconds=60, projec
     time.sleep(5)
 
 
-def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_id=None, warmup_seconds=60):
+def run_hammer(target_type, ip, tree_id=None, duration_seconds=300, qps=100, project_id=None, warmup_seconds=60):
     # Run warmup phase if enabled
     if warmup_seconds > 0:
         run_warmup(target_type, ip, tree_id, qps, warmup_seconds, project_id)
 
-    print(f"🚀 Starting {target_type} load test ({qps} QPS for {duration_min} min)...")
+    print(f"🚀 Starting {target_type} load test ({qps} QPS for {duration_seconds}s)...")
 
     initial_size = get_log_size(target_type, ip, project_id)
     print(f"📈 Initial tree size: {initial_size}")
-
-    duration_seconds = duration_min * 60
 
     if target_type == "trillian":
         der_hex = get_trillian_pub_key_der_hex()
@@ -258,7 +256,7 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_i
         # Set max_write_ops well above target so the hammer isn't the
         # bottleneck.  leaf_write_goal=0 lets max_runtime control duration.
         max_write = qps * 20
-        cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={max_write} --max_read_ops=0 --max_runtime={duration_min}m --show_ui=false -v=1 " \
+        cmd = f"./bin/hammer --log_url={log_url} --write_log_url={write_url} --origin=tesseract-benchmark --max_write_ops={max_write} --max_read_ops=0 --max_runtime={duration_seconds}s --show_ui=false -v=1 " \
               f"--num_writers={num_writers} --num_readers_random=0 --num_readers_full=0 --num_mmd_verifiers=0 --leaf_write_goal=0 --dup_chance=0 " \
               f"--intermediate_ca_cert_path=testdata/tesseract/test_intermediate_ca_cert.pem --intermediate_ca_key_path=testdata/tesseract/test_intermediate_ca_private_key.pem --cert_sign_private_key_path=testdata/tesseract/test_leaf_cert_signing_private_key.pem"
 
@@ -284,7 +282,7 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_i
     print(f"📈 Final tree size: {final_size} ({entries_written} new entries)")
 
     # Guard against bogus results from crashed or stalled hammers
-    min_elapsed = 30  # seconds
+    min_elapsed = 15  # seconds
     min_entries = 10
     if elapsed < min_elapsed:
         print(f"❌ Benchmark ran for only {elapsed:.1f}s (minimum {min_elapsed}s). Results not valid.")
@@ -298,10 +296,10 @@ def run_hammer(target_type, ip, tree_id=None, duration_min=5, qps=100, project_i
 
     return start_time, end_time, achieved_qps, entries_written, elapsed
 
-def run_single_benchmark(target_type, ip, tree_id, duration_min, qps, project_id, warmup_seconds, tier):
+def run_single_benchmark(target_type, ip, tree_id, duration_seconds, qps, project_id, warmup_seconds, tier):
     """Run a benchmark for one system at one QPS level and return a result dict."""
     t_start, t_end, achieved_qps, entries_written, elapsed = run_hammer(
-        target_type, ip, tree_id, duration_min, qps, project_id, warmup_seconds
+        target_type, ip, tree_id, duration_seconds, qps, project_id, warmup_seconds
     )
 
     res = subprocess.check_output(
@@ -330,12 +328,12 @@ def run_single_benchmark(target_type, ip, tree_id, duration_min, qps, project_id
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--project_id", required=True)
-    parser.add_argument("--duration", type=int, default=15, help="Benchmark duration in minutes (single-QPS mode)")
+    parser.add_argument("--duration", type=int, default=900, help="Benchmark duration in seconds (single-QPS mode, default 15min)")
     parser.add_argument("--qps", type=int, default=50, help="Target QPS (single-QPS mode)")
     parser.add_argument("--warmup", type=int, default=60, help="Warmup duration in seconds (0 to disable)")
     parser.add_argument("--tier", default="large", help="Infrastructure tier (small/medium/large)")
     parser.add_argument("--qps_levels", default=None, help="Comma-separated QPS levels for sweep mode (e.g. 50,100,250,500), or 'auto' for tier-aware defaults")
-    parser.add_argument("--sweep_duration", type=int, default=3, help="Duration in minutes per QPS level during sweep")
+    parser.add_argument("--sweep_duration", type=int, default=30, help="Duration in seconds per QPS level during sweep")
     args = parser.parse_args()
 
     trillian_ip = get_lb_ip("ctfe", "trillian")
