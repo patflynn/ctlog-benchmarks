@@ -24,6 +24,7 @@ spec:
         - "--signer_private_key_secret_name=${PRIV_KEY_SECRET_NAME}"
         - "--http_endpoint=0.0.0.0:80"
         - "--origin=tesseract-benchmark"
+        - "--path_prefix=tesseract-benchmark"
         - "--roots_pem_file=/config/roots.pem"
         ports:
         - containerPort: 80
