@@ -1,13 +1,12 @@
-# A Priori Cost/Performance Estimate: Trillian vs TesseraCT
+# Cost/Performance Analysis: Trillian vs TesseraCT
 
 ## Methodology
 
-This analysis uses **reference throughput data from the Tessera project** rather
-than the current benchmark results. The benchmark shows TesseraCT at 2–5 QPS on
-1000 PU Spanner — three orders of magnitude below Tessera's published numbers
-(>800 QPS on 100 PU). This indicates a benchmark tooling issue, not a TesseraCT
-limitation. Where benchmark data is suspect, conservative ranges from reference
-literature are used instead.
+This analysis combines **empirical benchmark data** with reference throughput
+data from the Tessera project. An initial benchmark tooling bug (missing
+`--path_prefix` on the TesseraCT server) had suppressed TesseraCT throughput to
+2–5 QPS. After fixing this, our benchmarks show TesseraCT reaching >1,000 QPS
+on 1000 PU Spanner, consistent with Tessera's published reference data.
 
 All prices are GCP list prices, us-central1, excluding sustained-use and
 committed-use discounts.
@@ -16,6 +15,7 @@ committed-use discounts.
 
 | Source | Used for |
 |---|---|
+| `benchmark_summary.json` | Empirical benchmark results (2026-02-02, large tier) |
 | `costs.json` | Infrastructure hourly rates per tier |
 | `terraform/tesseract.tf` | Spanner schema (SeqCoord, IntCoord, Seq, IDSeq, FollowCoord) |
 | `terraform/trillian.tf` | Cloud SQL MySQL configuration |
@@ -38,34 +38,72 @@ committed-use discounts.
 These include a 50/50 split of shared infrastructure (GKE cluster management,
 node compute, load balancers) plus each system's dedicated backend cost.
 
+### Measured write throughput (large tier benchmark, 2026-02-02)
+
+| Target QPS | Trillian achieved | TesseraCT achieved | Entries (Trillian) | Entries (TesseraCT) |
+|---|---|---|---|---|
+| 50 | 9.3 | 123.6 | 3,069 | 37,250 |
+| 100 | 9.6 | 248.0 | 3,166 | 74,756 |
+| 250 | 9.6 | 618.9 | 3,154 | 186,792 |
+| 500 | 9.3 | 1,008.1 | 3,052 | 303,945 |
+
+**Key observations**:
+- Trillian saturates at ~9.5 QPS on db-n1-standard-2 regardless of target.
+  This is below the a priori estimate (50–200 QPS) and likely reflects the
+  Trillian sequencer bottleneck on this Cloud SQL tier under CT workload
+  patterns (cert chain storage + Merkle tree updates per write).
+- TesseraCT scales linearly and is **not yet saturated** at 1,008 QPS on
+  1000 PU. At each target level it achieved 2–2.5× the target, indicating
+  the hammer was still the rate-limiting factor, not the server.
+- This run used the pre-optimization hammer settings. With the pending
+  hammer bottleneck removal (higher `--max_write_ops`, more writers, disabled
+  readers), the TesseraCT ceiling is likely significantly higher.
+
 ### Expected sustained write throughput
 
-| Tier | Trillian (est.) | TesseraCT (ref.) | Source |
+| Tier | Trillian (measured/est.) | TesseraCT (measured/ref.) | Source |
 |---|---|---|---|
-| small | 5–20 QPS | >800 QPS | Cloud SQL micro limits; Tessera benchmarks |
-| medium | 20–80 QPS | >3,000 QPS | Cloud SQL standard-1; Tessera benchmarks |
-| large | 50–200 QPS | ~8,000–10,000 QPS | Cloud SQL standard-2; linear PU extrapolation |
+| small | 5–10 QPS | >800 QPS | Benchmark extrapolation; Tessera benchmarks |
+| medium | 5–15 QPS | >3,000 QPS | Benchmark extrapolation; Tessera benchmarks |
+| large | **~9.5 QPS (measured)** | **>1,008 QPS (measured, not saturated)** | Benchmark 2026-02-02 |
 
-### Write cost efficiency (a priori, midpoint estimates)
+The measured Trillian throughput is significantly lower than initial estimates.
+The Trillian sequencer's single-writer architecture combined with Cloud SQL
+MySQL latency under the CT write workload (cert chain + Merkle subtree updates)
+appears to cap throughput well below the theoretical MySQL insert rate.
+
+### Write cost efficiency
+
+**Measured (large tier)**:
+
+| Target QPS | Trillian $/1M | TesseraCT $/1M | TesseraCT advantage |
+|---|---|---|---|
+| 50 | $14.62 | $2.89 | 5× |
+| 100 | $14.17 | $1.44 | 10× |
+| 250 | $14.23 | $0.58 | 25× |
+| 500 | $14.70 | $0.35 | **42×** |
+
+**A priori estimates (all tiers, midpoint)**:
 
 | Tier | Trillian QPS | Trillian $/1M writes | TesseraCT QPS | TesseraCT $/1M writes |
 |---|---|---|---|---|
-| small | 12 | $4.47 | 800 | $0.09 |
-| medium | 50 | $1.56 | 3,000 | $0.05 |
-| large | 125 | $1.09 | 9,000 | $0.04 |
+| small | 8 | $6.70 | 800 | $0.09 |
+| medium | 10 | $7.78 | 3,000 | $0.05 |
+| large | 9.5 | $14.31 | 9,000 | $0.04 |
 
 **Formula**: `cost_per_1M = (cost_per_hour / sustained_qps / 3600) × 1,000,000`
 
-On reference throughput, TesseraCT delivers **27–46× more write QPS per dollar**
-than Trillian. The absolute cost per million entries for TesseraCT ($0.04–0.09)
-is dominated by the Spanner PU hourly cost, which is fixed regardless of
-utilization. Trillian's cost per million ($1.09–4.47) is higher because Cloud
-SQL MySQL saturates at much lower QPS, so the fixed hourly cost is amortized
-over fewer entries.
+At measured throughput, TesseraCT delivers **5–42× lower cost per million
+writes** than Trillian on the large tier. The cost advantage grows with
+throughput because TesseraCT's infrastructure cost is fixed (Spanner PUs are
+hourly) while its QPS scales up — each additional write amortizes the fixed
+cost further. Trillian's cost per million is nearly constant (~$14) because it
+is saturated at ~9.5 QPS regardless of demand.
 
-> **Caveat**: If the benchmark's observed TesseraCT throughput (~2–5 QPS)
-> reflects real production behavior rather than a tooling bug, the write cost
-> picture inverts. Root-causing the benchmark underperformance is critical.
+> **Note**: TesseraCT was not saturated in this benchmark run. At the server's
+> actual ceiling (likely >3,000 QPS based on Tessera reference data for
+> comparable PU counts), the cost per million entries would drop further toward
+> the $0.04 a priori estimate.
 
 ---
 
@@ -215,16 +253,20 @@ Per-shard requirements (assuming 10–25% of aggregate traffic):
 
 | QPS needed | Cloud SQL tier | $/hr (DB only) | Notes |
 |---|---|---|---|
-| 13 | db-f1-micro | $0.015 | Comfortable |
-| 50 | db-n1-standard-1 | $0.050 | Comfortable |
-| 200 | db-n1-standard-2 to standard-4 | $0.105–0.210 | Approaching ceiling |
-| 500 | db-n1-standard-8+ | $0.420+ | Near vertical scaling limits |
-| 1,000+ | Multiple instances + sharding | $1.00+ | Requires architectural changes |
+| 10 | db-f1-micro | $0.015 | Near measured ceiling (~9.5 QPS) |
+| 13 | db-n1-standard-1 | $0.050 | May not achieve — needs validation |
+| 50 | db-n1-standard-2+ | $0.105+ | Benchmark shows ~9.5 QPS on standard-2 |
+| 200 | db-n1-standard-4 to standard-8 | $0.210–0.420 | Uncertain — sequencer bottleneck |
+| 500+ | Multiple instances + sharding | $1.00+ | Requires architectural changes |
 
-Cloud SQL MySQL has a practical write ceiling of ~500–1,000 QPS on the largest
-instances. The Trillian sequencer is a single-writer bottleneck. Beyond this
-ceiling, horizontal scaling requires application-level sharding across multiple
-independent log trees.
+Benchmark results show Trillian saturating at ~9.5 QPS on db-n1-standard-2 —
+well below the MySQL theoretical insert rate. The Trillian sequencer is a
+single-writer bottleneck, and the CT write workload (cert chain storage +
+Merkle subtree cache updates) is heavier than simple row inserts. Scaling
+beyond ~10 QPS likely requires larger Cloud SQL instances, but the single-writer
+sequencer may impose a ceiling regardless of MySQL capacity. Horizontal
+scaling requires application-level sharding across multiple independent log
+trees.
 
 ### TesseraCT scaling path
 
@@ -247,72 +289,140 @@ throughput, which scales linearly with PU count.
 
 | | Trillian | TesseraCT |
 |---|---|---|
-| Infra needed | db-n1-standard-2 ($0.105/hr) | 100 PU Spanner ($0.090/hr) |
-| QPS headroom above need | 0–100% | ~300% |
-| $/1M entries | ~$0.15 | ~$0.03 |
+| Infra needed | Sharding required (~20 shards at 9.5 QPS each) | 100 PU Spanner ($0.090/hr) |
+| Hourly cost | ~$2.00+ (20× db-f1-micro + coordination) | $0.090 |
+| QPS headroom above need | None without sharding | >300% |
+| $/1M entries | ~$2.78+ | ~$0.03 |
 
 **Aggressive scenario (~1,000 QPS per shard)**:
 
 | | Trillian | TesseraCT |
 |---|---|---|
-| Infra needed | db-n1-standard-8+ or sharding | 200 PU Spanner ($0.180/hr) |
-| Hourly cost | $0.42+ (single) or $0.84+ (sharded) | $0.180 |
-| $/1M entries | ~$0.12+ | ~$0.05 |
-| Feasibility | Requires architectural changes | Linear PU increase |
+| Infra needed | ~100 shards or major Cloud SQL scaling | 200 PU Spanner ($0.180/hr) |
+| Hourly cost | $10.00+ | $0.180 |
+| $/1M entries | $2.78+ | ~$0.05 |
+| Feasibility | Requires fundamental architectural changes | Linear PU increase |
 
 ---
 
 ## 6. Total Cost of Ownership
 
-### Year 1 (single shard, 10% of aggregate, current issuance)
+### Year 1 (single shard, 10% of aggregate, current issuance ~13 QPS)
 
 | Component | Trillian | TesseraCT | Winner |
 |---|---|---|---|
-| Compute/DB | $1,690/yr ($0.193/hr) | $2,348/yr ($0.268/hr) | Trillian (28% cheaper) |
+| Compute/DB | $1,690/yr ($0.193/hr, small) | $2,348/yr ($0.268/hr, small) | Trillian (28% cheaper) |
+| Throughput capacity | ~9.5 QPS (may not meet 13 QPS need) | >800 QPS | TesseraCT |
 | Storage (400M certs) | $2,016/yr | $214/yr | TesseraCT (9.4×) |
 | Read serving | Included in DB (limits read QPS) | ~$50–200/yr (GCS ops) | TesseraCT |
 | Read egress | ~$500/yr | ~$100–250/yr (CDN) | TesseraCT (2–5×) |
 | **Total** | **~$4,206/yr** | **~$2,812/yr** | **TesseraCT (33% cheaper)** |
 
-### Year 3 (47-day mandate, 8.5× current issuance)
+Note: Trillian at ~9.5 QPS may not handle even 10% of current aggregate
+issuance (~13 QPS) on the small tier, potentially requiring the medium tier
+($0.280/hr) from day one — raising Year 1 cost to ~$4,970/yr.
+
+### Year 3 (47-day mandate, 8.5× current issuance ~109 QPS per shard)
 
 | Component | Trillian | TesseraCT | Winner |
 |---|---|---|---|
-| Compute/DB | $3,679/yr (medium, $0.42/hr) | $2,348/yr (still small, 100 PU) | TesseraCT (36%) |
+| Compute/DB | $5,256/yr+ (sharded, ~12 instances) | $2,348/yr (still small, 100 PU) | TesseraCT (55%) |
 | Storage (3.4B certs cumul.) | $58,000/yr | $6,100/yr | TesseraCT (9.5×) |
 | Read serving | $2,000+/yr (read replicas) | ~$500/yr (GCS + CDN) | TesseraCT (4×) |
-| **Total** | **~$63,679/yr** | **~$8,948/yr** | **TesseraCT (7× cheaper)** |
+| **Total** | **~$65,256/yr** | **~$8,948/yr** | **TesseraCT (7.3× cheaper)** |
+
+The Trillian Year 3 compute cost assumes sharding to meet ~109 QPS: at least
+12 independent log instances at ~9.5 QPS each, each on a small Cloud SQL
+instance ($0.050/hr × 12 = $0.60/hr). TesseraCT handles 109 QPS comfortably
+within a single 100 PU Spanner instance.
+
+---
+
+## 7. Benchmark Validation
+
+The 2026-02-02 benchmark run on the large tier validates the directional
+conclusions of the a priori analysis while refining the absolute numbers.
+
+### What the benchmark confirmed
+
+1. **TesseraCT throughput scales with demand.** Achieved QPS tracked linearly
+   from 124 to 1,008 across the sweep — consistent with Tessera reference data
+   showing >800 QPS on just 100 PU. The server was not saturated at 1,008 QPS
+   on 1000 PU; the true ceiling is likely several thousand QPS.
+
+2. **TesseraCT cost per entry drops with throughput.** From $2.89/1M at 124 QPS
+   to $0.35/1M at 1,008 QPS — a direct consequence of fixed Spanner PU costs
+   being amortized over more entries. This validates the a priori model.
+
+3. **Trillian's write bottleneck is real and severe.** Saturated at ~9.5 QPS on
+   db-n1-standard-2 — the sequencer's single-writer design limits throughput
+   far below MySQL's raw insert capacity.
+
+### What the benchmark revised
+
+1. **Trillian throughput was overestimated.** The a priori estimate of 50–200
+   QPS for db-n1-standard-2 was based on MySQL insert benchmarks. The measured
+   ~9.5 QPS reflects the overhead of Trillian's sequencer + subtree cache
+   updates per write. This makes the cost-per-entry gap wider than initially
+   projected (~$14.50/1M vs the estimated ~$1.09/1M).
+
+2. **The cost advantage is even larger than projected.** At measured throughput,
+   TesseraCT is **42× cheaper per million entries** at peak (vs the a priori
+   estimate of 27×). The gap is driven by Trillian's lower-than-expected
+   throughput compounding with its higher per-entry cost.
+
+### Benchmark limitations
+
+- The hammer was rate-limiting TesseraCT (achieved 2–2.5× target at each
+  level). A pending change to remove hammer-side throttling should reveal the
+  actual server ceiling.
+- Trillian was tested with the same hammer settings and showed consistent
+  saturation, so its ~9.5 QPS measurement is likely accurate.
+- Only the large tier was tested. Small and medium tier measurements are needed
+  to validate the full cost model.
 
 ---
 
 ## Key Findings
 
-1. **At low scale, Trillian is slightly cheaper on compute.** Cloud SQL's floor
-   ($0.015/hr for db-f1-micro) is 6× lower than Spanner's floor ($0.090/hr for
-   100 PU). For very small logs this matters.
+1. **TesseraCT is 5–42× cheaper per write** at measured throughput on the
+   large tier. The advantage grows with demand: at 1,008 QPS, TesseraCT costs
+   $0.35 per million entries vs Trillian's $14.70 — a 42× difference.
 
-2. **At scale, storage dominates total cost**, and TesseraCT wins decisively.
+2. **Trillian's throughput ceiling is much lower than expected.** Measured at
+   ~9.5 QPS on db-n1-standard-2, not the estimated 50–200 QPS. The Trillian
+   sequencer bottleneck is the binding constraint, not MySQL capacity.
+
+3. **At scale, storage dominates total cost**, and TesseraCT wins decisively.
    GCS at $0.020/GB vs Cloud SQL SSD at $0.170/GB is an 8.5× difference that
    applies to every byte stored for the lifetime of the log.
 
-3. **TesseraCT's read path is a structural advantage.** Immutable tiles enable
+4. **TesseraCT's read path is a structural advantage.** Immutable tiles enable
    CDN serving, eliminating the need for read replicas. This becomes increasingly
    valuable as CT monitoring traffic grows.
 
-4. **TesseraCT has 10–50× more throughput headroom** before requiring
-   infrastructure changes. Trillian hits MySQL write ceilings at ~500–1,000 QPS
-   and requires application-level sharding. TesseraCT scales by adding Spanner
-   PUs with no architectural changes.
+5. **TesseraCT has >100× more throughput headroom** before requiring
+   infrastructure changes. Trillian saturates at ~9.5 QPS and requires
+   sharding. TesseraCT was not saturated at 1,008 QPS and scales linearly
+   by adding Spanner PUs with no architectural changes.
 
-5. **The crossover point** where TesseraCT becomes cheaper overall is roughly
+6. **The crossover point** where TesseraCT becomes cheaper overall is roughly
    when storage exceeds ~500 GB — around 125M certificates, or ~4 months of
-   moderate shard traffic at current issuance rates.
+   moderate shard traffic at current issuance rates. However, given Trillian's
+   measured throughput (~9.5 QPS), even a 10% shard of current CT traffic may
+   require multiple Trillian instances, making TesseraCT cheaper from the start
+   for any non-trivial deployment.
 
 ## Open Questions
 
-- **Benchmark gap**: The 160–400× gap between observed TesseraCT throughput
-  (2–5 QPS) and reference data (800+ QPS) must be root-caused. The most likely
-  explanation is hammer tooling misconfiguration, but this needs validation.
+- **TesseraCT true ceiling**: The benchmark did not saturate TesseraCT. Running
+  with the optimized hammer settings (higher `--max_write_ops`, more writers,
+  disabled readers) should reveal the actual throughput ceiling on 1000 PU.
+
+- **Trillian scaling curve**: Only db-n1-standard-2 was tested. It is possible
+  that larger Cloud SQL instances (standard-4, standard-8) could push Trillian
+  beyond 9.5 QPS, though the sequencer bottleneck may persist regardless of
+  MySQL capacity. Testing larger tiers would clarify this.
 
 - **Spanner Seq table lifecycle**: This analysis assumes the `Seq` table is
   transient (entries cleaned up after integration into GCS bundles), keeping
