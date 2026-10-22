@@ -1,0 +1,57 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# R5 per 3 fixed 8 vCPU / 16 GiB instances, Direct VPC egress,
+# tuned batching/connections, and raised pushback thresholds. Run at 2000 PU Spanner.
+resources:
+- ../../base
+patches:
+- target:
+    kind: Service
+    name: tesseract-bench
+  # `test` ops make the patch fail loudly if base arg positions change.
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/autoscaling.knative.dev~1minScale
+      value: "3"
+    - op: replace
+      path: /spec/template/metadata/annotations/autoscaling.knative.dev~1maxScale
+      value: "3"
+    - op: add
+      path: /spec/template/metadata/annotations/run.googleapis.com~1network-interfaces
+      value: '[{"network":"default","subnetwork":"default"}]'
+    - op: add
+      path: /spec/template/metadata/annotations/run.googleapis.com~1vpc-access-egress
+      value: "all-traffic"
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/memory
+      value: 16Gi
+    - op: test
+      path: /spec/template/spec/containers/0/args/7
+      value: "--spanner_connections=4"
+    - op: replace
+      path: /spec/template/spec/containers/0/args/7
+      value: "--spanner_connections=8"
+    - op: test
+      path: /spec/template/spec/containers/0/args/8
+      value: "--gcs_connections=4"
+    - op: replace
+      path: /spec/template/spec/containers/0/args/8
+      value: "--gcs_connections=8"
+    - op: test
+      path: /spec/template/spec/containers/0/args/15
+      value: "--batch_max_size=1024"
+    - op: replace
+      path: /spec/template/spec/containers/0/args/15
+      value: "--batch_max_size=2048"
+    - op: test
+      path: /spec/template/spec/containers/0/args/16
+      value: "--batch_max_age=500ms"
+    - op: replace
+      path: /spec/template/spec/containers/0/args/16
+      value: "--batch_max_age=250ms"
+    - op: add
+      path: /spec/template/spec/containers/0/args/-
+      value: "--pushback_max_antispam_lag=10000"
+    - op: add
+      path: /spec/template/spec/containers/0/args/-
+      value: "--pushback_max_outstanding=8192"

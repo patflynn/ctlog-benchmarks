@@ -1,0 +1,74 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: tesseract-bench
+  annotations:
+    run.googleapis.com/ingress: internal
+    run.googleapis.com/launch-stage: GA
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/cpu-throttling: "false"
+        autoscaling.knative.dev/minScale: "2"
+        autoscaling.knative.dev/maxScale: "2"
+    spec:
+      serviceAccountName: tesseract-cloudrun-sa@${PROJECT_ID}.iam.gserviceaccount.com
+      containerConcurrency: 1000
+      timeoutSeconds: 30
+      containers:
+      - name: tesseract
+        image: ${IMAGE_URI}
+        ports:
+        - name: http1
+          containerPort: 6962
+        args:
+        - "--http_endpoint=:6962"
+        - "--otel_project_id=${PROJECT_ID}"
+        - "--slog_level=-4"
+        - "--slog_to_cloud_api=true"
+        - "--bucket=${PROJECT_ID}-tesseract-bench"
+        - "--spanner_db_path=projects/${PROJECT_ID}/instances/tesseract-bench/databases/tesseract-log"
+        - "--spanner_antispam_db_path=projects/${PROJECT_ID}/instances/tesseract-bench/databases/tesseract-aspam"
+        - "--spanner_connections=4"
+        - "--gcs_connections=4"
+        - "--roots_pem_file=/config/roots.pem"
+        - "--origin=tesseract-benchmark"
+        - "--path_prefix=tesseract-benchmark"
+        - "--signer_public_key_secret_name=projects/${PROJECT_NUMBER}/secrets/tesseract-signer-pub/versions/${PUB_KEY_VERSION}"
+        - "--signer_private_key_secret_name=projects/${PROJECT_NUMBER}/secrets/tesseract-signer-priv/versions/${PRIV_KEY_VERSION}"
+        - "--inmemory_antispam_cache_size=256k"
+        - "--batch_max_size=1024"
+        - "--batch_max_age=500ms"
+        - "--checkpoint_interval=1100ms"
+        - "--awaiter_poll_interval=50ms"
+        - "--enable_publication_awaiter=true"
+        - "--rate_limit_dedup=-1"
+        - "--http_deadline=8s"
+        - "--trace_fraction=0.05"
+        # hammer certs have notBefore=2023-01-01, so the default 28h:500/s-per-instance
+        # old-cert rate limit would cap throughput at 500 QPS x instances. Disable it.
+        - "--rate_limit_old_not_before="
+        resources:
+          limits:
+            cpu: "8"
+            memory: 8Gi
+        volumeMounts:
+        - name: roots-vol
+          mountPath: /config
+          readOnly: true
+        startupProbe:
+          initialDelaySeconds: 1
+          timeoutSeconds: 1
+          periodSeconds: 5
+          failureThreshold: 48  # 48 x 5s = 240s (Cloud Run max); antispam cache warmup grows with log size
+          tcpSocket:
+            port: 6962
+      volumes:
+      - name: roots-vol
+        secret:
+          secretName: tesseract-roots-pem
+          items:
+          - key: "1"
+            path: roots.pem

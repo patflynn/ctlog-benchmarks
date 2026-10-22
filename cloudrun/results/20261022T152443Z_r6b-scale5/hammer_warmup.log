@@ -1,0 +1,15 @@
+time=2026-10-22T15:25:01.303Z level=INFO msg="Will fail after timeout" timeout=1m0s
+time=2026-10-22T15:25:01.382Z level=INFO msg="Will fail after timeout" timeout=1m0s
+time=2026-10-22T15:25:02.568Z level=INFO msg="Will fail after timeout" timeout=1m0s
+time=2026-10-22T15:25:37.374Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=22
+time=2026-10-22T15:25:37.560Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=5
+time=2026-10-22T15:25:38.295Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=480
+time=2026-10-22T15:25:38.374Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=371
+time=2026-10-22T15:25:46.558Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=18
+time=2026-10-22T15:25:49.558Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=6
+time=2026-10-22T15:25:50.294Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=220
+time=2026-10-22T15:25:50.374Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=188
+time=2026-10-22T15:25:51.294Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=2
+time=2026-10-22T15:26:01.305Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T15:26:01.383Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T15:26:02.568Z level=INFO msg="Max runtime reached; exiting"

@@ -1,0 +1,58 @@
+{
+  "project_id": "PROJECT_ID",
+  "region": "europe-west3",
+  "overlay": "cloudrun/overlays/r7-eu-parity",
+  "image_uri": "us-east4-docker.pkg.dev/PROJECT_ID/tesseract-bench/tesseract-gcp:v0.2.0@sha256:bae936bab3d16c04b89b45cf1317bbbb66db19da6ab6a1d7e4e00f28b7514e81",
+  "hammer_image": "us-east4-docker.pkg.dev/PROJECT_ID/tesseract-bench/tesseract-hammer:v0.2.0@sha256:c02629ebf7e98c46360a702c8dd2dabd825d70b278e1d8877d711b5e3739ef41",
+  "service_url": "https://tesseract-bench-eu-HASH-ey.a.run.app",
+  "warmup": {
+    "target_qps": 2000,
+    "dup_chance": 0.1,
+    "num_writers": 8000,
+    "hammer_tasks": 2,
+    "start_utc": "2026-10-22T18:26:52Z",
+    "end_utc": "2026-10-22T18:28:23Z",
+    "wall_seconds": 90.5,
+    "checkpoint_size_start": 0,
+    "checkpoint_size_end": 14834,
+    "entries_integrated": 14834,
+    "integrated_unique_qps": 247.23,
+    "est_total_write_qps_incl_dups": 274.7,
+    "job_execution": "tesseract-hammer-eu-l7d8f",
+    "job_exit_code": 1
+  },
+  "results": [
+    {
+      "target_qps": 2000,
+      "dup_chance": 0.1,
+      "num_writers": 8000,
+      "hammer_tasks": 2,
+      "start_utc": "2026-10-22T18:28:50Z",
+      "end_utc": "2026-10-22T18:33:37Z",
+      "wall_seconds": 286.7,
+      "checkpoint_size_start": 14834,
+      "checkpoint_size_end": 341134,
+      "entries_integrated": 326300,
+      "integrated_unique_qps": 1812.78,
+      "est_total_write_qps_incl_dups": 2014.2,
+      "job_execution": "tesseract-hammer-eu-pkm8h",
+      "job_exit_code": 1
+    },
+    {
+      "target_qps": 2500,
+      "dup_chance": 0.1,
+      "num_writers": 10000,
+      "hammer_tasks": 2,
+      "start_utc": "2026-10-22T18:34:07Z",
+      "end_utc": "2026-10-22T18:37:33Z",
+      "wall_seconds": 205.9,
+      "checkpoint_size_start": 341134,
+      "checkpoint_size_end": 694099,
+      "entries_integrated": 352965,
+      "integrated_unique_qps": 1960.92,
+      "est_total_write_qps_incl_dups": 2178.8,
+      "job_execution": "tesseract-hammer-eu-rwbdh",
+      "job_exit_code": 1
+    }
+  ]
+}

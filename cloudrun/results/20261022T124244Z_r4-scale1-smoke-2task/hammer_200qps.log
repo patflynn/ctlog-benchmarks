@@ -1,0 +1,5 @@
+time=2026-10-22T12:43:02.778Z level=INFO msg="Will fail after timeout" timeout=45s
+time=2026-10-22T12:43:21.372Z level=INFO msg="Will fail after timeout" timeout=45s
+time=2026-10-22T12:43:47.778Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T12:44:06.373Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T12:44:06.373Z level=WARN msg=tracker.Update error="getObject: failed to create reader for object \"checkpoint\" in bucket \"PROJECT_ID-tesseract-bench\": context canceled"

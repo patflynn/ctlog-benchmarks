@@ -1,0 +1,3 @@
+# Needs a shell (busybox) for entrypoint.sh, so use the distroless :debug base.
+baseImageOverrides:
+  github.com/transparency-dev/tesseract/internal/hammer: gcr.io/distroless/base-debian12:debug

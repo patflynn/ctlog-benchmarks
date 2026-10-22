@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base
+patches:
+- target:
+    kind: Service
+    name: tesseract-bench
+  patch: |-
+    - op: test
+      path: /spec/template/spec/containers/0/args/16
+      value: "--batch_max_age=500ms"
+    - op: replace
+      path: /spec/template/spec/containers/0/args/16
+      value: "--batch_max_age=100ms"

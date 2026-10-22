@@ -1,0 +1,195 @@
+time=2026-10-22T15:42:41.823Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T15:42:43.228Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T15:42:44.000Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T15:43:16.992Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=7
+time=2026-10-22T15:43:17.991Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=1
+time=2026-10-22T15:43:59.992Z level=WARN msg="requests received pushback from log" count=53
+time=2026-10-22T15:44:00.806Z level=WARN msg="requests received pushback from log" count=21
+time=2026-10-22T15:44:07.991Z level=WARN msg="requests received pushback from log" count=7
+time=2026-10-22T15:44:08.806Z level=WARN msg="requests received pushback from log" count=54
+time=2026-10-22T15:44:08.992Z level=WARN msg="requests received pushback from log" count=41
+time=2026-10-22T15:44:09.222Z level=WARN msg="requests received pushback from log" count=52
+time=2026-10-22T15:44:09.805Z level=WARN msg="requests received pushback from log" count=33
+time=2026-10-22T15:44:09.992Z level=WARN msg="requests received pushback from log" count=60
+time=2026-10-22T15:44:10.223Z level=WARN msg="requests received pushback from log" count=51
+time=2026-10-22T15:44:10.834Z level=WARN msg="requests received pushback from log" count=41
+time=2026-10-22T15:44:10.992Z level=WARN msg="requests received pushback from log" count=46
+time=2026-10-22T15:44:11.222Z level=WARN msg="requests received pushback from log" count=47
+time=2026-10-22T15:44:11.806Z level=WARN msg="requests received pushback from log" count=11
+time=2026-10-22T15:44:12.087Z level=WARN msg="requests received pushback from log" count=15
+time=2026-10-22T15:44:12.222Z level=WARN msg="requests received pushback from log" count=52
+time=2026-10-22T15:44:12.806Z level=WARN msg="requests received pushback from log" count=44
+time=2026-10-22T15:44:12.992Z level=WARN msg="requests received pushback from log" count=29
+time=2026-10-22T15:44:13.222Z level=WARN msg="requests received pushback from log" count=29
+time=2026-10-22T15:44:13.805Z level=WARN msg="requests received pushback from log" count=37
+time=2026-10-22T15:44:13.992Z level=WARN msg="requests received pushback from log" count=32
+time=2026-10-22T15:44:14.222Z level=WARN msg="requests received pushback from log" count=41
+time=2026-10-22T15:44:14.805Z level=WARN msg="requests received pushback from log" count=27
+time=2026-10-22T15:44:14.805Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=7
+time=2026-10-22T15:44:14.992Z level=WARN msg="requests received pushback from log" count=54
+time=2026-10-22T15:44:14.992Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=5
+time=2026-10-22T15:44:15.222Z level=WARN msg="requests received pushback from log" count=2
+time=2026-10-22T15:44:15.222Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=1
+time=2026-10-22T15:44:15.806Z level=WARN msg="requests received pushback from log" count=51
+time=2026-10-22T15:44:15.991Z level=WARN msg="requests received pushback from log" count=64
+time=2026-10-22T15:44:16.222Z level=WARN msg="requests received pushback from log" count=53
+time=2026-10-22T15:44:16.806Z level=WARN msg="requests received pushback from log" count=42
+time=2026-10-22T15:44:16.992Z level=WARN msg="requests received pushback from log" count=37
+time=2026-10-22T15:44:17.222Z level=WARN msg="requests received pushback from log" count=59
+time=2026-10-22T15:44:17.806Z level=WARN msg="requests received pushback from log" count=25
+time=2026-10-22T15:44:17.993Z level=WARN msg="requests received pushback from log" count=36
+time=2026-10-22T15:44:18.222Z level=WARN msg="requests received pushback from log" count=25
+time=2026-10-22T15:44:18.806Z level=WARN msg="requests received pushback from log" count=1
+time=2026-10-22T15:44:18.992Z level=WARN msg="requests received pushback from log" count=4
+time=2026-10-22T15:44:19.223Z level=WARN msg="requests received pushback from log" count=49
+time=2026-10-22T15:44:19.805Z level=WARN msg="requests received pushback from log" count=38
+time=2026-10-22T15:44:19.991Z level=WARN msg="requests received pushback from log" count=46
+time=2026-10-22T15:44:20.223Z level=WARN msg="requests received pushback from log" count=51
+time=2026-10-22T15:44:20.805Z level=WARN msg="requests received pushback from log" count=33
+time=2026-10-22T15:44:20.991Z level=WARN msg="requests received pushback from log" count=59
+time=2026-10-22T15:44:21.223Z level=WARN msg="requests received pushback from log" count=103
+time=2026-10-22T15:44:21.806Z level=WARN msg="requests received pushback from log" count=143
+time=2026-10-22T15:44:21.991Z level=WARN msg="requests received pushback from log" count=153
+time=2026-10-22T15:44:22.222Z level=WARN msg="requests received pushback from log" count=378
+time=2026-10-22T15:44:22.806Z level=WARN msg="requests received pushback from log" count=317
+time=2026-10-22T15:44:22.991Z level=WARN msg="requests received pushback from log" count=407
+time=2026-10-22T15:44:23.222Z level=WARN msg="requests received pushback from log" count=548
+time=2026-10-22T15:44:23.806Z level=WARN msg="requests received pushback from log" count=503
+time=2026-10-22T15:44:23.992Z level=WARN msg="requests received pushback from log" count=538
+time=2026-10-22T15:44:24.222Z level=WARN msg="requests received pushback from log" count=725
+time=2026-10-22T15:44:24.806Z level=WARN msg="requests received pushback from log" count=609
+time=2026-10-22T15:44:24.992Z level=WARN msg="requests received pushback from log" count=744
+time=2026-10-22T15:44:25.222Z level=WARN msg="requests received pushback from log" count=864
+time=2026-10-22T15:44:25.805Z level=WARN msg="requests received pushback from log" count=803
+time=2026-10-22T15:44:25.991Z level=WARN msg="requests received pushback from log" count=885
+time=2026-10-22T15:44:25.991Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=49
+time=2026-10-22T15:44:26.222Z level=WARN msg="requests received pushback from log" count=867
+time=2026-10-22T15:44:26.805Z level=WARN msg="requests received pushback from log" count=806
+time=2026-10-22T15:44:26.805Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=229
+time=2026-10-22T15:44:27.014Z level=WARN msg="requests received pushback from log" count=839
+time=2026-10-22T15:44:27.014Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=204
+time=2026-10-22T15:44:27.222Z level=WARN msg="requests received pushback from log" count=655
+time=2026-10-22T15:44:27.222Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=97
+time=2026-10-22T15:44:27.806Z level=WARN msg="requests received pushback from log" count=630
+time=2026-10-22T15:44:27.806Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=226
+time=2026-10-22T15:44:27.992Z level=WARN msg="requests received pushback from log" count=638
+time=2026-10-22T15:44:27.992Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=106
+time=2026-10-22T15:44:28.223Z level=WARN msg="requests received pushback from log" count=423
+time=2026-10-22T15:44:28.223Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=112
+time=2026-10-22T15:44:28.806Z level=WARN msg="requests received pushback from log" count=453
+time=2026-10-22T15:44:28.806Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=216
+time=2026-10-22T15:44:28.992Z level=WARN msg="requests received pushback from log" count=471
+time=2026-10-22T15:44:29.232Z level=WARN msg="requests received pushback from log" count=344
+time=2026-10-22T15:44:29.232Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=112
+time=2026-10-22T15:44:29.805Z level=WARN msg="requests received pushback from log" count=300
+time=2026-10-22T15:44:29.805Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=149
+time=2026-10-22T15:44:29.992Z level=WARN msg="requests received pushback from log" count=331
+time=2026-10-22T15:44:29.992Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=232
+time=2026-10-22T15:44:30.222Z level=WARN msg="requests received pushback from log" count=170
+time=2026-10-22T15:44:30.222Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=208
+time=2026-10-22T15:44:30.805Z level=WARN msg="requests received pushback from log" count=147
+time=2026-10-22T15:44:30.805Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=223
+time=2026-10-22T15:44:30.992Z level=WARN msg="requests received pushback from log" count=182
+time=2026-10-22T15:44:30.992Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=242
+time=2026-10-22T15:44:31.222Z level=WARN msg="requests received pushback from log" count=65
+time=2026-10-22T15:44:31.222Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=227
+time=2026-10-22T15:44:31.806Z level=WARN msg="requests received pushback from log" count=42
+time=2026-10-22T15:44:31.806Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=260
+time=2026-10-22T15:44:31.992Z level=WARN msg="requests received pushback from log" count=62
+time=2026-10-22T15:44:31.992Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=230
+time=2026-10-22T15:44:32.222Z level=WARN msg="requests received pushback from log" count=42
+time=2026-10-22T15:44:32.222Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=248
+time=2026-10-22T15:44:32.806Z level=WARN msg="requests received pushback from log" count=50
+time=2026-10-22T15:44:32.807Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=230
+time=2026-10-22T15:44:32.992Z level=WARN msg="requests received pushback from log" count=17
+time=2026-10-22T15:44:32.992Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=249
+time=2026-10-22T15:44:33.222Z level=WARN msg="requests received pushback from log" count=28
+time=2026-10-22T15:44:33.222Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=228
+time=2026-10-22T15:44:33.805Z level=WARN msg="requests received pushback from log" count=36
+time=2026-10-22T15:44:33.805Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=111
+time=2026-10-22T15:44:34.060Z level=WARN msg="requests received pushback from log" count=38
+time=2026-10-22T15:44:34.060Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=248
+time=2026-10-22T15:44:34.222Z level=WARN msg="requests received pushback from log" count=91
+time=2026-10-22T15:44:34.222Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=240
+time=2026-10-22T15:44:34.806Z level=WARN msg="requests received pushback from log" count=78
+time=2026-10-22T15:44:34.806Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=159
+time=2026-10-22T15:44:34.991Z level=WARN msg="requests received pushback from log" count=102
+time=2026-10-22T15:44:34.991Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=173
+time=2026-10-22T15:44:35.222Z level=WARN msg="requests received pushback from log" count=110
+time=2026-10-22T15:44:35.222Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=243
+time=2026-10-22T15:44:35.805Z level=WARN msg="requests received pushback from log" count=115
+time=2026-10-22T15:44:35.805Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=211
+time=2026-10-22T15:44:35.992Z level=WARN msg="requests received pushback from log" count=104
+time=2026-10-22T15:44:35.992Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=92
+time=2026-10-22T15:44:36.222Z level=WARN msg="requests received pushback from log" count=74
+time=2026-10-22T15:44:36.222Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=253
+time=2026-10-22T15:44:36.806Z level=WARN msg="requests received pushback from log" count=179
+time=2026-10-22T15:44:36.806Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=214
+time=2026-10-22T15:44:36.991Z level=WARN msg="requests received pushback from log" count=249
+time=2026-10-22T15:44:36.991Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=243
+time=2026-10-22T15:44:37.223Z level=WARN msg="requests received pushback from log" count=135
+time=2026-10-22T15:44:37.223Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=87
+time=2026-10-22T15:44:37.805Z level=WARN msg="requests received pushback from log" count=104
+time=2026-10-22T15:44:37.992Z level=WARN msg="requests received pushback from log" count=144
+time=2026-10-22T15:44:38.222Z level=WARN msg="requests received pushback from log" count=79
+time=2026-10-22T15:44:38.807Z level=WARN msg="requests received pushback from log" count=211
+time=2026-10-22T15:44:38.991Z level=WARN msg="requests received pushback from log" count=183
+time=2026-10-22T15:44:39.222Z level=WARN msg="requests received pushback from log" count=131
+time=2026-10-22T15:44:39.805Z level=WARN msg="requests received pushback from log" count=44
+time=2026-10-22T15:44:39.996Z level=WARN msg="requests received pushback from log" count=47
+time=2026-10-22T15:44:40.222Z level=WARN msg="requests received pushback from log" count=210
+time=2026-10-22T15:44:40.805Z level=WARN msg="requests received pushback from log" count=163
+time=2026-10-22T15:44:41.082Z level=WARN msg="requests received pushback from log" count=217
+time=2026-10-22T15:44:41.222Z level=WARN msg="requests received pushback from log" count=245
+time=2026-10-22T15:44:41.806Z level=WARN msg="requests received pushback from log" count=178
+time=2026-10-22T15:44:41.991Z level=WARN msg="requests received pushback from log" count=127
+time=2026-10-22T15:44:42.222Z level=WARN msg="requests received pushback from log" count=75
+time=2026-10-22T15:44:42.806Z level=WARN msg="requests received pushback from log" count=247
+time=2026-10-22T15:44:42.992Z level=WARN msg="requests received pushback from log" count=117
+time=2026-10-22T15:44:43.222Z level=WARN msg="requests received pushback from log" count=111
+time=2026-10-22T15:44:43.805Z level=WARN msg="requests received pushback from log" count=199
+time=2026-10-22T15:44:43.992Z level=WARN msg="requests received pushback from log" count=200
+time=2026-10-22T15:44:44.222Z level=WARN msg="requests received pushback from log" count=139
+time=2026-10-22T15:44:44.806Z level=WARN msg="requests received pushback from log" count=257
+time=2026-10-22T15:44:44.992Z level=WARN msg="requests received pushback from log" count=221
+time=2026-10-22T15:44:45.222Z level=WARN msg="requests received pushback from log" count=183
+time=2026-10-22T15:44:45.806Z level=WARN msg="requests received pushback from log" count=193
+time=2026-10-22T15:44:45.992Z level=WARN msg="requests received pushback from log" count=301
+time=2026-10-22T15:44:46.223Z level=WARN msg="requests received pushback from log" count=129
+time=2026-10-22T15:44:46.806Z level=WARN msg="requests received pushback from log" count=57
+time=2026-10-22T15:44:46.995Z level=WARN msg="requests received pushback from log" count=150
+time=2026-10-22T15:44:47.222Z level=WARN msg="requests received pushback from log" count=312
+time=2026-10-22T15:44:47.806Z level=WARN msg="requests received pushback from log" count=36
+time=2026-10-22T15:44:47.992Z level=WARN msg="requests received pushback from log" count=72
+time=2026-10-22T15:44:48.222Z level=WARN msg="requests received pushback from log" count=221
+time=2026-10-22T15:44:48.805Z level=WARN msg="requests received pushback from log" count=204
+time=2026-10-22T15:44:48.992Z level=WARN msg="requests received pushback from log" count=72
+time=2026-10-22T15:44:49.222Z level=WARN msg="requests received pushback from log" count=92
+time=2026-10-22T15:44:49.805Z level=WARN msg="requests received pushback from log" count=215
+time=2026-10-22T15:44:49.992Z level=WARN msg="requests received pushback from log" count=183
+time=2026-10-22T15:44:50.222Z level=WARN msg="requests received pushback from log" count=88
+time=2026-10-22T15:44:50.805Z level=WARN msg="requests received pushback from log" count=121
+time=2026-10-22T15:44:50.806Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=1
+time=2026-10-22T15:44:50.991Z level=WARN msg="requests received pushback from log" count=129
+time=2026-10-22T15:44:51.222Z level=WARN msg="requests received pushback from log" count=68
+time=2026-10-22T15:44:51.806Z level=WARN msg="requests received pushback from log" count=228
+time=2026-10-22T15:44:51.992Z level=WARN msg="requests received pushback from log" count=330
+time=2026-10-22T15:44:52.222Z level=WARN msg="requests received pushback from log" count=98
+time=2026-10-22T15:44:52.902Z level=WARN msg="requests received pushback from log" count=86
+time=2026-10-22T15:44:52.992Z level=WARN msg="requests received pushback from log" count=303
+time=2026-10-22T15:44:53.222Z level=WARN msg="requests received pushback from log" count=238
+time=2026-10-22T15:44:53.805Z level=WARN msg="requests received pushback from log" count=33
+time=2026-10-22T15:44:54.016Z level=WARN msg="requests received pushback from log" count=131
+time=2026-10-22T15:44:54.223Z level=WARN msg="requests received pushback from log" count=209
+time=2026-10-22T15:44:54.806Z level=WARN msg="requests received pushback from log" count=210
+time=2026-10-22T15:44:54.991Z level=WARN msg="requests received pushback from log" count=35
+time=2026-10-22T15:44:55.250Z level=WARN msg="requests received pushback from log" count=182
+time=2026-10-22T15:44:55.806Z level=WARN msg="requests received pushback from log" count=218
+time=2026-10-22T15:44:55.992Z level=WARN msg="requests received pushback from log" count=114
+time=2026-10-22T15:44:56.222Z level=WARN msg="requests received pushback from log" count=13
+time=2026-10-22T15:45:22.806Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=4
+time=2026-10-22T15:45:22.991Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=3
+time=2026-10-22T15:45:23.222Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=2
+time=2026-10-22T15:45:41.824Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T15:45:43.228Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T15:45:44.000Z level=INFO msg="Max runtime reached; exiting"
