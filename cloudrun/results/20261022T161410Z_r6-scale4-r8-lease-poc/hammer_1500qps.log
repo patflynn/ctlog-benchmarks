@@ -1,0 +1,6 @@
+time=2026-10-22T16:16:22.185Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T16:16:22.531Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T16:16:41.726Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T16:19:22.186Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T16:19:22.532Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T16:19:41.726Z level=INFO msg="Max runtime reached; exiting"

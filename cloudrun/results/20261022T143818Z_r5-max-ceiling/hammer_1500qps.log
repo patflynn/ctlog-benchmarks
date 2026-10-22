@@ -1,0 +1,5 @@
+time=2026-10-22T14:48:21.822Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T14:48:23.580Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T14:48:25.780Z level=WARN msg=tracker.Update error="failed to create proof builder: failed to fetch range nodes: failed to fetch tile: failed to fetch tile at 0/18993(.p/139]): failed to fetch resource: getObject: failed to create reader for object \"tile/0/x018/993.p/139\" in bucket \"PROJECT_ID-tesseract-bench\": storage: object doesn't exist: googleapi: got HTTP response code 404 with body: No such object: PROJECT_ID-tesseract-bench/tile/0/x018/993.p/139"
+time=2026-10-22T14:51:21.822Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T14:51:23.580Z level=INFO msg="Max runtime reached; exiting"

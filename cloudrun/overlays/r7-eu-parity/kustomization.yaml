@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# europe-west3 parity spot check: r5b-batch500 with EU-colocated
+# service name, bucket, Spanner instance and subnet. Deploy with --region=europe-west3.
+resources:
+- ../r5b-batch500
+patches:
+- target:
+    kind: Service
+    name: tesseract-bench
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: tesseract-bench-eu
+    - op: replace
+      path: /spec/template/metadata/annotations/run.googleapis.com~1network-interfaces
+      value: '[{"network":"default","subnetwork":"default-eu"}]'
+    - op: test
+      path: /spec/template/spec/containers/0/args/4
+      value: "--bucket=${PROJECT_ID}-tesseract-bench"
+    - op: replace
+      path: /spec/template/spec/containers/0/args/4
+      value: "--bucket=${PROJECT_ID}-tesseract-bench-eu"
+    - op: test
+      path: /spec/template/spec/containers/0/args/5
+      value: "--spanner_db_path=projects/${PROJECT_ID}/instances/tesseract-bench/databases/tesseract-log"
+    - op: replace
+      path: /spec/template/spec/containers/0/args/5
+      value: "--spanner_db_path=projects/${PROJECT_ID}/instances/tesseract-bench-eu/databases/tesseract-log"
+    - op: test
+      path: /spec/template/spec/containers/0/args/6
+      value: "--spanner_antispam_db_path=projects/${PROJECT_ID}/instances/tesseract-bench/databases/tesseract-aspam"
+    - op: replace
+      path: /spec/template/spec/containers/0/args/6
+      value: "--spanner_antispam_db_path=projects/${PROJECT_ID}/instances/tesseract-bench-eu/databases/tesseract-aspam"

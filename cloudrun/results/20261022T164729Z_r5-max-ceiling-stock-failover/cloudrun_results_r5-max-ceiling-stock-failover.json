@@ -1,0 +1,27 @@
+{
+  "project_id": "PROJECT_ID",
+  "region": "us-east4",
+  "overlay": "cloudrun/overlays/r5-max-ceiling",
+  "image_uri": "us-east4-docker.pkg.dev/PROJECT_ID/tesseract-bench/tesseract-gcp:v0.2.0@sha256:bae936bab3d16c04b89b45cf1317bbbb66db19da6ab6a1d7e4e00f28b7514e81",
+  "hammer_image": "us-east4-docker.pkg.dev/PROJECT_ID/tesseract-bench/tesseract-hammer:v0.2.0@sha256:c02629ebf7e98c46360a702c8dd2dabd825d70b278e1d8877d711b5e3739ef41",
+  "service_url": "https://tesseract-bench-HASH-uk.a.run.app",
+  "warmup": null,
+  "results": [
+    {
+      "target_qps": 1000,
+      "dup_chance": 0.1,
+      "num_writers": 4000,
+      "hammer_tasks": 1,
+      "start_utc": "2026-10-22T16:47:32Z",
+      "end_utc": "2026-10-22T16:53:11Z",
+      "wall_seconds": 338.9,
+      "checkpoint_size_start": 12786366,
+      "checkpoint_size_end": 13055734,
+      "entries_integrated": 269368,
+      "integrated_unique_qps": 897.89,
+      "est_total_write_qps_incl_dups": 997.66,
+      "job_execution": "tesseract-hammer-rmlff",
+      "job_exit_code": 1
+    }
+  ]
+}

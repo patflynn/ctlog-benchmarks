@@ -1,0 +1,216 @@
+time=2026-10-22T12:59:21.444Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T12:59:28.464Z level=WARN msg=tracker.Update error="failed to create proof builder: failed to fetch range nodes: failed to fetch tile: failed to fetch tile at 0/6280(.p/104]): failed to fetch resource: getObject: failed to create reader for object \"tile/0/x006/280.p/104\" in bucket \"PROJECT_ID-tesseract-bench\": storage: object doesn't exist: googleapi: got HTTP response code 404 with body: No such object: PROJECT_ID-tesseract-bench/tile/0/x006/280.p/104"
+time=2026-10-22T12:59:32.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=627
+time=2026-10-22T12:59:33.443Z level=WARN msg="requests received pushback from log" count=142
+time=2026-10-22T12:59:33.443Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=200
+time=2026-10-22T12:59:34.482Z level=WARN msg="requests received pushback from log" count=149
+time=2026-10-22T12:59:34.482Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=22
+time=2026-10-22T12:59:35.819Z level=WARN msg="requests received pushback from log" count=64
+time=2026-10-22T12:59:35.821Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=2
+time=2026-10-22T12:59:36.442Z level=WARN msg="requests received pushback from log" count=321
+time=2026-10-22T12:59:37.442Z level=WARN msg="requests received pushback from log" count=81
+time=2026-10-22T12:59:38.490Z level=WARN msg="requests received pushback from log" count=35
+time=2026-10-22T12:59:39.183Z level=WARN msg=tracker.Update error="failed to get node ({1 804682}): failed to fetch tile: failed to fetch tile at 0/6286(.p/150]): failed to fetch resource: getObject: failed to create reader for object \"tile/0/x006/286.p/150\" in bucket \"PROJECT_ID-tesseract-bench\": storage: object doesn't exist: googleapi: got HTTP response code 404 with body: No such object: PROJECT_ID-tesseract-bench/tile/0/x006/286.p/150"
+time=2026-10-22T12:59:39.442Z level=WARN msg="requests received pushback from log" count=210
+time=2026-10-22T12:59:40.439Z level=WARN msg="requests received pushback from log" count=267
+time=2026-10-22T12:59:40.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=477
+time=2026-10-22T12:59:41.439Z level=WARN msg="requests received pushback from log" count=476
+time=2026-10-22T12:59:42.439Z level=WARN msg="requests received pushback from log" count=379
+time=2026-10-22T12:59:43.438Z level=WARN msg="requests received pushback from log" count=261
+time=2026-10-22T12:59:44.438Z level=WARN msg="requests received pushback from log" count=260
+time=2026-10-22T12:59:45.440Z level=WARN msg="requests received pushback from log" count=231
+time=2026-10-22T12:59:46.438Z level=WARN msg="requests received pushback from log" count=94
+time=2026-10-22T12:59:46.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=297
+time=2026-10-22T12:59:47.439Z level=WARN msg="requests received pushback from log" count=223
+time=2026-10-22T12:59:47.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=243
+time=2026-10-22T12:59:48.439Z level=WARN msg="requests received pushback from log" count=324
+time=2026-10-22T12:59:49.439Z level=WARN msg="requests received pushback from log" count=284
+time=2026-10-22T12:59:50.438Z level=WARN msg="requests received pushback from log" count=301
+time=2026-10-22T12:59:51.438Z level=WARN msg="requests received pushback from log" count=252
+time=2026-10-22T12:59:52.439Z level=WARN msg="requests received pushback from log" count=252
+time=2026-10-22T12:59:53.438Z level=WARN msg="requests received pushback from log" count=105
+time=2026-10-22T12:59:53.438Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=161
+time=2026-10-22T12:59:54.438Z level=WARN msg="requests received pushback from log" count=190
+time=2026-10-22T12:59:54.438Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=111
+time=2026-10-22T12:59:55.439Z level=WARN msg="requests received pushback from log" count=215
+time=2026-10-22T12:59:55.439Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=2
+time=2026-10-22T12:59:56.438Z level=WARN msg="requests received pushback from log" count=198
+time=2026-10-22T12:59:56.438Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=1
+time=2026-10-22T12:59:57.438Z level=WARN msg="requests received pushback from log" count=256
+time=2026-10-22T12:59:58.457Z level=WARN msg="requests received pushback from log" count=394
+time=2026-10-22T12:59:59.439Z level=WARN msg="requests received pushback from log" count=208
+time=2026-10-22T13:00:00.438Z level=WARN msg="requests received pushback from log" count=317
+time=2026-10-22T13:00:01.438Z level=WARN msg="requests received pushback from log" count=279
+time=2026-10-22T13:00:02.439Z level=WARN msg="requests received pushback from log" count=452
+time=2026-10-22T13:00:03.438Z level=WARN msg="requests received pushback from log" count=326
+time=2026-10-22T13:00:03.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=9
+time=2026-10-22T13:00:04.493Z level=WARN msg="requests received pushback from log" count=277
+time=2026-10-22T13:00:05.438Z level=WARN msg="requests received pushback from log" count=53
+time=2026-10-22T13:00:06.438Z level=WARN msg="requests received pushback from log" count=222
+time=2026-10-22T13:00:07.439Z level=WARN msg="requests received pushback from log" count=285
+time=2026-10-22T13:00:08.439Z level=WARN msg="requests received pushback from log" count=292
+time=2026-10-22T13:00:09.439Z level=WARN msg="requests received pushback from log" count=305
+time=2026-10-22T13:00:10.439Z level=WARN msg="requests received pushback from log" count=292
+time=2026-10-22T13:00:11.438Z level=WARN msg="requests received pushback from log" count=85
+time=2026-10-22T13:00:12.438Z level=WARN msg="requests received pushback from log" count=214
+time=2026-10-22T13:00:13.439Z level=WARN msg="requests received pushback from log" count=271
+time=2026-10-22T13:00:13.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=193
+time=2026-10-22T13:00:14.439Z level=WARN msg="requests received pushback from log" count=275
+time=2026-10-22T13:00:15.438Z level=WARN msg="requests received pushback from log" count=276
+time=2026-10-22T13:00:16.439Z level=WARN msg="requests received pushback from log" count=269
+time=2026-10-22T13:00:17.438Z level=WARN msg="requests received pushback from log" count=64
+time=2026-10-22T13:00:17.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=58
+time=2026-10-22T13:00:18.439Z level=WARN msg="requests received pushback from log" count=234
+time=2026-10-22T13:00:18.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=50
+time=2026-10-22T13:00:19.438Z level=WARN msg="requests received pushback from log" count=282
+time=2026-10-22T13:00:20.438Z level=WARN msg="requests received pushback from log" count=287
+time=2026-10-22T13:00:21.438Z level=WARN msg="requests received pushback from log" count=289
+time=2026-10-22T13:00:22.439Z level=WARN msg="requests received pushback from log" count=270
+time=2026-10-22T13:00:23.439Z level=WARN msg="requests received pushback from log" count=233
+time=2026-10-22T13:00:24.439Z level=WARN msg="requests received pushback from log" count=95
+time=2026-10-22T13:00:25.439Z level=WARN msg="requests received pushback from log" count=243
+time=2026-10-22T13:00:26.439Z level=WARN msg="requests received pushback from log" count=262
+time=2026-10-22T13:00:26.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=9
+time=2026-10-22T13:00:27.438Z level=WARN msg="requests received pushback from log" count=276
+time=2026-10-22T13:00:27.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=80
+time=2026-10-22T13:00:28.438Z level=WARN msg="requests received pushback from log" count=252
+time=2026-10-22T13:00:29.440Z level=WARN msg="requests received pushback from log" count=225
+time=2026-10-22T13:00:30.438Z level=WARN msg="requests received pushback from log" count=88
+time=2026-10-22T13:00:30.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=258
+time=2026-10-22T13:00:31.438Z level=WARN msg="requests received pushback from log" count=207
+time=2026-10-22T13:00:32.438Z level=WARN msg="requests received pushback from log" count=262
+time=2026-10-22T13:00:33.439Z level=WARN msg="requests received pushback from log" count=267
+time=2026-10-22T13:00:34.438Z level=WARN msg="requests received pushback from log" count=278
+time=2026-10-22T13:00:35.438Z level=WARN msg="requests received pushback from log" count=269
+time=2026-10-22T13:00:35.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=429
+time=2026-10-22T13:00:36.443Z level=WARN msg="requests received pushback from log" count=217
+time=2026-10-22T13:00:36.443Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=113
+time=2026-10-22T13:00:37.439Z level=WARN msg="requests received pushback from log" count=141
+time=2026-10-22T13:00:38.440Z level=WARN msg="requests received pushback from log" count=231
+time=2026-10-22T13:00:39.439Z level=WARN msg="requests received pushback from log" count=270
+time=2026-10-22T13:00:40.439Z level=WARN msg="requests received pushback from log" count=278
+time=2026-10-22T13:00:41.438Z level=WARN msg="requests received pushback from log" count=251
+time=2026-10-22T13:00:41.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=81
+time=2026-10-22T13:00:42.439Z level=WARN msg="requests received pushback from log" count=252
+time=2026-10-22T13:00:43.438Z level=WARN msg="requests received pushback from log" count=84
+time=2026-10-22T13:00:44.439Z level=WARN msg="requests received pushback from log" count=217
+time=2026-10-22T13:00:45.438Z level=WARN msg="requests received pushback from log" count=258
+time=2026-10-22T13:00:46.438Z level=WARN msg="requests received pushback from log" count=275
+time=2026-10-22T13:00:47.438Z level=WARN msg="requests received pushback from log" count=277
+time=2026-10-22T13:00:48.456Z level=WARN msg="requests received pushback from log" count=236
+time=2026-10-22T13:00:49.438Z level=WARN msg="requests received pushback from log" count=91
+time=2026-10-22T13:00:50.439Z level=WARN msg="requests received pushback from log" count=240
+time=2026-10-22T13:00:51.439Z level=WARN msg="requests received pushback from log" count=278
+time=2026-10-22T13:00:51.439Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": read tcp 169.254.9.1:54700->34.143.79.2:443: read: connection reset by peer" count=90
+time=2026-10-22T13:00:52.439Z level=WARN msg="requests received pushback from log" count=332
+time=2026-10-22T13:00:53.442Z level=WARN msg="requests received pushback from log" count=335
+time=2026-10-22T13:00:54.439Z level=WARN msg="requests received pushback from log" count=59
+time=2026-10-22T13:00:55.439Z level=WARN msg="requests received pushback from log" count=305
+time=2026-10-22T13:00:56.438Z level=WARN msg="requests received pushback from log" count=518
+time=2026-10-22T13:00:56.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=1
+time=2026-10-22T13:00:57.438Z level=WARN msg="requests received pushback from log" count=302
+time=2026-10-22T13:00:58.439Z level=WARN msg="requests received pushback from log" count=296
+time=2026-10-22T13:00:59.439Z level=WARN msg="requests received pushback from log" count=303
+time=2026-10-22T13:01:00.438Z level=WARN msg="requests received pushback from log" count=331
+time=2026-10-22T13:01:01.438Z level=WARN msg="requests received pushback from log" count=265
+time=2026-10-22T13:01:02.438Z level=WARN msg="requests received pushback from log" count=43
+time=2026-10-22T13:01:03.438Z level=WARN msg="requests received pushback from log" count=256
+time=2026-10-22T13:01:04.439Z level=WARN msg="requests received pushback from log" count=276
+time=2026-10-22T13:01:05.438Z level=WARN msg="requests received pushback from log" count=293
+time=2026-10-22T13:01:06.438Z level=WARN msg="requests received pushback from log" count=275
+time=2026-10-22T13:01:07.444Z level=WARN msg="requests received pushback from log" count=148
+time=2026-10-22T13:01:08.438Z level=WARN msg="requests received pushback from log" count=44
+time=2026-10-22T13:01:09.438Z level=WARN msg="requests received pushback from log" count=247
+time=2026-10-22T13:01:10.439Z level=WARN msg="requests received pushback from log" count=291
+time=2026-10-22T13:01:11.438Z level=WARN msg="requests received pushback from log" count=282
+time=2026-10-22T13:01:12.438Z level=WARN msg="requests received pushback from log" count=279
+time=2026-10-22T13:01:13.438Z level=WARN msg="requests received pushback from log" count=279
+time=2026-10-22T13:01:14.438Z level=WARN msg="requests received pushback from log" count=102
+time=2026-10-22T13:01:15.438Z level=WARN msg="requests received pushback from log" count=189
+time=2026-10-22T13:01:15.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=144
+time=2026-10-22T13:01:16.439Z level=WARN msg="requests received pushback from log" count=276
+time=2026-10-22T13:01:16.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=41
+time=2026-10-22T13:01:17.438Z level=WARN msg="requests received pushback from log" count=274
+time=2026-10-22T13:01:18.439Z level=WARN msg="requests received pushback from log" count=270
+time=2026-10-22T13:01:19.442Z level=WARN msg="requests received pushback from log" count=271
+time=2026-10-22T13:01:20.438Z level=WARN msg="requests received pushback from log" count=126
+time=2026-10-22T13:01:21.439Z level=WARN msg="requests received pushback from log" count=180
+time=2026-10-22T13:01:22.439Z level=WARN msg="requests received pushback from log" count=254
+time=2026-10-22T13:01:22.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=64
+time=2026-10-22T13:01:23.438Z level=WARN msg="requests received pushback from log" count=276
+time=2026-10-22T13:01:24.439Z level=WARN msg="requests received pushback from log" count=287
+time=2026-10-22T13:01:25.438Z level=WARN msg="requests received pushback from log" count=279
+time=2026-10-22T13:01:26.438Z level=WARN msg="requests received pushback from log" count=261
+time=2026-10-22T13:01:27.438Z level=WARN msg="requests received pushback from log" count=48
+time=2026-10-22T13:01:28.439Z level=WARN msg="requests received pushback from log" count=260
+time=2026-10-22T13:01:29.438Z level=WARN msg="requests received pushback from log" count=283
+time=2026-10-22T13:01:30.438Z level=WARN msg="requests received pushback from log" count=259
+time=2026-10-22T13:01:31.439Z level=WARN msg="requests received pushback from log" count=273
+time=2026-10-22T13:01:31.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=35
+time=2026-10-22T13:01:32.438Z level=WARN msg="requests received pushback from log" count=286
+time=2026-10-22T13:01:33.439Z level=WARN msg="requests received pushback from log" count=41
+time=2026-10-22T13:01:34.439Z level=WARN msg="requests received pushback from log" count=264
+time=2026-10-22T13:01:35.438Z level=WARN msg="requests received pushback from log" count=255
+time=2026-10-22T13:01:36.439Z level=WARN msg="requests received pushback from log" count=262
+time=2026-10-22T13:01:36.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=133
+time=2026-10-22T13:01:37.439Z level=WARN msg="requests received pushback from log" count=259
+time=2026-10-22T13:01:38.442Z level=WARN msg="requests received pushback from log" count=276
+time=2026-10-22T13:01:38.442Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=17
+time=2026-10-22T13:01:39.439Z level=WARN msg="requests received pushback from log" count=128
+time=2026-10-22T13:01:39.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=18
+time=2026-10-22T13:01:40.438Z level=WARN msg="requests received pushback from log" count=182
+time=2026-10-22T13:01:40.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=192
+time=2026-10-22T13:01:41.439Z level=WARN msg="requests received pushback from log" count=262
+time=2026-10-22T13:01:42.439Z level=WARN msg="requests received pushback from log" count=279
+time=2026-10-22T13:01:43.439Z level=WARN msg="requests received pushback from log" count=285
+time=2026-10-22T13:01:44.438Z level=WARN msg="requests received pushback from log" count=276
+time=2026-10-22T13:01:44.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=230
+time=2026-10-22T13:01:45.438Z level=WARN msg="requests received pushback from log" count=235
+time=2026-10-22T13:01:46.438Z level=WARN msg="requests received pushback from log" count=111
+time=2026-10-22T13:01:46.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=187
+time=2026-10-22T13:01:47.439Z level=WARN msg="requests received pushback from log" count=221
+time=2026-10-22T13:01:47.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=1
+time=2026-10-22T13:01:48.439Z level=WARN msg="requests received pushback from log" count=271
+time=2026-10-22T13:01:48.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=248
+time=2026-10-22T13:01:49.439Z level=WARN msg="requests received pushback from log" count=328
+time=2026-10-22T13:01:50.439Z level=WARN msg="requests received pushback from log" count=354
+time=2026-10-22T13:01:51.438Z level=WARN msg="requests received pushback from log" count=282
+time=2026-10-22T13:01:52.439Z level=WARN msg="requests received pushback from log" count=138
+time=2026-10-22T13:01:53.438Z level=WARN msg="requests received pushback from log" count=187
+time=2026-10-22T13:01:53.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=84
+time=2026-10-22T13:01:54.438Z level=WARN msg="requests received pushback from log" count=258
+time=2026-10-22T13:01:54.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=78
+time=2026-10-22T13:01:55.439Z level=WARN msg="requests received pushback from log" count=277
+time=2026-10-22T13:01:55.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=226
+time=2026-10-22T13:01:56.438Z level=WARN msg="requests received pushback from log" count=355
+time=2026-10-22T13:01:57.438Z level=WARN msg="requests received pushback from log" count=336
+time=2026-10-22T13:01:58.438Z level=WARN msg="requests received pushback from log" count=280
+time=2026-10-22T13:01:59.438Z level=WARN msg="requests received pushback from log" count=114
+time=2026-10-22T13:01:59.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=26
+time=2026-10-22T13:02:00.438Z level=WARN msg="requests received pushback from log" count=286
+time=2026-10-22T13:02:01.439Z level=WARN msg="requests received pushback from log" count=329
+time=2026-10-22T13:02:02.439Z level=WARN msg="requests received pushback from log" count=319
+time=2026-10-22T13:02:03.438Z level=WARN msg="requests received pushback from log" count=347
+time=2026-10-22T13:02:04.440Z level=WARN msg="requests received pushback from log" count=263
+time=2026-10-22T13:02:05.438Z level=WARN msg="requests received pushback from log" count=82
+time=2026-10-22T13:02:05.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=157
+time=2026-10-22T13:02:06.439Z level=WARN msg="requests received pushback from log" count=232
+time=2026-10-22T13:02:07.439Z level=WARN msg="requests received pushback from log" count=283
+time=2026-10-22T13:02:08.439Z level=WARN msg="requests received pushback from log" count=280
+time=2026-10-22T13:02:09.439Z level=WARN msg="requests received pushback from log" count=268
+time=2026-10-22T13:02:10.502Z level=WARN msg="requests received pushback from log" count=282
+time=2026-10-22T13:02:11.439Z level=WARN msg="requests received pushback from log" count=107
+time=2026-10-22T13:02:12.438Z level=WARN msg="requests received pushback from log" count=185
+time=2026-10-22T13:02:12.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=134
+time=2026-10-22T13:02:13.438Z level=WARN msg="requests received pushback from log" count=275
+time=2026-10-22T13:02:14.439Z level=WARN msg="requests received pushback from log" count=263
+time=2026-10-22T13:02:15.439Z level=WARN msg="requests received pushback from log" count=286
+time=2026-10-22T13:02:16.439Z level=WARN msg="requests received pushback from log" count=293
+time=2026-10-22T13:02:17.438Z level=WARN msg="requests received pushback from log" count=256
+time=2026-10-22T13:02:18.438Z level=WARN msg="requests received pushback from log" count=91
+time=2026-10-22T13:02:18.438Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=186
+time=2026-10-22T13:02:19.439Z level=WARN msg="requests received pushback from log" count=304
+time=2026-10-22T13:02:19.439Z level=WARN msg="failed to create request: write leaf was not OK. Status code: 500. Body: \"\\n<html><head>\\n<meta http-equiv=\\\"content-type\\\" content=\\\"text/html;charset=utf-8\\\">\\n<title>500 Server Error</title>\\n</head>\\n<body text=#000000 bgcolor=#ffffff>\\n<h1>Error: Server Error</h1>\\n<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>\\n<h2></h2>\\n</body></html>\\n\"" count=135
+time=2026-10-22T13:02:20.438Z level=WARN msg="requests received pushback from log" count=369
+time=2026-10-22T13:02:21.439Z level=WARN msg="requests received pushback from log" count=369
+time=2026-10-22T13:02:21.445Z level=INFO msg="Max runtime reached; exiting"

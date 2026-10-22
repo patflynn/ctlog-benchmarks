@@ -1,0 +1,27 @@
+{
+  "project_id": "PROJECT_ID",
+  "region": "us-east4",
+  "overlay": "cloudrun/overlays/r1-baseline",
+  "image_uri": "us-east4-docker.pkg.dev/PROJECT_ID/tesseract-bench/tesseract-gcp:v0.2.0@sha256:bae936bab3d16c04b89b45cf1317bbbb66db19da6ab6a1d7e4e00f28b7514e81",
+  "hammer_image": "us-east4-docker.pkg.dev/PROJECT_ID/tesseract-bench/tesseract-hammer:v0.2.0@sha256:a09892013dca0271221f5f0ff2c9b661a355ca15d12d78d04a53e7e774044c40",
+  "service_url": "https://tesseract-bench-HASH-uk.a.run.app",
+  "warmup": null,
+  "results": [
+    {
+      "target_qps": 50,
+      "dup_chance": 0.1,
+      "num_writers": 256,
+      "start_utc": "2026-10-22T11:37:27Z",
+      "end_utc": "2026-10-22T11:39:32Z",
+      "wall_seconds": 125.5,
+      "checkpoint_size_start": 0,
+      "checkpoint_size_end": 2661,
+      "entries_integrated": 2661,
+      "integrated_unique_qps": 44.35,
+      "est_total_write_qps_incl_dups": 49.28,
+      "job_execution": "",
+      "job_exit_code": 1,
+      "job_error": "Creating execution...\nProvisioning resources....................done\nStarting execution...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................done\nRunning execution.............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................failed\nExecuting job failed\nERROR: (gcloud.run.jobs.execute) The execution failed.\nView details about this execution by running:\ngcloud run jobs executions describe tesseract-hammer-h8vj2\n\nOr visit https://console.cloud.google.com/run/jobs/executions/details/us-east4/tesseract-hammer-h8vj2?project=PROJECT_NUMBER"
+    }
+  ]
+}

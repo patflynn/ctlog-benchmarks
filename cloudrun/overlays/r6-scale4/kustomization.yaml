@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Same tuned flags as r5-max-ceiling, with 4 fixed instances.
+resources:
+- ../r5-max-ceiling
+patches:
+- target:
+    kind: Service
+    name: tesseract-bench
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/autoscaling.knative.dev~1minScale
+      value: "4"
+    - op: replace
+      path: /spec/template/metadata/annotations/autoscaling.knative.dev~1maxScale
+      value: "4"

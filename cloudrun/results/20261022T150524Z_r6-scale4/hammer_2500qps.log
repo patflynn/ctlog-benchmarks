@@ -1,0 +1,122 @@
+time=2026-10-22T15:15:41.298Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T15:15:41.642Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T15:15:41.711Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T15:16:59.639Z level=WARN msg="requests received pushback from log" count=38
+time=2026-10-22T15:16:59.700Z level=WARN msg="requests received pushback from log" count=37
+time=2026-10-22T15:17:00.292Z level=WARN msg="requests received pushback from log" count=8
+time=2026-10-22T15:17:00.639Z level=WARN msg="requests received pushback from log" count=26
+time=2026-10-22T15:17:00.700Z level=WARN msg="requests received pushback from log" count=12
+time=2026-10-22T15:17:01.292Z level=WARN msg="requests received pushback from log" count=1
+time=2026-10-22T15:17:13.700Z level=WARN msg="requests received pushback from log" count=9
+time=2026-10-22T15:17:14.292Z level=WARN msg="requests received pushback from log" count=48
+time=2026-10-22T15:17:14.638Z level=WARN msg="requests received pushback from log" count=79
+time=2026-10-22T15:17:14.700Z level=WARN msg="requests received pushback from log" count=216
+time=2026-10-22T15:17:15.291Z level=WARN msg="requests received pushback from log" count=223
+time=2026-10-22T15:17:15.638Z level=WARN msg="requests received pushback from log" count=234
+time=2026-10-22T15:17:15.701Z level=WARN msg="requests received pushback from log" count=296
+time=2026-10-22T15:17:16.292Z level=WARN msg="requests received pushback from log" count=275
+time=2026-10-22T15:17:16.638Z level=WARN msg="requests received pushback from log" count=333
+time=2026-10-22T15:17:16.701Z level=WARN msg="requests received pushback from log" count=296
+time=2026-10-22T15:17:17.292Z level=WARN msg="requests received pushback from log" count=304
+time=2026-10-22T15:17:17.639Z level=WARN msg="requests received pushback from log" count=398
+time=2026-10-22T15:17:17.701Z level=WARN msg="requests received pushback from log" count=293
+time=2026-10-22T15:17:18.291Z level=WARN msg="requests received pushback from log" count=261
+time=2026-10-22T15:17:18.638Z level=WARN msg="requests received pushback from log" count=352
+time=2026-10-22T15:17:18.701Z level=WARN msg="requests received pushback from log" count=293
+time=2026-10-22T15:17:19.292Z level=WARN msg="requests received pushback from log" count=264
+time=2026-10-22T15:17:19.638Z level=WARN msg="requests received pushback from log" count=376
+time=2026-10-22T15:17:19.701Z level=WARN msg="requests received pushback from log" count=199
+time=2026-10-22T15:17:20.291Z level=WARN msg="requests received pushback from log" count=99
+time=2026-10-22T15:17:20.639Z level=WARN msg="requests received pushback from log" count=197
+time=2026-10-22T15:17:20.700Z level=WARN msg="requests received pushback from log" count=47
+time=2026-10-22T15:17:21.292Z level=WARN msg="requests received pushback from log" count=49
+time=2026-10-22T15:17:21.639Z level=WARN msg="requests received pushback from log" count=53
+time=2026-10-22T15:17:21.702Z level=WARN msg="requests received pushback from log" count=11
+time=2026-10-22T15:17:22.291Z level=WARN msg="requests received pushback from log" count=8
+time=2026-10-22T15:17:22.638Z level=WARN msg="requests received pushback from log" count=31
+time=2026-10-22T15:17:22.700Z level=WARN msg="requests received pushback from log" count=46
+time=2026-10-22T15:17:23.292Z level=WARN msg="requests received pushback from log" count=41
+time=2026-10-22T15:17:23.638Z level=WARN msg="requests received pushback from log" count=38
+time=2026-10-22T15:17:23.701Z level=WARN msg="requests received pushback from log" count=22
+time=2026-10-22T15:17:24.291Z level=WARN msg="requests received pushback from log" count=16
+time=2026-10-22T15:17:24.639Z level=WARN msg="requests received pushback from log" count=18
+time=2026-10-22T15:17:24.701Z level=WARN msg="requests received pushback from log" count=50
+time=2026-10-22T15:17:25.292Z level=WARN msg="requests received pushback from log" count=52
+time=2026-10-22T15:17:25.638Z level=WARN msg="requests received pushback from log" count=44
+time=2026-10-22T15:17:25.701Z level=WARN msg="requests received pushback from log" count=39
+time=2026-10-22T15:17:26.292Z level=WARN msg="requests received pushback from log" count=11
+time=2026-10-22T15:17:26.639Z level=WARN msg="requests received pushback from log" count=52
+time=2026-10-22T15:17:26.700Z level=WARN msg="requests received pushback from log" count=31
+time=2026-10-22T15:17:27.292Z level=WARN msg="requests received pushback from log" count=2
+time=2026-10-22T15:17:27.638Z level=WARN msg="requests received pushback from log" count=55
+time=2026-10-22T15:17:27.701Z level=WARN msg="requests received pushback from log" count=25
+time=2026-10-22T15:17:28.292Z level=WARN msg="requests received pushback from log" count=42
+time=2026-10-22T15:17:28.639Z level=WARN msg="requests received pushback from log" count=56
+time=2026-10-22T15:17:28.701Z level=WARN msg="requests received pushback from log" count=37
+time=2026-10-22T15:17:29.291Z level=WARN msg="requests received pushback from log" count=23
+time=2026-10-22T15:17:29.638Z level=WARN msg="requests received pushback from log" count=55
+time=2026-10-22T15:17:29.638Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=13
+time=2026-10-22T15:17:29.701Z level=WARN msg="requests received pushback from log" count=8
+time=2026-10-22T15:17:29.701Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=153
+time=2026-10-22T15:17:30.292Z level=WARN msg="requests received pushback from log" count=34
+time=2026-10-22T15:17:30.292Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=162
+time=2026-10-22T15:17:30.638Z level=WARN msg="requests received pushback from log" count=41
+time=2026-10-22T15:17:30.638Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=27
+time=2026-10-22T15:17:30.700Z level=WARN msg="requests received pushback from log" count=41
+time=2026-10-22T15:17:30.700Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=205
+time=2026-10-22T15:17:31.291Z level=WARN msg="requests received pushback from log" count=42
+time=2026-10-22T15:17:31.291Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=212
+time=2026-10-22T15:17:31.638Z level=WARN msg="requests received pushback from log" count=59
+time=2026-10-22T15:17:31.638Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=83
+time=2026-10-22T15:17:31.701Z level=WARN msg="requests received pushback from log" count=61
+time=2026-10-22T15:17:31.701Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=172
+time=2026-10-22T15:17:32.291Z level=WARN msg="requests received pushback from log" count=56
+time=2026-10-22T15:17:32.291Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=186
+time=2026-10-22T15:17:32.639Z level=WARN msg="requests received pushback from log" count=46
+time=2026-10-22T15:17:32.639Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=45
+time=2026-10-22T15:17:32.701Z level=WARN msg="requests received pushback from log" count=64
+time=2026-10-22T15:17:32.701Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=116
+time=2026-10-22T15:17:33.292Z level=WARN msg="requests received pushback from log" count=46
+time=2026-10-22T15:17:33.292Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=197
+time=2026-10-22T15:17:33.639Z level=WARN msg="requests received pushback from log" count=56
+time=2026-10-22T15:17:33.639Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=14
+time=2026-10-22T15:17:33.701Z level=WARN msg="requests received pushback from log" count=59
+time=2026-10-22T15:17:33.701Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=88
+time=2026-10-22T15:17:34.292Z level=WARN msg="requests received pushback from log" count=19
+time=2026-10-22T15:17:34.292Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=184
+time=2026-10-22T15:17:34.638Z level=WARN msg="requests received pushback from log" count=58
+time=2026-10-22T15:17:34.638Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=59
+time=2026-10-22T15:17:34.701Z level=WARN msg="requests received pushback from log" count=65
+time=2026-10-22T15:17:34.701Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=161
+time=2026-10-22T15:17:35.292Z level=WARN msg="requests received pushback from log" count=68
+time=2026-10-22T15:17:35.292Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=175
+time=2026-10-22T15:17:35.639Z level=WARN msg="requests received pushback from log" count=57
+time=2026-10-22T15:17:35.639Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=55
+time=2026-10-22T15:17:35.802Z level=WARN msg="requests received pushback from log" count=54
+time=2026-10-22T15:17:35.802Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=196
+time=2026-10-22T15:17:36.292Z level=WARN msg="requests received pushback from log" count=78
+time=2026-10-22T15:17:36.292Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=108
+time=2026-10-22T15:17:36.638Z level=WARN msg="requests received pushback from log" count=49
+time=2026-10-22T15:17:36.638Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=80
+time=2026-10-22T15:17:36.701Z level=WARN msg="requests received pushback from log" count=29
+time=2026-10-22T15:17:36.701Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=185
+time=2026-10-22T15:17:37.292Z level=WARN msg="requests received pushback from log" count=9
+time=2026-10-22T15:17:37.292Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=32
+time=2026-10-22T15:17:37.638Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=92
+time=2026-10-22T15:17:37.701Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=203
+time=2026-10-22T15:17:38.291Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=129
+time=2026-10-22T15:17:38.701Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=178
+time=2026-10-22T15:17:39.291Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=188
+time=2026-10-22T15:17:39.638Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=74
+time=2026-10-22T15:17:39.701Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=106
+time=2026-10-22T15:17:40.293Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=197
+time=2026-10-22T15:17:40.701Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=71
+time=2026-10-22T15:17:41.291Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=208
+time=2026-10-22T15:17:41.638Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=168
+time=2026-10-22T15:17:41.701Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=126
+time=2026-10-22T15:17:42.292Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=158
+time=2026-10-22T15:17:42.638Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=66
+time=2026-10-22T15:17:42.700Z level=WARN msg="failed to create request: failed to write leaf: Post \"https://tesseract-bench-HASH-uk.a.run.app/tesseract-benchmark/ct/v1/add-chain\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)" count=128
+time=2026-10-22T15:18:41.300Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T15:18:41.644Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T15:18:41.712Z level=INFO msg="Max runtime reached; exiting"

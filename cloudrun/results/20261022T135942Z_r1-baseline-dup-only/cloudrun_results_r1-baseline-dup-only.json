@@ -1,0 +1,42 @@
+{
+  "project_id": "PROJECT_ID",
+  "region": "us-east4",
+  "overlay": "cloudrun/overlays/r1-baseline",
+  "image_uri": "us-east4-docker.pkg.dev/PROJECT_ID/tesseract-bench/tesseract-gcp:v0.2.0@sha256:bae936bab3d16c04b89b45cf1317bbbb66db19da6ab6a1d7e4e00f28b7514e81",
+  "hammer_image": "us-east4-docker.pkg.dev/PROJECT_ID/tesseract-bench/tesseract-hammer:v0.2.0@sha256:c02629ebf7e98c46360a702c8dd2dabd825d70b278e1d8877d711b5e3739ef41",
+  "service_url": "https://tesseract-bench-HASH-uk.a.run.app",
+  "warmup": {
+    "target_qps": 1000,
+    "dup_chance": 1.0,
+    "num_writers": 4000,
+    "hammer_tasks": 1,
+    "start_utc": "2026-10-22T13:59:44Z",
+    "end_utc": "2026-10-22T14:00:51Z",
+    "wall_seconds": 66.7,
+    "checkpoint_size_start": 3663613,
+    "checkpoint_size_end": 3667420,
+    "entries_integrated": 3807,
+    "integrated_unique_qps": 126.9,
+    "est_total_write_qps_incl_dups": null,
+    "job_execution": "tesseract-hammer-xz2qq",
+    "job_exit_code": 1
+  },
+  "results": [
+    {
+      "target_qps": 1000,
+      "dup_chance": 1.0,
+      "num_writers": 4000,
+      "hammer_tasks": 1,
+      "start_utc": "2026-10-22T14:01:07Z",
+      "end_utc": "2026-10-22T14:04:34Z",
+      "wall_seconds": 206.5,
+      "checkpoint_size_start": 3667420,
+      "checkpoint_size_end": 3688064,
+      "entries_integrated": 20644,
+      "integrated_unique_qps": 114.69,
+      "est_total_write_qps_incl_dups": null,
+      "job_execution": "tesseract-hammer-44jmq",
+      "job_exit_code": 1
+    }
+  ]
+}

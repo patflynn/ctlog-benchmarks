@@ -1,0 +1,7 @@
+time=2026-10-22T16:24:41.516Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T16:24:41.866Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T16:24:42.550Z level=INFO msg="Will fail after timeout" timeout=3m0s
+time=2026-10-22T16:27:41.516Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T16:27:41.866Z level=INFO msg="Max runtime reached; exiting"
+time=2026-10-22T16:27:41.867Z level=WARN msg=tracker.Update error="failed to get node ({1 6009982}): failed to fetch tile: failed to fetch tile at 0/46952(.p/0]): failed to fetch resource: getObject: failed to create reader for object \"tile/0/x046/952\" in bucket \"PROJECT_ID-tesseract-bench\": context canceled"
+time=2026-10-22T16:27:42.551Z level=INFO msg="Max runtime reached; exiting"
